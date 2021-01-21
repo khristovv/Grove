@@ -35,13 +35,14 @@ class DecisionTree(AbstractTree, SplittingMixin):
     ):
         super().__init__(dataset, features, target, max_depth=max_depth)
         self.criteria = criteria or self.GINI
+        self.root = BNode(data=self.dataset, label='root')
 
     def build(self):
 
         def _build(dataset, features, node=None):
             split_result = self.calculate_best_split(dataset, features, self.target, self.criteria)
 
-            if split_result.score == 0:
+            if split_result.gain == 0:
                 # this is a leaf Node
                 return BNode(
                     data=dataset,
@@ -56,7 +57,8 @@ class DecisionTree(AbstractTree, SplittingMixin):
             node.left = left_child
             node.right = right_child
 
+            _build(left_ds, self.features, left_child)
+            _build(right_ds, self.features, right_child)
 
-        root_node = BNode(data=self.dataset, label='root')
 
-        _build(self.dataset, self.features, root_node)
+        _build(self.dataset, self.features, self.root)

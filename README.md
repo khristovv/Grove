@@ -13,3 +13,5 @@ The famour [Iris dataset](./data/iris.csv) has been used during development.
 [Why are implementations of decision tree algorithms usually binary ?](https://github.com/rasbt/python-machine-learning-book/blob/master/faq/decision-tree-binary.md)
 
 [Decision Tree Classification](https://mlfromscratch.com/decision-tree-classification/#/)
+
+[Gini index for Decision Trees](https://www.youtube.com/watch?v=TmQTEGjGG80)

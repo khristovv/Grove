@@ -10,7 +10,7 @@ import numpy as np
 @dataclass
 class SplitResult:
     """Placeholder for the results values of a split"""
-    score: float
+    gain: float
     value: float
     feature: str
 
@@ -20,9 +20,9 @@ class SplittingMixin:
     ENTROPY = 'entropy'
 
 
-    def _get_criteria_algo(self, criteria: str):
+    def _get_gain_function(self, criteria: str):
         if criteria == self.GINI:
-            return self.gini
+            return self.gini_gain
 
         if criteria == self.ENTROPY:
             return self.entropy
@@ -46,8 +46,12 @@ class SplittingMixin:
             )
         )
 
-    def gini_index(self):
-        # TODO: implement
+    def gini_gain(self, current_gini, left_branch: pd.Series, right_branch: pd.Series):
+        # higher gini gain == better split
+        llen = len(left_branch)
+        rlen = len(right_branch)
+        total = llen + rlen
+        return current_gini - (llen / total) * self.gini(left_branch) - (rlen / total) * self.gini(right_branch)
         pass
 
     def entropy(self, series: pd.Series):
@@ -60,16 +64,18 @@ class SplittingMixin:
         )
 
     def calculate_best_split(self, dataset: pd.DataFrame, features: Iterable, target: str, criteria: str):
-        evaluate_purity = self._get_criteria_algo(criteria)
+        info_gain = self._get_gain_function(criteria)
         remaining_features = deque(features)
 
-        split_score = 999
+        split_gain = 0
         split_value = 0
         split_feature = ''
 
-        if self.gini(dataset[target]) == 0:
+        current_gini = self.gini(dataset[target])
+
+        if current_gini == 0:
             return SplitResult(
-                score=0,
+                gain=0,
                 value=None,
                 feature=None,
             )
@@ -83,18 +89,15 @@ class SplittingMixin:
             for value in dataset[feature].unique():
                 left, right = self.binary_split(dataset, feature, value)
 
-                left_score = evaluate_purity(left[target])
-                right_score = evaluate_purity(right[target])
+                new_gain = info_gain(current_gini, left[target], right[target])
 
-                new_score = min(split_score, left_score, right_score)
-
-                if new_score < split_score:
-                    split_score = new_score
+                if new_gain > split_gain:
+                    split_gain = new_gain
                     split_value = value
                     split_feature = feature
 
         return SplitResult(
-            score=split_score,
+            gain=split_gain,
             value=split_value,
             feature=split_feature
         )
