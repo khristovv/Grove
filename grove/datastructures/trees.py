@@ -1,6 +1,7 @@
 from typing import Iterable
 
 import pandas as pd
+from ppbtree import print_tree
 
 from grove.algorithms.splitting import SplittingMixin
 from grove.datastructures.nodes import BNode
@@ -37,23 +38,24 @@ class DecisionTree(AbstractTree, SplittingMixin):
         self.criteria = criteria or self.GINI
         self.root = BNode(data=self.dataset, label='root')
 
-    def build(self):
+
+    def print(self):
+        print_tree(self.root, "children")
+
+    def train(self):
 
         def _build(dataset, features, node=None):
             split_result = self.calculate_best_split(dataset, features, self.target, self.criteria)
 
             if split_result.gain == 0:
                 # this is a leaf Node
-                return BNode(
-                    data=dataset,
-                    label=dataset[self.target].unique()[0],
-                    ancestor=node
-                )
+                node.leafify(str(dataset[self.target].unique()[0]))
+                return node
 
             left_ds, right_ds = self.binary_split(dataset, split_result.feature, split_result.value)
 
-            left_child = BNode(left_ds, f' < {split_result.feature}', node)
-            right_child = BNode(right_ds, f' >= {split_result.feature}', node)
+            left_child = BNode(left_ds, f'{split_result.feature} < {split_result.value}', node)
+            right_child = BNode(right_ds, f'{split_result.feature} >= {split_result.value}', node)
             node.left = left_child
             node.right = right_child
 
@@ -62,3 +64,7 @@ class DecisionTree(AbstractTree, SplittingMixin):
 
 
         _build(self.dataset, self.features, self.root)
+
+    def fit(self):
+        #TODO implement
+        pass

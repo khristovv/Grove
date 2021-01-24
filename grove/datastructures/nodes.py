@@ -34,7 +34,7 @@ class BNode(AbstractNode):
         self.right = right
 
     def __str__(self) -> str:
-        return f"Node({self.label})"
+        return f" {self.label} "
 
     @property
     def is_leaf(self) -> bool:
@@ -43,3 +43,8 @@ class BNode(AbstractNode):
     @property
     def is_inner(self) -> bool:
         return bool(self.left or self.right)
+
+    def leafify(self, classifed_as):
+        self.left = None
+        self.right = None
+        self.label = self.label + f'-> {classifed_as}'
