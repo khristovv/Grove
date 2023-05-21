@@ -10,15 +10,15 @@ import numpy as np
 @dataclass
 class SplitResult:
     """Placeholder for the results values of a split"""
+
     gain: float
     value: float
     feature: str
 
 
 class SplittingMixin:
-    GINI = 'gini'
-    ENTROPY = 'entropy'
-
+    GINI = "gini"
+    ENTROPY = "entropy"
 
     def _get_gain_function(self, criteria: str):
         if criteria == self.GINI:
@@ -31,7 +31,7 @@ class SplittingMixin:
         self,
         dataset: pd.DataFrame,
         split_col: str,
-        split_val: Any
+        split_val: Any,
     ) -> Tuple[pd.DataFrame, pd.DataFrame]:
         left_ds = dataset[dataset[split_col] < split_val]
         right_ds = dataset[dataset[split_col] >= split_val]
@@ -39,12 +39,7 @@ class SplittingMixin:
 
     def gini(self, series: pd.Series):
         count = series.size
-        return 1 - sum(
-            map(
-                lambda value: (value / count) ** 2,
-                series.value_counts()
-            )
-        )
+        return 1 - sum(map(lambda value: (value / count) ** 2, series.value_counts()))
 
     def gini_gain(self, current_gini, left_branch: pd.Series, right_branch: pd.Series):
         # higher gini gain == better split
@@ -58,8 +53,8 @@ class SplittingMixin:
         count = series.size
         return -1 * sum(
             map(
-                lambda value: (value/count) * np.log2(value/count),
-                series.value_counts()
+                lambda value: (value / count) * np.log2(value / count),
+                series.value_counts(),
             )
         )
 
@@ -69,7 +64,7 @@ class SplittingMixin:
 
         split_gain = 0
         split_value = 0
-        split_feature = ''
+        split_feature = ""
 
         current_gini = self.gini(dataset[target])
 
@@ -79,7 +74,6 @@ class SplittingMixin:
                 value=None,
                 feature=None,
             )
-
 
         while remaining_features:
             feature = remaining_features.popleft()
@@ -99,5 +93,5 @@ class SplittingMixin:
         return SplitResult(
             gain=split_gain,
             value=split_value,
-            feature=split_feature
+            feature=split_feature,
         )

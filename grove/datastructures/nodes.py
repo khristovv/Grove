@@ -1,12 +1,9 @@
 from pandas import DataFrame
 from uuid import uuid4
 
+
 class AbstractNode:
-    def __init__(
-        self,
-        data: DataFrame,
-        ancestor = None
-    ):
+    def __init__(self, data: DataFrame, ancestor=None):
         self.data = data
         self.identifier = str(uuid4())
         self.ancestor = ancestor
@@ -20,14 +17,8 @@ class BNode(AbstractNode):
     """
     BNode stands for BinaryNode -> A node wich can have at most 2 children
     """
-    def __init__(
-        self,
-        data: DataFrame,
-        label: str = None,
-        ancestor = None,
-        left = None,
-        right = None
-    ):
+
+    def __init__(self, data: DataFrame, label: str = None, ancestor=None, left=None, right=None):
         super().__init__(data, ancestor)
         self.label = label
         self.left = left
@@ -47,4 +38,4 @@ class BNode(AbstractNode):
     def leafify(self, classifed_as):
         self.left = None
         self.right = None
-        self.label = self.label + f'-> {classifed_as}'
+        self.label = self.label + f"-> {classifed_as}"
