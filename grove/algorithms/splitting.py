@@ -47,7 +47,6 @@ class SplittingMixin:
         rlen = len(right_branch)
         total = llen + rlen
         return current_gini - (llen / total) * self.gini(left_branch) - (rlen / total) * self.gini(right_branch)
-        pass
 
     def entropy(self, series: pd.Series):
         count = series.size

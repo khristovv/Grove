@@ -37,7 +37,7 @@ class DecisionTree(AbstractTree, SplittingMixin):
         self.criteria = criteria or self.GINI
         self.root = BNode(data=self.dataset, label="root")
 
-    def print(self):
+    def view(self):
         print_tree(self.root, "children")
 
     def train(self):
