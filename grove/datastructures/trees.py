@@ -1,7 +1,6 @@
 from typing import Iterable
 
 import pandas as pd
-from ppbtree import print_tree
 
 from grove.algorithms.splitting import SplittingMixin
 from grove.datastructures.nodes import BinaryNode
@@ -24,7 +23,28 @@ class AbstractTree:
         raise NotImplementedError
 
 
-class DecisionTree(AbstractTree, SplittingMixin):
+class BaseTree(AbstractTree, SplittingMixin):
+    def print(self):
+        def _print(node: BinaryNode, indent: str = "", is_last: bool = True):
+            marker = "└──" if is_last else "├──"
+
+            output = str(node) if node.is_root else f"{indent}{marker} {node}"
+            print(output)
+
+            if node.is_leaf:
+                return
+
+            child_count = len(node.children)
+            for index, child in enumerate(node.children):
+                is_last_child = index == child_count - 1
+                child_indent = indent + ("   " if is_last else "│  ")
+                _print(node=child, indent=child_indent, is_last=is_last_child)
+
+        print()
+        _print(self.root)
+
+
+class DecisionTree(BaseTree):
     def __init__(
         self,
         dataset: pd.DataFrame,
@@ -36,9 +56,6 @@ class DecisionTree(AbstractTree, SplittingMixin):
         super().__init__(dataset, features, target, max_depth=max_depth)
         self.criteria = criteria or self.GINI
         self.root = BinaryNode(data=self.dataset, label="root")
-
-    def view(self):
-        print_tree(self.root, "label")
 
     def train(self):
         def _build(dataset, features, node: BinaryNode = None):

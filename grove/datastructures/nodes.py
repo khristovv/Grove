@@ -13,7 +13,7 @@ class AbstractNode:
         self.ancestor = ancestor
 
     def __str__(self) -> str:
-        return f" {self.label} "
+        return f"{self.label}"
 
     def __repr__(self) -> str:
         return str(self)
@@ -29,7 +29,7 @@ TNode = TypeVar("TNode", bound="Node")
 class Node(AbstractNode):
     def __init__(self, children: list[TNode] | None = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.children: list[Node] = children or []
+        self.children = children or []
 
     @property
     def is_leaf(self) -> bool:
@@ -66,6 +66,10 @@ class BinaryNode(Node):
         super().__init__(children=[left, right], *args, **kwargs)
 
     @property
+    def is_leaf(self) -> bool:
+        return self.left is None and self.right is None
+
+    @property
     def left(self):
         return self.children[0]
 
@@ -82,7 +86,7 @@ class BinaryNode(Node):
         self.children[1] = node
 
     def add_child(self, node: TBinaryNode):
-        self.ancestor = self
+        node.ancestor = self
 
         if not self.left:
             self.left = node
