@@ -4,7 +4,7 @@ import pandas as pd
 from ppbtree import print_tree
 
 from grove.algorithms.splitting import SplittingMixin
-from grove.datastructures.nodes import BNode
+from grove.datastructures.nodes import BinaryNode
 
 
 class AbstractTree:
@@ -35,10 +35,10 @@ class DecisionTree(AbstractTree, SplittingMixin):
     ):
         super().__init__(dataset, features, target, max_depth=max_depth)
         self.criteria = criteria or self.GINI
-        self.root = BNode(data=self.dataset, label="root")
+        self.root = BinaryNode(data=self.dataset, label="root")
 
     def view(self):
-        print_tree(self.root, "children")
+        print_tree(self.root, "label")
 
     def train(self):
         def _build(dataset, features, node=None):
@@ -55,8 +55,16 @@ class DecisionTree(AbstractTree, SplittingMixin):
                 split_result.value,
             )
 
-            left_child = BNode(left_ds, f"{split_result.feature} < {split_result.value}", node)
-            right_child = BNode(right_ds, f"{split_result.feature} >= {split_result.value}", node)
+            left_child = BinaryNode(
+                data=left_ds,
+                label=f"{split_result.feature} < {split_result.value} ",
+                ancestor=node,
+            )
+            right_child = BinaryNode(
+                data=right_ds,
+                label=f"{split_result.feature} >= {split_result.value} ",
+                ancestor=node,
+            )
             node.left = left_child
             node.right = right_child
 
