@@ -41,7 +41,7 @@ class DecisionTree(AbstractTree, SplittingMixin):
         print_tree(self.root, "label")
 
     def train(self):
-        def _build(dataset, features, node=None):
+        def _build(dataset, features, node: BinaryNode = None):
             split_result = self.calculate_best_split(dataset, features, self.target, self.criteria)
 
             if split_result.gain == 0:
@@ -55,18 +55,10 @@ class DecisionTree(AbstractTree, SplittingMixin):
                 split_result.value,
             )
 
-            left_child = BinaryNode(
-                data=left_ds,
-                label=f"{split_result.feature} < {split_result.value} ",
-                ancestor=node,
-            )
-            right_child = BinaryNode(
-                data=right_ds,
-                label=f"{split_result.feature} >= {split_result.value} ",
-                ancestor=node,
-            )
-            node.left = left_child
-            node.right = right_child
+            left_child = BinaryNode(data=left_ds, label=f"{split_result.feature} < {split_result.value} ")
+            right_child = BinaryNode(data=right_ds, label=f"{split_result.feature} >= {split_result.value} ")
+            node.add_child(left_child)
+            node.add_child(right_child)
 
             _build(left_ds, self.features, left_child)
             _build(right_ds, self.features, right_child)
