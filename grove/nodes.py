@@ -6,7 +6,12 @@ TAbstractNode = TypeVar("TAbstractNode", bound="AbstractNode")
 
 
 class AbstractNode:
-    def __init__(self, data: DataFrame, label: str | None = "", ancestor: TAbstractNode | None = None):
+    def __init__(
+        self,
+        data: DataFrame,
+        label: str | None = "",
+        ancestor: TAbstractNode | None = None,
+    ):
         self.identifier = str(uuid4())
         self.label = label
         self.data = data

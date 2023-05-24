@@ -1,1 +1,1 @@
-from .datastructures.trees import BinaryTree
+from .trees import *  # noqa

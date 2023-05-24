@@ -10,7 +10,8 @@ if __name__ == "__main__":
     dataset = pd.read_csv(IRIS_DATA_PATH)
 
     x_train, x_test, y_train, y_test = train_test_split(
-        dataset[["SepalLengthCm", "SepalWidthCm", "PetalLengthCm", "PetalWidthCm"]], dataset["Species"]
+        dataset[["SepalLengthCm", "SepalWidthCm", "PetalLengthCm", "PetalWidthCm"]],
+        dataset["Species"],
     )
 
     model = BinaryTree(

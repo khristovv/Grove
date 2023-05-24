@@ -36,7 +36,11 @@ class SplittingMixin:
         llen = len(left_branch)
         rlen = len(right_branch)
         total = llen + rlen
-        return current_gini - (llen / total) * self.gini(left_branch) - (rlen / total) * self.gini(right_branch)
+        return (
+            current_gini
+            - (llen / total) * self.gini(left_branch)
+            - (rlen / total) * self.gini(right_branch)
+        )
 
     def entropy(self, series: pd.Series):
         count = series.size
@@ -47,7 +51,9 @@ class SplittingMixin:
             )
         )
 
-    def calculate_best_split(self, dataset: pd.DataFrame, features: Iterable, target: str, criteria: str):
+    def calculate_best_split(
+        self, dataset: pd.DataFrame, features: Iterable, target: str, criteria: str
+    ):
         info_gain = self._get_gain_function(criteria)
         remaining_features = deque(features)
 
