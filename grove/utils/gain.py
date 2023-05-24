@@ -17,16 +17,10 @@ class GainMixin:
         count = series.size
         return 1 - sum(map(lambda value: (value / count) ** 2, series.value_counts()))
 
-    def gini_gain(self, current_gini, left_branch: pd.Series, right_branch: pd.Series):
+    def gini_gain(self, current_gini, *subsets: pd.Series):
         # higher gini gain == better split
-        llen = len(left_branch)
-        rlen = len(right_branch)
-        total = llen + rlen
-        return (
-            current_gini
-            - (llen / total) * self.gini(left_branch)
-            - (rlen / total) * self.gini(right_branch)
-        )
+        total = sum(subset.size for subset in subsets)
+        return current_gini - sum((subset.size / total) * self.gini(subset) for subset in subsets)
 
     def entropy(self, series: pd.Series):
         count = series.size
