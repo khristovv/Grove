@@ -2,7 +2,7 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-from grove import DecisionTree
+from grove import BinaryTree
 
 IRIS_DATA_PATH = "./data/Iris.csv"
 
@@ -13,7 +13,7 @@ if __name__ == "__main__":
         dataset[["SepalLengthCm", "SepalWidthCm", "PetalLengthCm", "PetalWidthCm"]], dataset["Species"]
     )
 
-    model = DecisionTree(
+    model = BinaryTree(
         dataset=dataset,
         features=["SepalLengthCm", "SepalWidthCm", "PetalLengthCm", "PetalWidthCm"],
         target="Species",

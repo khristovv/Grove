@@ -1,4 +1,4 @@
-from typing import Any, Iterable, Tuple
+from typing import Iterable
 from collections import deque
 from dataclasses import dataclass
 
@@ -26,16 +26,6 @@ class SplittingMixin:
 
         if criteria == self.ENTROPY:
             return self.entropy
-
-    def binary_split(
-        self,
-        dataset: pd.DataFrame,
-        split_col: str,
-        split_val: Any,
-    ) -> Tuple[pd.DataFrame, pd.DataFrame]:
-        left_ds = dataset[dataset[split_col] < split_val]
-        right_ds = dataset[dataset[split_col] >= split_val]
-        return left_ds, right_ds
 
     def gini(self, series: pd.Series):
         count = series.size

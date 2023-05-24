@@ -1,1 +1,1 @@
-from .datastructures.trees import DecisionTree
+from .datastructures.trees import BinaryTree

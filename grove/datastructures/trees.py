@@ -1,4 +1,4 @@
-from typing import Iterable
+from typing import Any, Iterable
 
 import pandas as pd
 
@@ -44,7 +44,7 @@ class BaseTree(AbstractTree, SplittingMixin):
         _print(self.root)
 
 
-class DecisionTree(BaseTree):
+class BinaryTree(BaseTree):
     def __init__(
         self,
         dataset: pd.DataFrame,
@@ -56,6 +56,16 @@ class DecisionTree(BaseTree):
         super().__init__(dataset, features, target, max_depth=max_depth)
         self.criteria = criteria or self.GINI
         self.root = BinaryNode(data=self.dataset, label="root")
+
+    def binary_split(
+        self,
+        dataset: pd.DataFrame,
+        split_col: str,
+        split_val: Any,
+    ) -> tuple[pd.DataFrame, pd.DataFrame]:
+        left_ds = dataset[dataset[split_col] < split_val]
+        right_ds = dataset[dataset[split_col] >= split_val]
+        return left_ds, right_ds
 
     def train(self):
         def _build(dataset, features, node: BinaryNode = None):
