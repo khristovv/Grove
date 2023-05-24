@@ -2,7 +2,7 @@ from typing import Iterable
 
 import pandas as pd
 
-from grove.utils.splitting import SplittingMixin
+from grove.utils.gain import GainMixin
 from grove.nodes import BinaryNode
 
 
@@ -20,10 +20,15 @@ class AbstractTree:
         self.max_depth = max_depth
 
     def build(self):
+        """A method that builds the decision tree from the training set (X, y)."""
+        raise NotImplementedError
+
+    def classify(self):
+        """A method"""
         raise NotImplementedError
 
 
-class BaseTree(AbstractTree, SplittingMixin):
+class BaseTree(AbstractTree, GainMixin):
     def print(self):
         def _print(node: BinaryNode, indent: str = "", is_last: bool = True):
             marker = "└──" if is_last else "├──"

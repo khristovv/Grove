@@ -20,7 +20,6 @@ if __name__ == "__main__":
         target="Species",
     )
 
-    model.train()
-    # model.build()
+    model.build()
 
     model.print()
