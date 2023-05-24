@@ -6,7 +6,6 @@ import pandas as pd
 from grove.nodes import BinaryNode
 from grove.trees.base_tree import BaseTree
 from grove.ds import SplitResult
-from grove.utils.gain import GINI
 
 
 class BinaryTree(BaseTree):
@@ -16,16 +15,11 @@ class BinaryTree(BaseTree):
         features: Iterable[str],
         target: str,
         max_depth: int = 5,
-        criteria: str = None,
     ):
         super().__init__(dataset, features, target, max_depth=max_depth)
-        self.criteria = criteria or GINI
         self.root = BinaryNode(data=self.dataset, label="root")
 
-    def calculate_best_split(
-        self, dataset: pd.DataFrame, features: Iterable, target: str, criteria: str
-    ):
-        info_gain = self._get_gain_function(criteria)
+    def calculate_best_split(self, dataset: pd.DataFrame, features: Iterable, target: str):
         remaining_features = deque(features)
 
         split_gain = 0
@@ -49,7 +43,7 @@ class BinaryTree(BaseTree):
             for value in dataset[feature].unique():
                 left, right = self.binary_split(dataset, feature, value)
 
-                new_gain = info_gain(current_gini, left[target], right[target])
+                new_gain = self.gini_gain(current_gini, left[target], right[target])
 
                 if new_gain > split_gain:
                     split_gain = new_gain
@@ -74,9 +68,7 @@ class BinaryTree(BaseTree):
 
     def build(self):
         def _build(dataset, features, node: BinaryNode = None):
-            split_result = self.calculate_best_split(
-                dataset, features, self.target, self.criteria
-            )
+            split_result = self.calculate_best_split(dataset, features, self.target)
 
             if split_result.gain == 0:
                 # this is a leaf Node
@@ -89,12 +81,8 @@ class BinaryTree(BaseTree):
                 split_result.value,
             )
 
-            left_child = BinaryNode(
-                data=left_ds, label=f"{split_result.feature} < {split_result.value} "
-            )
-            right_child = BinaryNode(
-                data=right_ds, label=f"{split_result.feature} >= {split_result.value} "
-            )
+            left_child = BinaryNode(data=left_ds, label=f"{split_result.feature} < {split_result.value} ")
+            right_child = BinaryNode(data=right_ds, label=f"{split_result.feature} >= {split_result.value} ")
             node.add_child(left_child)
             node.add_child(right_child)
 

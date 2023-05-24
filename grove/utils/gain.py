@@ -6,7 +6,7 @@ ENTROPY = "entropy"
 
 
 class GainMixin:
-    def _get_gain_function(self, criteria: str):
+    def get_gain_function(self, criteria: str):
         if criteria == GINI:
             return self.gini_gain
 
