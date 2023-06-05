@@ -9,9 +9,9 @@ from grove.nodes import BinaryNode
 class AbstractTree:
     def __init__(
         self,
-        dataset: pd.DataFrame,
+        dataset: pd.DataFrame,  # X
+        target: pd.Series,  # y
         features: Iterable[str],
-        target: str,
         max_depth: int = None,
     ):
         self.dataset = dataset
@@ -20,7 +20,11 @@ class AbstractTree:
         self.max_depth = max_depth
 
     def build(self):
-        """A method that builds the decision tree from the training set (X, y)."""
+        """A method that builds the decision tree from the training set (dataset, target)."""
+        raise NotImplementedError
+
+    def test(self, dataset: pd.DataFrame, target: pd.Series):
+        """A method that tests the decision tree on the test set (dataset, target)."""
         raise NotImplementedError
 
     def classify(self):

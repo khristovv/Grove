@@ -15,9 +15,9 @@ if __name__ == "__main__":
     )
 
     model = BinaryTree(
-        dataset=dataset,
+        dataset=x_train,
+        target=y_train,
         features=["SepalLengthCm", "SepalWidthCm", "PetalLengthCm", "PetalWidthCm"],
-        target="Species",
     )
 
     model.build()
