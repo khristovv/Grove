@@ -19,19 +19,34 @@ class Bin:
     type: Literal["Normal", "Special Values", "Missing", "Other"]
     size: int
 
+    @property
+    def bounds(self) -> tuple[float, float]:
+        return self.left_bound[0], self.right_bound[0]
+
+    @property
+    def values(self) -> npt.ArrayLike:
+        return self.left_bound
+
+    @property
+    def is_discrete(self) -> bool:
+        return len(self.left_bound) > 1
+
 
 @dataclass
 class BinnedFeature:
-    feature: str
+    label: str
     bins: list[Bin]
     stats: dict[str, npt.ArrayLike]
+
+    def get_criterion_value(self, criterion: str) -> float | None:
+        return self.stats.get(criterion, [None])[0]
 
 
 def parse_supervised_binning_results(binned_features: list[dict]) -> list[BinnedFeature]:
     """Parse the result of supervised binning into a list of BinnedFeature"""
     return [
         BinnedFeature(
-            feature=binned_feature["cname"],
+            label=binned_feature["cname"],
             bins=[
                 Bin(
                     left_bound=bin["lb"],
@@ -39,9 +54,9 @@ def parse_supervised_binning_results(binned_features: list[dict]) -> list[Binned
                     type=bin["type"],
                     size=bin["n"],
                 )
-                for bin in binned_feature['bns'].values()
+                for bin in binned_feature["bns"].values()
             ],
-            stats=binned_feature["st"],
+            stats=binned_feature["st"][0],
         )
         for binned_feature in binned_features
     ]

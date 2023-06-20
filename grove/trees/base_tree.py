@@ -3,7 +3,7 @@ from typing import Iterable
 import pandas as pd
 
 from grove.utils.gain import GainMixin
-from grove.nodes import BinaryNode
+from grove.nodes import Node
 
 
 class AbstractTree:
@@ -34,7 +34,7 @@ class AbstractTree:
 
 class BaseTree(AbstractTree, GainMixin):
     def print(self):
-        def _print(node: BinaryNode, indent: str = "", is_last: bool = True):
+        def _print(node: Node, indent: str = "", is_last: bool = True):
             marker = "└──" if is_last else "├──"
 
             output = str(node) if node.is_root else f"{indent}{marker} {node}"

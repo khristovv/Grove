@@ -52,6 +52,10 @@ class Node(AbstractNode):
         node.ancestor = self
         self.children.append(node)
 
+    def leafify(self, classifed_as):
+        self.children = []
+        self.label += f" -> {classifed_as}"
+
 
 TBinaryNode = TypeVar("TBinaryNode", bound="BinaryNode")
 
@@ -99,7 +103,7 @@ class BinaryNode(Node):
 
         self.right = node
 
-    def leafify(self, classifed_as):
+    def leafify(self, classifed_as: str):
         self.left = None
         self.right = None
         self.label = self.label + f"-> {classifed_as}"
