@@ -141,13 +141,19 @@ class NTree(BaseTree):
 
     def _build_node_label(self, feature: str, bin: Bin) -> str:
         if bin.is_discrete:
-            return f"{feature} {SpecialChars.ELEMENT_OF}  [{', '.join(str(v) for v in bin.values)}]"
+            return f"( {feature} {SpecialChars.ELEMENT_OF}  [{', '.join(str(v) for v in bin.values)}] )"
 
         lb, rb = bin.bounds
-        lb = lb if not np.isinf(lb) else SpecialChars.MINUS_INFINITY
-        rb = rb if not np.isinf(rb) else SpecialChars.PLUS_INFINITY
+        lb = lb if not np.isinf(lb) else ""
+        rb = rb if not np.isinf(rb) else ""
 
-        return f"({lb} <= {feature} < {rb})"
+        if lb and rb:
+            return f"( {lb} <= {feature} < {rb} )"
+
+        if lb:
+            return f"( {lb} <= {feature} )"
+
+        return f"( {feature} < {rb} )"
 
     def _build_node(self, bin: Bin, data: pd.DataFrame, feature: str):
         if bin.is_discrete:
