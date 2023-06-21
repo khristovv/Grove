@@ -23,7 +23,7 @@ class NTree(BaseTree):
         min_samples_per_node: int,
         criterion: str = Criteria.GINI,
         criterion_threshold: float = 1.0,
-        max_depth: int = None,  # TODO: make required
+        max_depth: int = None,
         logging_enabled: bool = False,
         config_values_delimiter: str = "|",
     ):
@@ -118,11 +118,13 @@ class NTree(BaseTree):
 
         self.root = Node(data=encoded_data.x, label="Root")
 
-        def _build(node: Node):
+        def _build(node: Node, curr_depth: int):
+            if self.max_depth and curr_depth == self.max_depth:
+                # node.leafify()
+                return
+
             binned_features = self.bin(encoded_data=encoded_data, curr_node=node)
             feature, bins = self.calculate_best_split(binned_features=binned_features)
-
-            # TODO: Add `max_depth` handling
 
             if not bins:
                 # node.leafify()
@@ -133,9 +135,9 @@ class NTree(BaseTree):
                 node.add_child(child_node)
 
             for child_node in node.children:
-                _build(node=child_node)
+                _build(node=child_node, curr_depth=curr_depth + 1)
 
-        _build(node=self.root)
+        _build(node=self.root, curr_depth=0)
 
     def _build_node_label(self, feature: str, bin: Bin) -> str:
         if bin.is_discrete:

@@ -25,8 +25,10 @@ if __name__ == "__main__":
         target=pd.DataFrame(y_train),
         features=["Gender", "Height", "Weight", "Overweight"],
         config=config,
-        max_children=3,
-        min_samples_per_node=50,
+        max_children=2,
+        min_samples_per_node=20,
+        # criterion_threshold=10.0,
+        max_depth=4,
         logging_enabled=True,
     )
 
