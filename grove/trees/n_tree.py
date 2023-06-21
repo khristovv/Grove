@@ -5,7 +5,7 @@ import pandas as pd
 from aislab import dp_feng
 
 from grove.binning import Bin, parse_supervised_binning_results, BinnedFeature
-from grove.constants import Criteria
+from grove.constants import Criteria, SpecialChars
 from grove.ds import EncodedData
 from grove.nodes import Node
 
@@ -141,11 +141,11 @@ class NTree(BaseTree):
 
     def _build_node_label(self, feature: str, bin: Bin) -> str:
         if bin.is_discrete:
-            return f"{feature} \u2208  [{', '.join(str(v) for v in bin.values)}]"
+            return f"{feature} {SpecialChars.ELEMENT_OF}  [{', '.join(str(v) for v in bin.values)}]"
 
         lb, rb = bin.bounds
-        lb = lb if not np.isinf(lb) else "-∞"
-        rb = rb if not np.isinf(rb) else "∞"
+        lb = lb if not np.isinf(lb) else SpecialChars.MINUS_INFINITY
+        rb = rb if not np.isinf(rb) else SpecialChars.PLUS_INFINITY
 
         return f"({lb} <= {feature} < {rb})"
 
