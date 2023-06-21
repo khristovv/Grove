@@ -1,3 +1,9 @@
+class SpecialChars:
+    TREE_BRANCH = "├──"
+    TREE_LAST_BRANCH = "└──"
+    TREE_PATH = "│"
+
+
 class Criteria:
     GINI = "Gini"
     CHI2 = "Chi2"

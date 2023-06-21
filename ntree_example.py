@@ -20,7 +20,7 @@ if __name__ == "__main__":
         dataset["Overweight"],
     )
 
-    model = NTree(
+    tree_model = NTree(
         dataset=x_train,
         target=pd.DataFrame(y_train),
         features=["Gender", "Height", "Weight", "Overweight"],
@@ -32,5 +32,5 @@ if __name__ == "__main__":
         logging_enabled=True,
     )
 
-    model.build()
-    model.print()
+    tree_model.build()
+    print(tree_model)
