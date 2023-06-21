@@ -1,17 +1,10 @@
-# Grove
-*by [Kamen Hristov](https://github.com/khristovv) & Elvis Kirilov*
+# Grove - A Decision Tree Training Algorithm Built with Python
+This repository contains the implementation and analysis of a decision tree training algorithm in Python. The algorithm aims to create an accurate and interpretable model for classification and regression tasks.
 
-## Decision trees  and Random Forests (Дървета на решенията. Метод на случайната гора)
-Grove is a simple python library implementing some basic types of decision trees and random forest models.
-The main purpose of this is to be used as a course project for the class "Управление на промишлени системи"
+## Introduction
+The goal of this project is to develop a decision tree training algorithm using Python that would serce as the base bulding block for an upcoming Random Forest algorithm implementation. Decision trees are widely used in machine learning due to their interpretability and ability to handle both categorical and numerical features. This project aims to provide a comprehensive understanding of decision tree algorithms and their practical implementation by implemententing a decision tree training algorithm from scratch and analyzing its performance on a variety of datasets.
 
-The famour [Iris dataset](./data/iris.csv) has been used during development.
-
-## Articles that helped
-[All About Decision Trees from Scratch with Python Implementation](https://medium.com/towards-artificial-intelligence/all-about-decision-tree-from-scratch-with-python-implementation-5159c06a4a59)
-
-[Why are implementations of decision tree algorithms usually binary ?](https://github.com/rasbt/python-machine-learning-book/blob/master/faq/decision-tree-binary.md)
-
-[Decision Tree Classification](https://mlfromscratch.com/decision-tree-classification/#/)
-
-[Gini index for Decision Trees](https://www.youtube.com/watch?v=TmQTEGjGG80)
+## Setup
+1. Create a virtual environment using `pyenv`, `venv` or any other tool of your choice. Although the project was build using 3.10.2, it can probably run with older/newers versions, but tests weren't performed to confirm this.
+2. Activate your environment
+3. Install the project dependencies via pip `pip install -r requirements.txt`.
