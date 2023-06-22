@@ -25,12 +25,15 @@ if __name__ == "__main__":
         target=pd.DataFrame(y_train),
         features=["Gender", "Height", "Weight", "Overweight"],
         config=config,
-        max_children=2,
-        min_samples_per_node=20,
+        max_children=3,
+        min_samples_per_node=50,
         # criterion_threshold=10.0,
-        max_depth=4,
+        max_depth=5,
         logging_enabled=True,
+        statistics_enabled=True,
     )
 
     tree_model.build()
     print(tree_model)
+    print("============================== Statistics ==============================")
+    print(tree_model.get_statistics())

@@ -5,7 +5,7 @@ import pandas as pd
 from aislab import dp_feng
 
 from grove.binning import Bin, parse_supervised_binning_results, BinnedFeature
-from grove.constants import Criteria, SpecialChars
+from grove.constants import Criteria, SpecialChars, TreeStatistics
 from grove.ds import EncodedData
 from grove.nodes import Node
 
@@ -25,6 +25,7 @@ class NTree(BaseTree):
         criterion_threshold: float = 1.0,
         max_depth: int = None,
         logging_enabled: bool = False,
+        statistics_enabled: bool = False,
         config_values_delimiter: str = "|",
     ):
         self.validate_init(
@@ -40,7 +41,10 @@ class NTree(BaseTree):
         self.config = config
         self.min_samples_per_node = min_samples_per_node
         self.logging_enabled = logging_enabled
+        self.statistics_enabled = statistics_enabled
         self.config_values_delimiter = config_values_delimiter
+
+        self.statistics = pd.DataFrame(columns=TreeStatistics.ALL)
 
     def validate_init(self, *, max_children: int, min_samples_per_node: int, criterion: int):
         if max_children < 2:
@@ -118,15 +122,17 @@ class NTree(BaseTree):
 
         self.root = Node(data=encoded_data.x, label="Root")
 
-        def _build(node: Node, curr_depth: int):
+        def _build(node: Node, curr_depth: int = 0, prev_split_feature: str = ""):
             if self.max_depth and curr_depth == self.max_depth:
                 # node.leafify()
+                self._log_node_statistics(node=node, prev_split_feature=prev_split_feature, depth=curr_depth)
                 return
 
             binned_features = self.bin(encoded_data=encoded_data, curr_node=node)
             feature, bins = self.calculate_best_split(binned_features=binned_features)
 
             if not bins:
+                self._log_node_statistics(node=node, prev_split_feature=prev_split_feature, depth=curr_depth)
                 # node.leafify()
                 return
 
@@ -134,10 +140,12 @@ class NTree(BaseTree):
                 child_node = self._build_node(bin=bin, data=node.data, feature=feature)
                 node.add_child(child_node)
 
-            for child_node in node.children:
-                _build(node=child_node, curr_depth=curr_depth + 1)
+            self._log_node_statistics(node=node, prev_split_feature=prev_split_feature, depth=curr_depth)
 
-        _build(node=self.root, curr_depth=0)
+            for child_node in node.children:
+                _build(node=child_node, curr_depth=curr_depth + 1, prev_split_feature=feature)
+
+        _build(node=self.root)
 
     def _build_node_label(self, feature: str, bin: Bin) -> str:
         if bin.is_discrete:
@@ -165,6 +173,29 @@ class NTree(BaseTree):
             data=records,
             label=self._build_node_label(feature=feature, bin=bin),
         )
+
+    def _log_node_statistics(self, node: Node, prev_split_feature: str, depth: int):
+        if not self.statistics_enabled:
+            return
+
+        self.statistics = pd.concat(
+            [
+                self.statistics,
+                pd.DataFrame(
+                    {
+                        TreeStatistics.LABEL: [node.label],
+                        TreeStatistics.DEPTH: [depth],
+                        TreeStatistics.SPLIT_FEATURE: [prev_split_feature],
+                        TreeStatistics.CHILDREN: [len(node.children)],
+                        TreeStatistics.SIZE: [len(node.data.index)],
+                    }
+                ),
+            ],
+            ignore_index=True,
+        )
+
+    def get_statistics(self) -> pd.DataFrame:
+        return self.statistics.sort_values(by=[TreeStatistics.DEPTH])
 
     def classify(self):
         """Classify a new dataset."""
