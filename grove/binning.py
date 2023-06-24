@@ -20,15 +20,14 @@ class Bin:
     size: int
 
     @property
-    def bounds(self) -> tuple[float, float]:
-        return self.left_bound[0], self.right_bound[0]
+    def bounds(self) -> list[float, float]:
+        if self.is_categorical:
+            return self.left_bound
+
+        return [self.left_bound[0], self.right_bound[0]]
 
     @property
-    def values(self) -> npt.ArrayLike:
-        return self.left_bound
-
-    @property
-    def is_discrete(self) -> bool:
+    def is_categorical(self) -> bool:
         return len(self.left_bound) > 1
 
 

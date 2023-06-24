@@ -1,4 +1,4 @@
-from typing import TypeVar
+from typing import Literal, TypeVar
 from pandas import DataFrame
 from uuid import uuid4
 
@@ -8,13 +8,19 @@ TAbstractNode = TypeVar("TAbstractNode", bound="AbstractNode")
 class AbstractNode:
     def __init__(
         self,
-        data: DataFrame,
+        indexes: DataFrame,
         label: str | None = "",
         ancestor: TAbstractNode | None = None,
     ):
+        """
+        Args:
+            indexes (DataFrame): The row indexes of the dataset that are in the node.
+            label (str, optional): The label of the node. Defaults to "".
+            ancestor (Node, optional): The ancestor of the node. Defaults to None.
+        """
         self.identifier = str(uuid4())
         self.label = label
-        self.data = data
+        self.indexes = indexes
         self.ancestor = ancestor
 
     def __str__(self) -> str:
@@ -32,9 +38,31 @@ TNode = TypeVar("TNode", bound="Node")
 
 
 class Node(AbstractNode):
-    def __init__(self, children: list[TNode] | None = None, *args, **kwargs):
+    NUMERICAL = "Numerical"
+    CATEGORICAL = "Categorical"
+
+    def __init__(
+        self,
+        children: list[TNode] | None = None,
+        split_variable: str | None = None,
+        split_variable_type: Literal["Numerical", "Categorical"] | None = None,
+        bounds: list = None,
+        *args,
+        **kwargs,
+    ):
         super().__init__(*args, **kwargs)
         self.children = children or []
+        self.split_variable = split_variable
+        self.split_variable_type = split_variable_type
+        self.bounds = bounds or []
+
+    def __contains__(self, value) -> bool:
+        if self.split_variable_type == self.NUMERICAL:
+            left_bound, right_bound = self.bounds
+            return left_bound <= value < right_bound
+
+        if self.split_variable_type == self.CATEGORICAL:
+            return value in self.bounds
 
     @property
     def is_leaf(self) -> bool:

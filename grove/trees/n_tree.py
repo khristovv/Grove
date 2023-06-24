@@ -84,7 +84,7 @@ class NTree(BaseTree):
         )
 
     def bin(self, encoded_data: EncodedData, curr_node: Node) -> list[BinnedFeature]:
-        rows_to_include = curr_node.data.index
+        rows_to_include = curr_node.indexes
 
         # run unsupervised binning
         unsupervised_binning_results = dp_feng.ubng(
@@ -120,35 +120,36 @@ class NTree(BaseTree):
     def build(self):
         encoded_data = self.encode()
 
-        self.root = Node(data=encoded_data.x, label="Root")
+        self.root = Node(indexes=encoded_data.x.index, label="Root", split_variable=None)
 
-        def _build(node: Node, curr_depth: int = 0, prev_split_feature: str = ""):
+        def _build(node: Node, curr_depth: int = 0):
             if self.max_depth and curr_depth == self.max_depth:
                 # node.leafify()
-                self._log_node_statistics(node=node, prev_split_feature=prev_split_feature, depth=curr_depth)
+                self._log_node_statistics(node=node, depth=curr_depth)
                 return
 
             binned_features = self.bin(encoded_data=encoded_data, curr_node=node)
             feature, bins = self.calculate_best_split(binned_features=binned_features)
 
             if not bins:
-                self._log_node_statistics(node=node, prev_split_feature=prev_split_feature, depth=curr_depth)
+                self._log_node_statistics(node=node, depth=curr_depth)
                 # node.leafify()
                 return
 
             for bin in bins:
-                child_node = self._build_node(bin=bin, data=node.data, feature=feature)
+                curr_node_data = encoded_data.x.iloc[node.indexes]
+                child_node = self._build_node(bin=bin, data=curr_node_data, feature=feature)
                 node.add_child(child_node)
 
-            self._log_node_statistics(node=node, prev_split_feature=prev_split_feature, depth=curr_depth)
+            self._log_node_statistics(node=node, depth=curr_depth)
 
             for child_node in node.children:
-                _build(node=child_node, curr_depth=curr_depth + 1, prev_split_feature=feature)
+                _build(node=child_node, curr_depth=curr_depth + 1)
 
         _build(node=self.root)
 
     def _build_node_label(self, feature: str, bin: Bin) -> str:
-        if bin.is_discrete:
+        if bin.is_categorical:
             return f"( {feature} {SpecialChars.ELEMENT_OF}  [{', '.join(str(v) for v in bin.values)}] )"
 
         lb, rb = bin.bounds
@@ -163,18 +164,21 @@ class NTree(BaseTree):
 
         return f"( {feature} < {rb} )"
 
-    def _build_node(self, bin: Bin, data: pd.DataFrame, feature: str):
-        if bin.is_discrete:
-            records = data[data[feature].isin(bin.values)]
+    def _build_node(self, bin: Bin, data: pd.DataFrame, feature: str) -> Node:
+        if bin.is_categorical:
+            indexes = data[data[feature].isin(bin.bounds)].index
         else:
-            records = data[data[feature].between(*bin.bounds, inclusive="left")]
+            indexes = data[data[feature].between(*bin.bounds, inclusive="left")].index
 
         return Node(
-            data=records,
+            indexes=indexes,
             label=self._build_node_label(feature=feature, bin=bin),
+            split_variable=feature,
+            split_variable_type=Node.CATEGORICAL if bin.is_categorical else Node.NUMERICAL,
+            bounds=bin.bounds,
         )
 
-    def _log_node_statistics(self, node: Node, prev_split_feature: str, depth: int):
+    def _log_node_statistics(self, node: Node, depth: int):
         if not self.statistics_enabled:
             return
 
@@ -185,9 +189,9 @@ class NTree(BaseTree):
                     {
                         TreeStatistics.LABEL: [node.label],
                         TreeStatistics.DEPTH: [depth],
-                        TreeStatistics.SPLIT_FEATURE: [prev_split_feature],
+                        TreeStatistics.SPLIT_FEATURE: [node.split_variable],
                         TreeStatistics.CHILDREN: [len(node.children)],
-                        TreeStatistics.SIZE: [len(node.data.index)],
+                        TreeStatistics.SIZE: [len(node.indexes)],
                     }
                 ),
             ],
