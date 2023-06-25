@@ -1,4 +1,5 @@
 from collections import deque
+from typing import Literal
 
 import numpy as np
 import pandas as pd
@@ -19,6 +20,7 @@ class NTree(BaseTree):
         max_children: int,
         min_samples_per_node: int,
         criterion: str = Criteria.GINI,
+        y_dtype: Literal["num", "ord", "nom", "bin"] = "bin",
         criterion_threshold: float = 1.0,
         max_depth: int = None,
         logging_enabled: bool = False,
@@ -32,10 +34,11 @@ class NTree(BaseTree):
         )
 
         super().__init__(max_depth)
+        self.encoding_config = encoding_config
+        self.y_dtype = y_dtype
         self.criterion = criterion.capitalize()
         self.criterion_threshold = criterion_threshold
         self.max_children = max_children
-        self.encoding_config = encoding_config
         self.min_samples_per_node = min_samples_per_node
         self.logging_enabled = logging_enabled
         self.statistics_enabled = statistics_enabled
@@ -75,7 +78,7 @@ class NTree(BaseTree):
             x=encoded_x,
             xtp=xtp,
             y=y,
-            ytp="bin",
+            ytp=self.y_dtype,
             features=cname,
             vtp=vtp,
         )

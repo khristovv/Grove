@@ -16,6 +16,7 @@ if __name__ == "__main__":
     x_train, x_test, y_train, y_test = train_test_split(
         x[["Gender", "Height", "Weight"]],
         y,
+
     )
 
     tree_model = NTree(
