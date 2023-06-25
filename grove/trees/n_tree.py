@@ -7,7 +7,7 @@ from aislab import dp_feng
 
 from grove.binning import Bin, parse_supervised_binning_results, BinnedFeature
 from grove.constants import Criteria, SpecialChars, TreeStatistics
-from grove.ds import EncodedData
+from grove.ds import EncodedData, TestResults
 from grove.nodes import Node
 
 from grove.trees.base_tree import BaseTree
@@ -235,7 +235,22 @@ class NTree(BaseTree):
 
         return labeled_data
 
-    def test(self):
+    def test(self, x: pd.DataFrame, y: pd.DataFrame):
         """Test the model on a test dataset."""
-        # TODO: implement
-        pass
+        y_label = y.columns[0]
+        predicted_column = f"PREDICTED_{y_label}"
+        actual_column = f"ACTUAL_{y_label}"
+
+        labeled_data = self.classify(data=x, y_label=actual_column)
+        labeled_data[predicted_column] = y
+
+        missclassifed_values = labeled_data[actual_column] != labeled_data[predicted_column]
+        missclassifed_values_count = missclassifed_values.value_counts()[True]
+        missclassification_error = missclassifed_values_count / len(labeled_data)
+
+        test_results = TestResults(
+            labeled_data=labeled_data,
+            missclassification_error=missclassification_error,
+            missclassified_indexes=labeled_data[missclassifed_values].index,
+        )
+        return test_results

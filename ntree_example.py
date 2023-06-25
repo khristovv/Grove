@@ -16,7 +16,6 @@ if __name__ == "__main__":
     x_train, x_test, y_train, y_test = train_test_split(
         x[["Gender", "Height", "Weight"]],
         y,
-
     )
 
     tree_model = NTree(
@@ -29,7 +28,7 @@ if __name__ == "__main__":
         statistics_enabled=True,
     )
 
-    print("============================== Bulding Tree ==============================")
+    print("============================== Training Model ==============================")
     tree_model.train(
         x=x_train,
         y=pd.DataFrame(y_train),
@@ -37,6 +36,7 @@ if __name__ == "__main__":
     print(tree_model)
     print("============================== Statistics ==============================")
     print(tree_model.get_statistics())
-    print("============================== Classifying ==============================")
-    labeled_data = tree_model.classify(x_test, y_label="Overweight")
-    print(labeled_data)
+    print("============================== Test Results ==============================")
+    test_results = tree_model.test(x=x_test, y=pd.DataFrame(y_test))
+    print(test_results)
+    print("============================== Done ==============================")

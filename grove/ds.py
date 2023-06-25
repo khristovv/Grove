@@ -23,3 +23,21 @@ class SplitResult:
     gain: float
     value: float
     feature: str
+
+
+@dataclass
+class TestResults:
+    labeled_data: pd.DataFrame
+    missclassification_error: float
+    missclassified_indexes: pd.Series
+
+    def __str__(self) -> str:
+        return (
+            f"Test Results:\n"
+            f"  Missclassification error: {self.missclassification_error_perc:.2f}%\n"
+            f"  Missclassified indexes: {', '.join(str(v) for v in self.missclassified_indexes.values)}\n"
+        )
+
+    @property
+    def missclassification_error_perc(self):
+        return self.missclassification_error * 100
