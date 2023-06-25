@@ -4,23 +4,23 @@ from sklearn.model_selection import train_test_split
 
 from grove.trees.n_tree import NTree
 
-DATA_SAMPLES_PATH = "./data/500_Person_Gender_Height_Weight_Index/data_x.csv"
-TARGET_VARIABLE_PATH = "./data/500_Person_Gender_Height_Weight_Index/data_y.csv"
+X_PATH = "./data/500_Person_Gender_Height_Weight_Index/data_x.csv"
+Y_PATH = "./data/500_Person_Gender_Height_Weight_Index/data_y.csv"
 CONFIG_PATH = "./data/500_Person_Gender_Height_Weight_Index/config.csv"
 
 if __name__ == "__main__":
-    dataset = pd.read_csv(DATA_SAMPLES_PATH)
-    class_labels = pd.read_csv(TARGET_VARIABLE_PATH)
+    x = pd.read_csv(X_PATH)
+    y = pd.read_csv(Y_PATH)
     config = pd.read_csv(CONFIG_PATH)
 
     x_train, x_test, y_train, y_test = train_test_split(
-        dataset[["Gender", "Height", "Weight"]],
-        class_labels,
+        x[["Gender", "Height", "Weight"]],
+        y,
     )
 
     tree_model = NTree(
-        dataset=x_train,
-        target=pd.DataFrame(y_train),
+        x=x_train,
+        y=pd.DataFrame(y_train),
         config=config,
         max_children=3,
         min_samples_per_node=50,

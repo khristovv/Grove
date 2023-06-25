@@ -1,4 +1,4 @@
-from typing import Any, Literal, TypeVar
+from typing import Literal, TypeVar
 from pandas import DataFrame
 from uuid import uuid4
 

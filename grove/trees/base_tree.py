@@ -1,5 +1,3 @@
-from typing import Iterable
-
 import pandas as pd
 from grove.constants import SpecialChars
 
@@ -10,20 +8,20 @@ from grove.nodes import Node
 class AbstractTree:
     def __init__(
         self,
-        dataset: pd.DataFrame,  # X
-        target: pd.Series,  # y
+        x: pd.DataFrame,
+        y: pd.Series,
         max_depth: int = None,
     ):
-        self.dataset = dataset
-        self.target = target
+        self.x = x
+        self.y = y
         self.max_depth = max_depth
 
     def build(self):
-        """A method that builds the decision tree from the training set (dataset, target)."""
+        """A method that builds the decision tree from the training set (x, y)."""
         raise NotImplementedError
 
-    def test(self, dataset: pd.DataFrame, target: pd.Series):
-        """A method that tests the decision tree on the test set (dataset, target)."""
+    def test(self, x: pd.DataFrame, y: pd.Series):
+        """A method that tests the decision tree on the test set (x, y)."""
         raise NotImplementedError
 
     def classify(self):

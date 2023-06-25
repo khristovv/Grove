@@ -1,5 +1,4 @@
 from collections import deque
-from typing import Iterable
 
 import numpy as np
 import pandas as pd
@@ -16,8 +15,8 @@ from grove.trees.base_tree import BaseTree
 class NTree(BaseTree):
     def __init__(
         self,
-        dataset: pd.DataFrame,  # X
-        target: pd.DataFrame,  # y
+        x: pd.DataFrame,
+        y: pd.DataFrame,
         config: pd.DataFrame,
         max_children: int,
         min_samples_per_node: int,
@@ -34,8 +33,8 @@ class NTree(BaseTree):
             criterion=criterion.capitalize(),
         )
 
-        super().__init__(dataset, target, max_depth)
-        self.target_variable_label = target.columns[0]
+        super().__init__(x, y, max_depth)
+        self.y_label = y.columns[0]
         self.criterion = criterion.capitalize()
         self.criterion_threshold = criterion_threshold
         self.max_children = max_children
@@ -57,9 +56,9 @@ class NTree(BaseTree):
         if criterion not in Criteria.ALL:
             raise ValueError(f"'criterion' must be one of {Criteria.ALL}")
 
-    def encode(self, dataset: pd.DataFrame) -> EncodedData:
+    def encode(self, data: pd.DataFrame) -> EncodedData:
         cname = self.config["cname"].tolist()
-        x = dataset[cname]
+        x = data[cname]
         xtp = self.config["xtp"]
         vtp = self.config["vtp"]
         order = self.config["order"]
@@ -78,7 +77,7 @@ class NTree(BaseTree):
         return EncodedData(
             x=encoded_x,
             xtp=xtp,
-            y=self.target,
+            y=self.y,
             ytp="bin",
             features=cname,
             vtp=vtp,
@@ -119,7 +118,7 @@ class NTree(BaseTree):
         return feature_with_highest_gain.label, valid_bins
 
     def build(self):
-        encoded_data = self.encode(dataset=self.dataset)
+        encoded_data = self.encode(data=self.x)
 
         self.root = Node(indexes=encoded_data.x.index, label="Root", split_variable=None)
 
@@ -150,7 +149,7 @@ class NTree(BaseTree):
         _build(node=self.root)
 
     def _leaify_node(self, node: Node, y: pd.DataFrame):
-        class_label = y.iloc[node.indexes][self.target_variable_label].mode()[0]
+        class_label = y.iloc[node.indexes][self.y_label].mode()[0]
 
         node.children = []
         node.class_label = class_label
@@ -211,9 +210,9 @@ class NTree(BaseTree):
     def classify(self, data: pd.DataFrame):
         """Classify a new dataset."""
         labeled_data = data.copy()
-        labeled_data[self.target_variable_label] = None
+        labeled_data[self.y_label] = None
 
-        encoded_data = self.encode(dataset=data).x
+        encoded_data = self.encode(data=data).x
         # keep the original indexes
         encoded_data.set_index(data.index, inplace=True)
 
@@ -231,7 +230,7 @@ class NTree(BaseTree):
                     children.extend(child_node.children)
                     curr_node = child_node
 
-            labeled_data.at[idx, self.target_variable_label] = curr_node.class_label
+            labeled_data.at[idx, self.y_label] = curr_node.class_label
 
         return labeled_data
 
