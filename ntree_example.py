@@ -19,7 +19,7 @@ if __name__ == "__main__":
     )
 
     tree_model = NTree(
-        config=config,
+        encoding_config=config,
         max_children=3,
         min_samples_per_node=50,
         # criterion_threshold=10.0,

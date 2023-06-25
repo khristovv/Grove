@@ -15,7 +15,7 @@ from grove.trees.base_tree import BaseTree
 class NTree(BaseTree):
     def __init__(
         self,
-        config: pd.DataFrame,
+        encoding_config: pd.DataFrame,
         max_children: int,
         min_samples_per_node: int,
         criterion: str = Criteria.GINI,
@@ -35,7 +35,7 @@ class NTree(BaseTree):
         self.criterion = criterion.capitalize()
         self.criterion_threshold = criterion_threshold
         self.max_children = max_children
-        self.config = config
+        self.encoding_config = encoding_config
         self.min_samples_per_node = min_samples_per_node
         self.logging_enabled = logging_enabled
         self.statistics_enabled = statistics_enabled
@@ -54,11 +54,11 @@ class NTree(BaseTree):
             raise ValueError(f"'criterion' must be one of {Criteria.ALL}")
 
     def encode(self, x: pd.DataFrame, y: pd.DataFrame) -> EncodedData:
-        cname = self.config["cname"].tolist()
+        cname = self.encoding_config["cname"].tolist()
         x = x[cname]
-        xtp = self.config["xtp"]
-        vtp = self.config["vtp"]
-        order = self.config["order"]
+        xtp = self.encoding_config["xtp"]
+        vtp = self.encoding_config["vtp"]
+        order = self.encoding_config["order"]
         dlm = self.config_values_delimiter
 
         encoded_x = dp_feng.enc_int(
