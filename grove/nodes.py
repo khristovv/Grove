@@ -1,4 +1,4 @@
-from typing import Literal, TypeVar
+from typing import Any, Literal, TypeVar
 from pandas import DataFrame
 from uuid import uuid4
 
@@ -55,6 +55,7 @@ class Node(AbstractNode):
         self.split_variable = split_variable
         self.split_variable_type = split_variable_type
         self.bounds = bounds or []
+        self.class_label = None
 
     def __contains__(self, value) -> bool:
         if self.split_variable_type == self.NUMERICAL:
@@ -79,10 +80,6 @@ class Node(AbstractNode):
     def add_child(self, node: TNode):
         node.ancestor = self
         self.children.append(node)
-
-    def leafify(self, classifed_as):
-        self.children = []
-        self.label += f" -> {classifed_as}"
 
 
 TBinaryNode = TypeVar("TBinaryNode", bound="BinaryNode")

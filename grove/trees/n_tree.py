@@ -1,3 +1,4 @@
+from collections import deque
 from typing import Iterable
 
 import numpy as np
@@ -17,7 +18,6 @@ class NTree(BaseTree):
         self,
         dataset: pd.DataFrame,  # X
         target: pd.DataFrame,  # y
-        features: Iterable[str],
         config: pd.DataFrame,
         max_children: int,
         min_samples_per_node: int,
@@ -34,7 +34,8 @@ class NTree(BaseTree):
             criterion=criterion.capitalize(),
         )
 
-        super().__init__(dataset, target, features, max_depth)
+        super().__init__(dataset, target, max_depth)
+        self.target_variable_label = target.columns[0]
         self.criterion = criterion.capitalize()
         self.criterion_threshold = criterion_threshold
         self.max_children = max_children
@@ -56,9 +57,9 @@ class NTree(BaseTree):
         if criterion not in Criteria.ALL:
             raise ValueError(f"'criterion' must be one of {Criteria.ALL}")
 
-    def encode(self) -> EncodedData:
+    def encode(self, dataset: pd.DataFrame) -> EncodedData:
         cname = self.config["cname"].tolist()
-        x = self.dataset[cname]
+        x = dataset[cname]
         xtp = self.config["xtp"]
         vtp = self.config["vtp"]
         order = self.config["order"]
@@ -118,13 +119,13 @@ class NTree(BaseTree):
         return feature_with_highest_gain.label, valid_bins
 
     def build(self):
-        encoded_data = self.encode()
+        encoded_data = self.encode(dataset=self.dataset)
 
         self.root = Node(indexes=encoded_data.x.index, label="Root", split_variable=None)
 
         def _build(node: Node, curr_depth: int = 0):
             if self.max_depth and curr_depth == self.max_depth:
-                # node.leafify()
+                self._leaify_node(node=node, y=encoded_data.y)
                 self._log_node_statistics(node=node, depth=curr_depth)
                 return
 
@@ -132,8 +133,8 @@ class NTree(BaseTree):
             feature, bins = self.calculate_best_split(binned_features=binned_features)
 
             if not bins:
+                self._leaify_node(node=node, y=encoded_data.y)
                 self._log_node_statistics(node=node, depth=curr_depth)
-                # node.leafify()
                 return
 
             for bin in bins:
@@ -147,6 +148,12 @@ class NTree(BaseTree):
                 _build(node=child_node, curr_depth=curr_depth + 1)
 
         _build(node=self.root)
+
+    def _leaify_node(self, node: Node, y: pd.DataFrame):
+        class_label = y.iloc[node.indexes][self.target_variable_label].mode()[0]
+
+        node.children = []
+        node.class_label = class_label
 
     def _build_node_label(self, feature: str, bin: Bin) -> str:
         if bin.is_categorical:
@@ -201,10 +208,32 @@ class NTree(BaseTree):
     def get_statistics(self) -> pd.DataFrame:
         return self.statistics.sort_values(by=[TreeStatistics.DEPTH])
 
-    def classify(self):
+    def classify(self, data: pd.DataFrame):
         """Classify a new dataset."""
-        # TODO: implement
-        pass
+        labeled_data = data.copy()
+        labeled_data[self.target_variable_label] = None
+
+        encoded_data = self.encode(dataset=data).x
+        # keep the original indexes
+        encoded_data.set_index(data.index, inplace=True)
+
+        for idx, row in encoded_data.iterrows():
+            curr_node = self.root
+            children = deque(curr_node.children)
+
+            while children:
+                child_node = children.popleft()
+                column = child_node.split_variable
+                value = row[column]
+
+                if value in child_node:
+                    children.clear()
+                    children.extend(child_node.children)
+                    curr_node = child_node
+
+            labeled_data.at[idx, self.target_variable_label] = curr_node.class_label
+
+        return labeled_data
 
     def test(self):
         """Test the model on a test dataset."""

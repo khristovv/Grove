@@ -12,11 +12,9 @@ class AbstractTree:
         self,
         dataset: pd.DataFrame,  # X
         target: pd.Series,  # y
-        features: Iterable[str],
         max_depth: int = None,
     ):
         self.dataset = dataset
-        self.features = features
         self.target = target
         self.max_depth = max_depth
 
