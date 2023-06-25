@@ -255,13 +255,13 @@ class NTree(BaseTree):
         labeled_data = self.classify(data=x, y_label=actual_column)
         labeled_data[predicted_column] = y
 
-        missclassifed_values = labeled_data[actual_column] != labeled_data[predicted_column]
-        missclassifed_values_count = missclassifed_values.value_counts()[True]
-        missclassification_error = missclassifed_values_count / len(labeled_data)
+        misclassifed_values = labeled_data[actual_column] != labeled_data[predicted_column]
+        misclassifed_values_count = misclassifed_values.value_counts()[True]
+        misclassification_error = misclassifed_values_count / len(labeled_data)
 
         test_results = TestResults(
             labeled_data=labeled_data,
-            missclassification_error=missclassification_error,
-            missclassified_indexes=labeled_data[missclassifed_values].index,
+            misclassification_error=misclassification_error,
+            misclassified_indexes=labeled_data[misclassifed_values].index,
         )
         return test_results

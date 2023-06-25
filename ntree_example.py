@@ -22,8 +22,8 @@ if __name__ == "__main__":
         encoding_config=config,
         max_children=3,
         min_samples_per_node=50,
-        # criterion_threshold=10.0,
         max_depth=5,
+        # criterion_threshold=10.0,
         logging_enabled=True,
         statistics_enabled=True,
     )

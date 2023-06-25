@@ -28,16 +28,17 @@ class SplitResult:
 @dataclass
 class TestResults:
     labeled_data: pd.DataFrame
-    missclassification_error: float
-    missclassified_indexes: pd.Series
+    misclassification_error: float
+    misclassified_indexes: pd.Series
 
     def __str__(self) -> str:
         return (
             f"Test Results:\n"
-            f"  Missclassification error: {self.missclassification_error_perc:.2f}%\n"
-            f"  Missclassified indexes: {', '.join(str(v) for v in self.missclassified_indexes.values)}\n"
+            f"  Misclassification rate: {self.misclassification_error_perc:.2f}%\n"
+            f"  Misclassified indexes: {', '.join(str(v) for v in self.misclassified_indexes.values)}\n"
+            f"  Accuracy: {100 - self.misclassification_error_perc:.2f}%\n"
         )
 
     @property
-    def missclassification_error_perc(self):
-        return self.missclassification_error * 100
+    def misclassification_error_perc(self):
+        return self.misclassification_error * 100
