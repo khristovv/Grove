@@ -28,15 +28,17 @@ if __name__ == "__main__":
         statistics_enabled=True,
     )
 
-    print("============================== Training Model ==============================")
+    print("============================== Start ==============================")
+    print("============================== Training Model ==============================\n")
     tree_model.train(
         x=x_train,
         y=pd.DataFrame(y_train),
     )
     print(tree_model)
-    print("============================== Statistics ==============================")
+    print("============================== Training Complete ==============================\n")
+    print("============================== Statistics ==============================\n")
     print(tree_model.get_statistics())
-    print("============================== Test Results ==============================")
+    print("\n============================== Test Results ==============================\n")
     test_results = tree_model.test(x=x_test, y=pd.DataFrame(y_test))
     print(test_results)
-    print("============================== Done ==============================")
+    print("============================== Done ==============================\n")

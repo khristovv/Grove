@@ -1,6 +1,8 @@
-from typing import Literal, TypeVar
-from pandas import DataFrame
 from uuid import uuid4
+from typing import Literal, TypeVar
+
+from pandas import DataFrame
+import numpy.typing as npt
 
 TAbstractNode = TypeVar("TAbstractNode", bound="AbstractNode")
 
@@ -46,6 +48,7 @@ class Node(AbstractNode):
         children: list[TNode] | None = None,
         split_variable: str | None = None,
         split_variable_type: Literal["Numerical", "Categorical"] | None = None,
+        split_stats: dict[str, npt.ArrayLike] = {},
         bounds: list = None,
         *args,
         **kwargs,
@@ -54,6 +57,7 @@ class Node(AbstractNode):
         self.children = children or []
         self.split_variable = split_variable
         self.split_variable_type = split_variable_type
+        self.split_stats = split_stats or {}
         self.bounds = bounds or []
         self.class_label = None
 

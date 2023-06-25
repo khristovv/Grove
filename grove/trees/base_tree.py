@@ -6,12 +6,6 @@ from grove.nodes import Node
 
 
 class AbstractTree:
-    def __init__(
-        self,
-        max_depth: int = None,
-    ):
-        self.max_depth = max_depth
-
     def train(self, x: pd.DataFrame, y: pd.DataFrame):
         """A method that builds the decision tree from the training set (x, y)."""
         raise NotImplementedError

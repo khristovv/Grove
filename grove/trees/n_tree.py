@@ -2,6 +2,7 @@ from collections import deque
 from typing import Literal
 
 import numpy as np
+import numpy.typing as npt
 import pandas as pd
 from aislab import dp_feng
 
@@ -11,6 +12,7 @@ from grove.ds import EncodedData, TestResults
 from grove.nodes import Node
 
 from grove.trees.base_tree import BaseTree
+from grove.utils import first
 
 
 class NTree(BaseTree):
@@ -33,12 +35,13 @@ class NTree(BaseTree):
             criterion=criterion.capitalize(),
         )
 
-        super().__init__(max_depth)
+        super().__init__()
         self.encoding_config = encoding_config
         self.y_dtype = y_dtype
         self.criterion = criterion.capitalize()
         self.criterion_threshold = criterion_threshold
         self.max_children = max_children
+        self.max_depth = max_depth
         self.min_samples_per_node = min_samples_per_node
         self.logging_enabled = logging_enabled
         self.statistics_enabled = statistics_enabled
@@ -105,17 +108,19 @@ class NTree(BaseTree):
 
         return parse_supervised_binning_results(binned_features=supervised_binning_results)
 
-    def calculate_best_split(self, binned_features: list[BinnedFeature]) -> tuple[str, list[Bin]]:
+    def calculate_best_split(
+        self, binned_features: list[BinnedFeature]
+    ) -> tuple[str, list[Bin], dict[str, npt.ArrayLike]]:
         feature_with_highest_gain: BinnedFeature = max(
             binned_features, key=lambda feature: feature.get_criterion_value(criterion=self.criterion)
         )
 
         if feature_with_highest_gain.get_criterion_value(criterion=self.criterion) < self.criterion_threshold:
-            return ("", [])
+            return ("", [], {})
 
         valid_bins = [bin for bin in feature_with_highest_gain.bins if bin.size]
 
-        return feature_with_highest_gain.label, valid_bins
+        return feature_with_highest_gain.label, valid_bins, feature_with_highest_gain.stats
 
     def train(self, x: pd.DataFrame, y: pd.DataFrame):
         encoded_data = self.encode(x=x, y=y)
@@ -130,7 +135,7 @@ class NTree(BaseTree):
                 return
 
             binned_features = self.bin(encoded_data=encoded_data, curr_node=node)
-            feature, bins = self.calculate_best_split(binned_features=binned_features)
+            feature, bins, stats = self.calculate_best_split(binned_features=binned_features)
 
             if not bins:
                 self._leaify_node(node=node, y=encoded_data.y, y_label=y_label)
@@ -139,7 +144,7 @@ class NTree(BaseTree):
 
             for bin in bins:
                 curr_node_data = encoded_data.x.iloc[node.indexes]
-                child_node = self._build_node(bin=bin, data=curr_node_data, feature=feature)
+                child_node = self._build_node(bin=bin, data=curr_node_data, feature=feature, split_stats=stats)
                 node.add_child(child_node)
 
             self._log_node_statistics(node=node, depth=curr_depth)
@@ -171,7 +176,7 @@ class NTree(BaseTree):
 
         return f"( {feature} < {rb} )"
 
-    def _build_node(self, bin: Bin, data: pd.DataFrame, feature: str) -> Node:
+    def _build_node(self, bin: Bin, data: pd.DataFrame, feature: str, split_stats: dict[str, npt.ArrayLike]) -> Node:
         if bin.is_categorical:
             indexes = data[data[feature].isin(bin.bounds)].index
         else:
@@ -183,11 +188,14 @@ class NTree(BaseTree):
             split_variable=feature,
             split_variable_type=Node.CATEGORICAL if bin.is_categorical else Node.NUMERICAL,
             bounds=bin.bounds,
+            split_stats=split_stats,
         )
 
     def _log_node_statistics(self, node: Node, depth: int):
         if not self.statistics_enabled:
             return
+
+        split_stats = node.split_stats
 
         self.statistics = pd.concat(
             [
@@ -199,6 +207,9 @@ class NTree(BaseTree):
                         TreeStatistics.SPLIT_FEATURE: [node.split_variable],
                         TreeStatistics.CHILDREN: [len(node.children)],
                         TreeStatistics.SIZE: [len(node.indexes)],
+                        TreeStatistics.MY0: first(split_stats.get("my0", [])),
+                        TreeStatistics.MY1: first(split_stats.get("my1", [])),
+                        self.criterion: split_stats.get(self.criterion),
                     }
                 ),
             ],

@@ -15,9 +15,11 @@ class Criteria:
 
 class TreeStatistics:
     LABEL = "Label"
-    SPLIT_FEATURE = "Split Variable"
+    SPLIT_FEATURE = "Split_Variable"
     DEPTH = "Depth"
     CHILDREN = "Children"
     SIZE = "Size"
+    MY0 = "my0"
+    MY1 = "my1"
 
     ALL = [LABEL, SPLIT_FEATURE, DEPTH, CHILDREN, SIZE]
