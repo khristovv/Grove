@@ -19,8 +19,6 @@ if __name__ == "__main__":
     )
 
     tree_model = NTree(
-        x=x_train,
-        y=pd.DataFrame(y_train),
         config=config,
         max_children=3,
         min_samples_per_node=50,
@@ -31,10 +29,13 @@ if __name__ == "__main__":
     )
 
     print("============================== Bulding Tree ==============================")
-    tree_model.train()
+    tree_model.train(
+        x=x_train,
+        y=pd.DataFrame(y_train),
+    )
     print(tree_model)
     print("============================== Statistics ==============================")
     print(tree_model.get_statistics())
     print("============================== Classifying ==============================")
-    labeled_data = tree_model.classify(x_test)
+    labeled_data = tree_model.classify(x_test, y_label="Overweight")
     print(labeled_data)

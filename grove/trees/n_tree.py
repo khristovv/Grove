@@ -15,8 +15,6 @@ from grove.trees.base_tree import BaseTree
 class NTree(BaseTree):
     def __init__(
         self,
-        x: pd.DataFrame,
-        y: pd.DataFrame,
         config: pd.DataFrame,
         max_children: int,
         min_samples_per_node: int,
@@ -33,8 +31,7 @@ class NTree(BaseTree):
             criterion=criterion.capitalize(),
         )
 
-        super().__init__(x, y, max_depth)
-        self.y_label = y.columns[0]
+        super().__init__(max_depth)
         self.criterion = criterion.capitalize()
         self.criterion_threshold = criterion_threshold
         self.max_children = max_children
@@ -56,9 +53,9 @@ class NTree(BaseTree):
         if criterion not in Criteria.ALL:
             raise ValueError(f"'criterion' must be one of {Criteria.ALL}")
 
-    def encode(self, data: pd.DataFrame) -> EncodedData:
+    def encode(self, x: pd.DataFrame, y: pd.DataFrame) -> EncodedData:
         cname = self.config["cname"].tolist()
-        x = data[cname]
+        x = x[cname]
         xtp = self.config["xtp"]
         vtp = self.config["vtp"]
         order = self.config["order"]
@@ -77,7 +74,7 @@ class NTree(BaseTree):
         return EncodedData(
             x=encoded_x,
             xtp=xtp,
-            y=self.y,
+            y=y,
             ytp="bin",
             features=cname,
             vtp=vtp,
@@ -117,14 +114,15 @@ class NTree(BaseTree):
 
         return feature_with_highest_gain.label, valid_bins
 
-    def train(self):
-        encoded_data = self.encode(data=self.x)
+    def train(self, x: pd.DataFrame, y: pd.DataFrame):
+        encoded_data = self.encode(x=x, y=y)
+        y_label = y.columns[0]
 
         self.root = Node(indexes=encoded_data.x.index, label="Root", split_variable=None)
 
-        def _build(node: Node, curr_depth: int = 0):
+        def _grow(node: Node, curr_depth: int = 0):
             if self.max_depth and curr_depth == self.max_depth:
-                self._leaify_node(node=node, y=encoded_data.y)
+                self._leaify_node(node=node, y=encoded_data.y, y_label=y_label)
                 self._log_node_statistics(node=node, depth=curr_depth)
                 return
 
@@ -132,7 +130,7 @@ class NTree(BaseTree):
             feature, bins = self.calculate_best_split(binned_features=binned_features)
 
             if not bins:
-                self._leaify_node(node=node, y=encoded_data.y)
+                self._leaify_node(node=node, y=encoded_data.y, y_label=y_label)
                 self._log_node_statistics(node=node, depth=curr_depth)
                 return
 
@@ -144,12 +142,12 @@ class NTree(BaseTree):
             self._log_node_statistics(node=node, depth=curr_depth)
 
             for child_node in node.children:
-                _build(node=child_node, curr_depth=curr_depth + 1)
+                _grow(node=child_node, curr_depth=curr_depth + 1)
 
-        _build(node=self.root)
+        _grow(node=self.root)
 
-    def _leaify_node(self, node: Node, y: pd.DataFrame):
-        class_label = y.iloc[node.indexes][self.y_label].mode()[0]
+    def _leaify_node(self, node: Node, y: pd.DataFrame, y_label: str):
+        class_label = y.iloc[node.indexes][y_label].mode()[0]
 
         node.children = []
         node.class_label = class_label
@@ -207,12 +205,12 @@ class NTree(BaseTree):
     def get_statistics(self) -> pd.DataFrame:
         return self.statistics.sort_values(by=[TreeStatistics.DEPTH])
 
-    def classify(self, data: pd.DataFrame):
+    def classify(self, data: pd.DataFrame, y_label: str):
         """Classify a new dataset."""
         labeled_data = data.copy()
-        labeled_data[self.y_label] = None
+        labeled_data[y_label] = None
 
-        encoded_data = self.encode(data=data).x
+        encoded_data = self.encode(x=data, y=pd.DataFrame()).x
         # keep the original indexes
         encoded_data.set_index(data.index, inplace=True)
 
@@ -230,7 +228,7 @@ class NTree(BaseTree):
                     children.extend(child_node.children)
                     curr_node = child_node
 
-            labeled_data.at[idx, self.y_label] = curr_node.class_label
+            labeled_data.at[idx, y_label] = curr_node.class_label
 
         return labeled_data
 

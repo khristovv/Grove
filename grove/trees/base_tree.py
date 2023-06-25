@@ -8,19 +8,15 @@ from grove.nodes import Node
 class AbstractTree:
     def __init__(
         self,
-        x: pd.DataFrame,
-        y: pd.Series,
         max_depth: int = None,
     ):
-        self.x = x
-        self.y = y
         self.max_depth = max_depth
 
-    def train(self):
+    def train(self, x: pd.DataFrame, y: pd.DataFrame):
         """A method that builds the decision tree from the training set (x, y)."""
         raise NotImplementedError
 
-    def test(self, x: pd.DataFrame, y: pd.Series):
+    def test(self, x: pd.DataFrame, y: pd.DataFrame):
         """A method that tests the decision tree on the test set (x, y)."""
         raise NotImplementedError
 
