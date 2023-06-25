@@ -31,7 +31,7 @@ if __name__ == "__main__":
     )
 
     print("============================== Bulding Tree ==============================")
-    tree_model.build()
+    tree_model.train()
     print(tree_model)
     print("============================== Statistics ==============================")
     print(tree_model.get_statistics())

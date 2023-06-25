@@ -16,7 +16,7 @@ class AbstractTree:
         self.y = y
         self.max_depth = max_depth
 
-    def build(self):
+    def train(self):
         """A method that builds the decision tree from the training set (x, y)."""
         raise NotImplementedError
 

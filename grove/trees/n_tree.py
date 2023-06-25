@@ -117,7 +117,7 @@ class NTree(BaseTree):
 
         return feature_with_highest_gain.label, valid_bins
 
-    def build(self):
+    def train(self):
         encoded_data = self.encode(data=self.x)
 
         self.root = Node(indexes=encoded_data.x.index, label="Root", split_variable=None)

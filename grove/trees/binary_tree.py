@@ -68,7 +68,7 @@ class BinaryTree(BaseTree):
         right_ds = dataset[dataset[split_on] >= threshold]
         return left_ds, right_ds
 
-    def build(self):
+    def train(self):
         def _build(dataset: pd.DataFrame, target: pd.Series, features: Iterable[str], node: BinaryNode = None):
             split_result = self.calculate_best_split(dataset=dataset, target=target, features=features)
 
