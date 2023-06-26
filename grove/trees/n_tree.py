@@ -162,7 +162,7 @@ class NTree(BaseTree):
 
     def _build_node_label(self, feature: str, bin: Bin) -> str:
         if bin.is_categorical:
-            return f"( {feature} {SpecialChars.ELEMENT_OF}  [{', '.join(str(v) for v in bin.values)}] )"
+            return f"( {feature} {SpecialChars.ELEMENT_OF}  [{', '.join(str(v) for v in bin.bounds)}] )"
 
         lb, rb = bin.bounds
         lb = lb if not np.isinf(lb) else ""
