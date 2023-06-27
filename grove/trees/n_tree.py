@@ -246,7 +246,7 @@ class NTree(BaseTree):
 
         return labeled_data
 
-    def test(self, x: pd.DataFrame, y: pd.DataFrame):
+    def test(self, x: pd.DataFrame, y: pd.DataFrame, save_results: bool = False):
         """Test the model on a test dataset."""
         y_label = y.columns[0]
         predicted_column = f"PREDICTED_{y_label}"
@@ -261,7 +261,12 @@ class NTree(BaseTree):
 
         test_results = TestResults(
             labeled_data=labeled_data,
+            tree_statistics=self.get_statistics(),
             misclassification_error=misclassification_error,
             misclassified_indexes=labeled_data[misclassifed_values].index,
         )
+
+        if save_results:
+            test_results.save()
+
         return test_results

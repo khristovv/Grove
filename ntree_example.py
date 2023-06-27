@@ -39,6 +39,6 @@ if __name__ == "__main__":
     print("============================== Statistics ==============================\n")
     print(tree_model.get_statistics())
     print("\n============================== Test Results ==============================\n")
-    test_results = tree_model.test(x=x_test, y=pd.DataFrame(y_test))
+    test_results = tree_model.test(x=x_test, y=pd.DataFrame(y_test), save_results=True)
     print(test_results)
     print("============================== Done ==============================\n")

@@ -133,3 +133,6 @@ dmypy.json
 
 /config/media
 private/
+
+# Project specific
+/test_results
