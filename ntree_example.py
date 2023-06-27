@@ -2,7 +2,7 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-from grove.trees.n_tree import NTree
+from grove.trees import NTree
 
 X_PATH = "./data/500_Person_Gender_Height_Weight_Index/data_x.csv"
 Y_PATH = "./data/500_Person_Gender_Height_Weight_Index/data_y.csv"

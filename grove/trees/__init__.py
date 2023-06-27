@@ -1,1 +1,1 @@
-from .binary_tree import BinaryTree  # noqa
+from .n_tree import NTree  # noqa

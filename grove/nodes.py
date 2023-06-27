@@ -89,6 +89,7 @@ class Node(AbstractNode):
 TBinaryNode = TypeVar("TBinaryNode", bound="BinaryNode")
 
 
+# type: ignore
 class BinaryNode(Node):
     """
     BinaryNode -> A node wich can have at most 2 children

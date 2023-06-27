@@ -1,3 +1,5 @@
+# type: ignore
+
 from collections import deque
 from typing import Iterable, Any
 
@@ -8,6 +10,8 @@ from grove.trees.base_tree import BaseTree
 from grove.ds import SplitResult
 
 
+# WARNING: Do not use! This was the initial attempt for a simple tree implementation.
+# TODO: reimplement using a similar approach to the NTree class
 class BinaryTree(BaseTree):
     def __init__(
         self,
