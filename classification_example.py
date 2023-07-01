@@ -2,11 +2,11 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-from grove.trees import NTree
+from grove.trees import BaseTree
 
-X_PATH = "./data/500_Person_Gender_Height_Weight_Index/data_x.csv"
-Y_PATH = "./data/500_Person_Gender_Height_Weight_Index/data_y.csv"
-CONFIG_PATH = "./data/500_Person_Gender_Height_Weight_Index/config.csv"
+X_PATH = "./data/500_Person_Gender_Height_Weight_Index_Classification/data_x.csv"
+Y_PATH = "./data/500_Person_Gender_Height_Weight_Index_Classification/data_y.csv"
+CONFIG_PATH = "./data/500_Person_Gender_Height_Weight_Index_Classification/config.csv"
 
 if __name__ == "__main__":
     x = pd.read_csv(X_PATH)
@@ -18,7 +18,7 @@ if __name__ == "__main__":
         y,
     )
 
-    tree_model = NTree(
+    tree_model = BaseTree(
         encoding_config=config,
         max_children=3,
         min_samples_per_node=50,

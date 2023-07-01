@@ -6,7 +6,7 @@ from typing import Iterable, Any
 import pandas as pd
 
 from grove.nodes import BinaryNode
-from grove.trees.base_tree import BaseTree
+from grove.trees.abstract import BaseTree
 from grove.ds import SplitResult
 
 
