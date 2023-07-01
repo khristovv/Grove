@@ -28,7 +28,7 @@ class Bin:
 
     @property
     def is_categorical(self) -> bool:
-        return len(self.left_bound) > 1
+        return len(self.left_bound) >= 1 and len(self.right_bound) == 0
 
 
 @dataclass
