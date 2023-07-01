@@ -13,10 +13,9 @@ from grove.ds import EncodedData, TestResults
 from grove.nodes import Node
 from grove.trees.abstract import AbstractTree
 from grove.utils import first
-from grove.utils.gain import GainMixin
 
 
-class BaseTree(AbstractTree, GainMixin):
+class BaseTree(AbstractTree):
     def __init__(
         self,
         encoding_config: pd.DataFrame,
@@ -271,6 +270,15 @@ class BaseTree(AbstractTree, GainMixin):
 
         return labeled_data
 
+    def _get_misclassified_values(
+        self,
+        labeled_data: pd.DataFrame,
+        actual_column: str,
+        predicted_column: str,
+    ) -> pd.Series:
+        """Get the misclassified values."""
+        raise NotImplementedError
+
     def test(self, x: pd.DataFrame, y: pd.DataFrame, save_results: bool = False):
         """Test the model on a test dataset."""
         y_label = y.columns[0]
@@ -280,7 +288,11 @@ class BaseTree(AbstractTree, GainMixin):
         labeled_data = self.classify(data=x, y_label=actual_column)
         labeled_data[predicted_column] = y
 
-        misclassifed_values = labeled_data[actual_column] != labeled_data[predicted_column]
+        misclassifed_values = self._get_misclassified_values(
+            labeled_data=labeled_data,
+            actual_column=actual_column,
+            predicted_column=predicted_column,
+        )
         misclassifed_values_count = misclassifed_values.value_counts()[True]
         misclassification_error = misclassifed_values_count / len(labeled_data)
 
