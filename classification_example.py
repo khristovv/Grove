@@ -17,6 +17,7 @@ if __name__ == "__main__":
 
     tree_model = ClassificationTree(
         encoding_config=config,
+        y_dtype="bin",
         max_children=3,
         min_samples_per_node=50,
         max_depth=5,

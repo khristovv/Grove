@@ -20,10 +20,10 @@ class BaseTree(AbstractTree, GainMixin):
     def __init__(
         self,
         encoding_config: pd.DataFrame,
+        y_dtype: Literal["num", "ord", "nom", "bin"],
         max_children: int,
         min_samples_per_node: int,
         criterion: str = Criteria.GINI,
-        y_dtype: Literal["num", "ord", "nom", "bin"] = "bin",
         criterion_threshold: float = 1.0,
         max_depth: int = None,
         logging_enabled: bool = False,
@@ -47,6 +47,8 @@ class BaseTree(AbstractTree, GainMixin):
         self.logging_enabled = logging_enabled
         self.statistics_enabled = statistics_enabled
         self.config_values_delimiter = config_values_delimiter
+
+        self.allowed_criteria = [Criteria.ALL]
 
         self.statistics = pd.DataFrame(columns=TreeStatistics.ALL)
 
@@ -81,7 +83,7 @@ class BaseTree(AbstractTree, GainMixin):
         if min_samples_per_node < 1:
             raise ValueError("'min_samples_per_node' must be greater than 0")
 
-        if criterion not in Criteria.ALL:
+        if criterion not in self.allowed_criteria:
             raise ValueError(f"'criterion' must be one of {Criteria.ALL}")
 
     def encode(self, x: pd.DataFrame, y: pd.DataFrame) -> EncodedData:

@@ -9,8 +9,9 @@ class SpecialChars:
 class Criteria:
     GINI = "Gini"
     CHI2 = "Chi2"
+    F = "Frat"
 
-    ALL = [GINI, CHI2]
+    ALL = [GINI, CHI2, F]
 
 
 class TreeStatistics:
