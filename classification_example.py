@@ -13,10 +13,7 @@ if __name__ == "__main__":
     y = pd.read_csv(Y_PATH)
     config = pd.read_csv(CONFIG_PATH)
 
-    x_train, x_test, y_train, y_test = train_test_split(
-        x[["Gender", "Height", "Weight"]],
-        y,
-    )
+    x_train, x_test, y_train, y_test = train_test_split(x, y)
 
     tree_model = ClassificationTree(
         encoding_config=config,
