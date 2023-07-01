@@ -4,6 +4,7 @@ from typing import Literal
 import numpy as np
 import numpy.typing as npt
 import pandas as pd
+
 from aislab import dp_feng
 
 from grove.binning import Bin, parse_supervised_binning_results, BinnedFeature
@@ -11,7 +12,6 @@ from grove.constants import Criteria, SpecialChars, TreeStatistics
 from grove.ds import EncodedData, TestResults
 from grove.nodes import Node
 from grove.trees.abstract import AbstractTree
-
 from grove.utils import first
 from grove.utils.gain import GainMixin
 
@@ -155,7 +155,7 @@ class BaseTree(AbstractTree, GainMixin):
 
         def _grow(node: Node, curr_depth: int = 0):
             if self.max_depth and curr_depth == self.max_depth:
-                self._leaify_node(node=node, y=encoded_data.y, y_label=y_label)
+                self._leafify_node(node=node, y=encoded_data.y, y_label=y_label)
                 self._log_node_statistics(node=node, depth=curr_depth)
                 return
 
@@ -163,7 +163,7 @@ class BaseTree(AbstractTree, GainMixin):
             feature, bins, stats = self.calculate_best_split(binned_features=binned_features)
 
             if not bins:
-                self._leaify_node(node=node, y=encoded_data.y, y_label=y_label)
+                self._leafify_node(node=node, y=encoded_data.y, y_label=y_label)
                 self._log_node_statistics(node=node, depth=curr_depth)
                 return
 
@@ -179,11 +179,9 @@ class BaseTree(AbstractTree, GainMixin):
 
         _grow(node=self.root)
 
-    def _leaify_node(self, node: Node, y: pd.DataFrame, y_label: str):
-        class_label = y.iloc[node.indexes][y_label].mode()[0]
-
-        node.children = []
-        node.class_label = class_label
+    def _leafify_node(self, node: Node, y: pd.DataFrame, y_label: str):
+        """Each tree implmentation should provide its own logic to leafify a node"""
+        raise NotImplementedError
 
     def _build_node_label(self, feature: str, bin: Bin) -> str:
         if bin.is_categorical:

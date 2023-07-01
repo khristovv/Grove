@@ -1,6 +1,6 @@
-# from typing import Union
+from typing import Union
 
-from grove.trees.base_tree import BaseTree
+from grove.trees import BaseTree, ClassificationTree
 
 
-Trees = BaseTree
+Trees = Union[BaseTree, ClassificationTree]
