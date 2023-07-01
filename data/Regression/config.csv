@@ -1,0 +1,9 @@
+cname,xtp,vtp,order
+Sex,ord,ord,M|F|I
+Length,num,num,
+Diameter,num,num,
+Height,num,num,
+Weight,num,num,
+Shucked Weight,num,num,
+Viscera Weight,num,num,
+Shell Weight,num,num,
