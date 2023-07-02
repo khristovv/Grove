@@ -243,8 +243,8 @@ class BaseTree(AbstractTree):
     def get_statistics(self) -> pd.DataFrame:
         return self.statistics.sort_values(by=[TreeStatistics.DEPTH])
 
-    def classify(self, data: pd.DataFrame, y_label: str):
-        """Classify a new dataset."""
+    def predict(self, data: pd.DataFrame, y_label: str):
+        """Label a new dataset."""
         labeled_data = data.copy()
         labeled_data[y_label] = None
 
@@ -285,7 +285,7 @@ class BaseTree(AbstractTree):
         predicted_column = f"PREDICTED_{y_label}"
         actual_column = f"ACTUAL_{y_label}"
 
-        labeled_data = self.classify(data=x, y_label=actual_column)
+        labeled_data = self.predict(data=x, y_label=actual_column)
         labeled_data[predicted_column] = y
 
         misclassifed_values = self._get_misclassified_values(

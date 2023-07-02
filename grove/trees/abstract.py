@@ -10,6 +10,6 @@ class AbstractTree:
         """A method that tests the decision tree model on the test set (x, y)."""
         raise NotImplementedError
 
-    def classify(self, data: pd.DataFrame, y_label: str):
+    def predict(self, data: pd.DataFrame, y_label: str):
         """A method that classifies new data using the trained decision tree model."""
         raise NotImplementedError
