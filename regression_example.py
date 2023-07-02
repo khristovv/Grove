@@ -17,7 +17,7 @@ if __name__ == "__main__":
     y = x["Age"]
     x = x.drop(columns=["Age"])
 
-    x_train, x_test, y_train, y_test = train_test_split(x, y)
+    x_train, x_test, y_train, y_test = train_test_split(x, y, random_state=1)
 
     tree_model = RegressionTree(
         encoding_config=config,
