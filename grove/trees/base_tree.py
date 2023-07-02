@@ -279,7 +279,13 @@ class BaseTree(AbstractTree):
         """Get the misclassified values."""
         raise NotImplementedError
 
-    def test(self, x: pd.DataFrame, y: pd.DataFrame, save_results: bool = False):
+    def test(
+        self,
+        x: pd.DataFrame,
+        y: pd.DataFrame,
+        save_results: bool = False,
+        output_dir: str = None,
+    ):
         """Test the model on a test dataset."""
         y_label = y.columns[0]
         predicted_column = f"PREDICTED_{y_label}"
@@ -304,6 +310,6 @@ class BaseTree(AbstractTree):
         )
 
         if save_results:
-            test_results.save()
+            test_results.save(output_dir=output_dir)
 
         return test_results

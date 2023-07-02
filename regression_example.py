@@ -12,7 +12,7 @@ if __name__ == "__main__":
     config = pd.read_csv(CONFIG_PATH)
 
     # get a subset of the data for faster development
-    x = x.sample(n=10000, replace=False, random_state=1)
+    x = x.sample(n=5000, replace=False, random_state=1)
 
     y = x["Age"]
     x = x.drop(columns=["Age"])
@@ -32,15 +32,26 @@ if __name__ == "__main__":
 
     print("============================== Start ==============================")
     print("============================== Training Model ==============================\n")
+
     tree_model.train(
         x=x_train,
         y=pd.DataFrame(y_train),
     )
     print(tree_model)
+
     print("============================== Training Complete ==============================\n")
     print("============================== Statistics ==============================\n")
+
     print(tree_model.get_statistics())
+
     print("\n============================== Test Results ==============================\n")
-    test_results = tree_model.test(x=x_test, y=pd.DataFrame(y_test), save_results=True)
+
+    test_results = tree_model.test(
+        x=x_test,
+        y=pd.DataFrame(y_test),
+        save_results=True,
+        output_dir="regression_test_results",
+    )
     print(test_results)
+
     print("============================== Done ==============================\n")
