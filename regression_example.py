@@ -50,7 +50,7 @@ if __name__ == "__main__":
         x=x_test,
         y=pd.DataFrame(y_test),
         save_results=True,
-        output_dir="regression_test_results",
+        output_dir="test_results_regression",
     )
     print(test_results)
 

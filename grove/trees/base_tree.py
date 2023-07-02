@@ -291,8 +291,8 @@ class BaseTree(AbstractTree):
         predicted_column = f"PREDICTED_{y_label}"
         actual_column = f"ACTUAL_{y_label}"
 
-        labeled_data = self.predict(data=x, y_label=actual_column)
-        labeled_data[predicted_column] = y
+        labeled_data = self.predict(data=x, y_label=predicted_column)
+        labeled_data[actual_column] = y
 
         misclassifed_values = self._get_misclassified_values(
             labeled_data=labeled_data,
