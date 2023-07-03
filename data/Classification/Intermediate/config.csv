@@ -1,0 +1,12 @@
+cname,xtp,vtp,order
+Type,ord,ord,L|M|H
+Air temperature [K],num,num,
+Process temperature [K],num,num,
+Rotational speed [rpm],num,num,
+Torque [Nm],num,num,
+Tool wear [min],num,num,
+TWF,num,num,
+HDF,num,num,
+PWF,num,num,
+OSF,num,num,
+RNF,num,num,
