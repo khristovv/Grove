@@ -136,3 +136,4 @@ private/
 
 # Project specifics
 /test_results*
+/grove/algorithms/
