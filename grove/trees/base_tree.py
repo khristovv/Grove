@@ -259,17 +259,17 @@ class BaseTree(AbstractTree):
 
         return curr_node.predicted_value
 
-    def predict(self, data: pd.DataFrame, y_label: str, return_y_only=False) -> pd.DataFrame | pd.Series:
+    def predict(self, x: pd.DataFrame, y_label: str, return_y_only=False) -> pd.DataFrame | pd.Series:
         """Label a new dataset."""
-        encoded_data = self.encode(x=data, y=pd.DataFrame()).x
+        encoded_data = self.encode(x=x, y=pd.DataFrame()).x
         # keep the original indexes
-        encoded_data.set_index(data.index, inplace=True)
+        encoded_data.set_index(x.index, inplace=True)
 
         y = encoded_data.apply(self._get_prediction, axis=1)
         if return_y_only:
             return y
 
-        labeled_data = data.copy()
+        labeled_data = x.copy()
         labeled_data[y_label] = y
 
         return labeled_data
@@ -295,7 +295,7 @@ class BaseTree(AbstractTree):
         predicted_column = f"PREDICTED_{y_label}"
         actual_column = f"ACTUAL_{y_label}"
 
-        labeled_data = self.predict(data=x, y_label=predicted_column)
+        labeled_data = self.predict(x=x, y_label=predicted_column)
         labeled_data[actual_column] = y
 
         misclassifed_values = self._get_misclassified_values(
