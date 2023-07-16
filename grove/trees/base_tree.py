@@ -243,30 +243,34 @@ class BaseTree(AbstractTree):
     def get_statistics(self) -> pd.DataFrame:
         return self.statistics.sort_values(by=[TreeStatistics.DEPTH])
 
-    def predict(self, data: pd.DataFrame, y_label: str):
-        """Label a new dataset."""
-        labeled_data = data.copy()
-        labeled_data[y_label] = None
+    def _get_prediction(self, row: pd.Series):
+        curr_node = self.root
+        nodes = deque(curr_node.children)
 
+        while nodes:
+            child_node = nodes.popleft()
+            column = child_node.split_variable
+            value = row[column]
+
+            if value in child_node:
+                nodes.clear()
+                nodes.extend(child_node.children)
+                curr_node = child_node
+
+        return curr_node.predicted_value
+
+    def predict(self, data: pd.DataFrame, y_label: str, return_y_only=False) -> pd.DataFrame | pd.Series:
+        """Label a new dataset."""
         encoded_data = self.encode(x=data, y=pd.DataFrame()).x
         # keep the original indexes
         encoded_data.set_index(data.index, inplace=True)
 
-        for idx, row in encoded_data.iterrows():
-            curr_node = self.root
-            children = deque(curr_node.children)
+        y = encoded_data.apply(self._get_prediction, axis=1)
+        if return_y_only:
+            return y
 
-            while children:
-                child_node = children.popleft()
-                column = child_node.split_variable
-                value = row[column]
-
-                if value in child_node:
-                    children.clear()
-                    children.extend(child_node.children)
-                    curr_node = child_node
-
-            labeled_data.at[idx, y_label] = curr_node.class_label
+        labeled_data = data.copy()
+        labeled_data[y_label] = y
 
         return labeled_data
 

@@ -46,7 +46,7 @@ class ClassificationTree(BaseTree):
 
     def _leafify_node(self, node: Node, y: pd.DataFrame, y_label: str):
         """Leafify node by calculating the majority class and its probability"""
-        class_label = y.iloc[node.indexes][y_label].mode()[0]
+        predicted_value = y.iloc[node.indexes][y_label].mode()[0]
 
         node.children = []
-        node.class_label = class_label
+        node.predicted_value = predicted_value

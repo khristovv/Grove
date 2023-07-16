@@ -50,4 +50,4 @@ class RegressionTree(BaseTree):
         predicted_value = y.iloc[node.indexes][y_label].mean()
 
         node.children = []
-        node.class_label = predicted_value
+        node.predicted_value = predicted_value

@@ -59,7 +59,7 @@ class Node(AbstractNode):
         self.split_variable_type = split_variable_type
         self.split_stats = split_stats or {}
         self.bounds = bounds or []
-        self.class_label = None
+        self.predicted_value = None
 
     def __contains__(self, value) -> bool:
         if self.split_variable_type == self.NUMERICAL:
