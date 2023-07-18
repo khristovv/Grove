@@ -47,12 +47,16 @@ class BaseTree(AbstractTree):
         self.statistics_enabled = statistics_enabled
         self.config_values_delimiter = config_values_delimiter
 
+        self.root = None
         self.allowed_criteria = [Criteria.ALL]
 
         self.statistics = pd.DataFrame(columns=TreeStatistics.ALL)
 
     def __str__(self):
         """A method that builds a string representation of the decision tree."""
+
+        if not self.is_training_complete:
+            return "Decision tree has not been trained yet."
 
         lines = []
 
@@ -74,6 +78,11 @@ class BaseTree(AbstractTree):
         _next_line(node=self.root)
 
         return "".join(lines)
+
+    @property
+    def is_training_complete(self) -> bool:
+        """A property that returns whether the decision tree has been trained."""
+        return self.root is not None
 
     def validate_init(self, *, max_children: int, min_samples_per_node: int, criterion: int):
         if max_children < 2:
@@ -261,6 +270,9 @@ class BaseTree(AbstractTree):
 
     def predict(self, x: pd.DataFrame, y_label: str, return_y_only=False) -> pd.DataFrame | pd.Series:
         """Label a new dataset."""
+        if not self.is_training_complete:
+            raise Exception("Model is not trained yet.")
+
         encoded_data = self.encode(x=x, y=pd.DataFrame()).x
         # keep the original indexes
         encoded_data.set_index(x.index, inplace=True)
