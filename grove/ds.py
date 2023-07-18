@@ -96,3 +96,18 @@ class TestResults:
         tree_statistics_filepath = Path(f"{output_dir}/{tree_statistics_filename}")
         tree_statistics_filepath.parent.mkdir(parents=True, exist_ok=True)
         self.tree_statistics.to_csv(tree_statistics_filepath)
+
+
+@dataclass
+class Coordinates:
+    """Placeholder for the coordinates of a node"""
+
+    depth: int
+    index: int
+
+    def __str__(self):
+        return f"[{self.depth},{self.index}]"
+
+    @property
+    def as_tuple(self):
+        return self.depth, self.index

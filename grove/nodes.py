@@ -1,8 +1,11 @@
 from uuid import uuid4
 from typing import Literal, TypeVar
+import numpy as np
 
 from pandas import DataFrame
 import numpy.typing as npt
+
+from grove.ds import Coordinates
 
 TAbstractNode = TypeVar("TAbstractNode", bound="AbstractNode")
 
@@ -11,6 +14,7 @@ class AbstractNode:
     def __init__(
         self,
         indexes: DataFrame,
+        coordinates: tuple[int, int] = None,
         label: str | None = "",
         ancestor: TAbstractNode | None = None,
     ):
@@ -21,12 +25,16 @@ class AbstractNode:
             ancestor (Node, optional): The ancestor of the node. Defaults to None.
         """
         self.identifier = str(uuid4())
-        self.label = label
         self.indexes = indexes
+        self.coordinates = Coordinates(*coordinates) if coordinates else None
+        self.label = label
         self.ancestor = ancestor
 
     def __str__(self) -> str:
-        return f"{self.label}"
+        if self.is_root:
+            return "Root"
+
+        return f"Node{self.coordinates} - ( {self.label} )"
 
     def __repr__(self) -> str:
         return str(self)
@@ -34,6 +42,10 @@ class AbstractNode:
     def __hash__(self) -> int:
         """Usefull if the node needs to be used as a dictionary key or in a set."""
         return self.identifier
+
+    @property
+    def is_root(self) -> bool:
+        return self.ancestor is None
 
 
 TNode = TypeVar("TNode", bound="Node")
@@ -58,7 +70,7 @@ class Node(AbstractNode):
         self.split_variable = split_variable
         self.split_variable_type = split_variable_type
         self.split_stats = split_stats or {}
-        self.bounds = bounds or []
+        self.bounds = bounds or [-np.inf, np.inf]
         self.predicted_value = None
 
     def __contains__(self, value) -> bool:
@@ -76,10 +88,6 @@ class Node(AbstractNode):
     @property
     def is_inner(self) -> bool:
         return not self.is_leaf
-
-    @property
-    def is_root(self) -> bool:
-        return self.ancestor is None
 
     def add_child(self, node: TNode):
         node.ancestor = self

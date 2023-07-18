@@ -177,9 +177,16 @@ class BaseTree(AbstractTree):
                 self._log_node_statistics(node=node, depth=curr_depth)
                 return
 
-            for bin in bins:
+            for index, bin in enumerate(bins):
                 curr_node_data = encoded_data.x.iloc[node.indexes]
-                child_node = self._build_node(bin=bin, data=curr_node_data, feature=feature, split_stats=stats)
+                child_node = self._build_node(
+                    bin=bin,
+                    data=curr_node_data,
+                    feature=feature,
+                    split_stats=stats,
+                    depth=curr_depth,
+                    index=index,
+                )
                 node.add_child(child_node)
 
             self._log_node_statistics(node=node, depth=curr_depth)
@@ -195,21 +202,29 @@ class BaseTree(AbstractTree):
 
     def _build_node_label(self, feature: str, bin: Bin) -> str:
         if bin.is_categorical:
-            return f"( {feature} {SpecialChars.ELEMENT_OF}  [{', '.join(str(v) for v in bin.bounds)}] )"
+            return f"{feature} {SpecialChars.ELEMENT_OF}  [{', '.join(str(v) for v in bin.bounds)}]"
 
         lb, rb = bin.bounds
         lb = lb if not np.isinf(lb) else ""
         rb = rb if not np.isinf(rb) else ""
 
         if lb and rb:
-            return f"( {lb} <= {feature} < {rb} )"
+            return f"{lb} <= {feature} < {rb}"
 
         if lb:
-            return f"( {feature} >= {lb} )"
+            return f"{feature} >= {lb}"
 
-        return f"( {feature} < {rb} )"
+        return f"{feature} < {rb}"
 
-    def _build_node(self, bin: Bin, data: pd.DataFrame, feature: str, split_stats: dict[str, npt.ArrayLike]) -> Node:
+    def _build_node(
+        self,
+        bin: Bin,
+        data: pd.DataFrame,
+        feature: str,
+        split_stats: dict[str, npt.ArrayLike],
+        depth: int,
+        index: int,
+    ) -> Node:
         if bin.is_categorical:
             indexes = data[data[feature].isin(bin.bounds)].index
         else:
@@ -217,6 +232,7 @@ class BaseTree(AbstractTree):
 
         return Node(
             indexes=indexes,
+            coordinates=(depth, index),
             label=self._build_node_label(feature=feature, bin=bin),
             split_variable=feature,
             split_variable_type=Node.CATEGORICAL if bin.is_categorical else Node.NUMERICAL,
