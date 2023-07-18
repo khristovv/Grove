@@ -205,7 +205,7 @@ class BaseTree(AbstractTree):
             return f"( {lb} <= {feature} < {rb} )"
 
         if lb:
-            return f"( {lb} <= {feature} )"
+            return f"( {feature} >= {lb} )"
 
         return f"( {feature} < {rb} )"
 
