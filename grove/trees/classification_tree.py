@@ -19,6 +19,7 @@ class ClassificationTree(BaseTree):
         max_depth: int = None,
         logging_enabled: bool = False,
         statistics_enabled: bool = False,
+        consecutive_splits_on_same_feature_enabled: bool = True,
         config_values_delimiter: str = "|",
     ):
         self.allowed_criteria = [Criteria.GINI, Criteria.CHI2]
@@ -32,6 +33,7 @@ class ClassificationTree(BaseTree):
             max_depth=max_depth,
             logging_enabled=logging_enabled,
             statistics_enabled=statistics_enabled,
+            consecutive_splits_on_same_feature_enabled=consecutive_splits_on_same_feature_enabled,
             config_values_delimiter=config_values_delimiter,
         )
 

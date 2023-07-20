@@ -27,6 +27,7 @@ class BaseTree(AbstractTree):
         max_depth: int = None,
         logging_enabled: bool = False,
         statistics_enabled: bool = False,
+        consecutive_splits_on_same_feature_enabled: bool = True,
         config_values_delimiter: str = "|",
     ):
         self.validate_init(
@@ -38,13 +39,18 @@ class BaseTree(AbstractTree):
         super().__init__()
         self.encoding_config = encoding_config
         self.y_dtype = y_dtype
+
         self.criterion = criterion.capitalize()
         self.criterion_threshold = criterion_threshold
+
         self.max_children = max_children
         self.max_depth = max_depth
         self.min_samples_per_node = min_samples_per_node
+
         self.logging_enabled = logging_enabled
         self.statistics_enabled = statistics_enabled
+        self.consecutive_splits_on_same_feature_enabled = consecutive_splits_on_same_feature_enabled
+
         self.config_values_delimiter = config_values_delimiter
 
         self.root = None
@@ -53,7 +59,7 @@ class BaseTree(AbstractTree):
         self.statistics = pd.DataFrame(columns=TreeStatistics.ALL)
 
     def __str__(self):
-        """A method that builds a string representation of the decision tree."""
+        """A method that builds a string representation of prev_split_featurethe decision tree."""
 
         if not self.is_training_complete:
             return "Decision tree has not been trained yet."
@@ -144,11 +150,22 @@ class BaseTree(AbstractTree):
         return parse_supervised_binning_results(binned_features=supervised_binning_results)
 
     def calculate_best_split(
-        self, binned_features: list[BinnedFeature]
+        self,
+        binned_features: list[BinnedFeature],
+        prev_split_feature: str = None,
     ) -> tuple[str, list[Bin], dict[str, npt.ArrayLike]]:
-        feature_with_highest_gain: BinnedFeature = max(
-            binned_features, key=lambda feature: feature.get_criterion_value(criterion=self.criterion)
-        )
+        if self.consecutive_splits_on_same_feature_enabled:
+            feature_with_highest_gain: BinnedFeature = max(
+                binned_features, key=lambda feature: feature.get_criterion_value(criterion=self.criterion)
+            )
+
+        else:
+            feature_with_highest_gain: BinnedFeature = max(
+                binned_features,
+                key=lambda feature: feature.get_criterion_value(criterion=self.criterion)
+                if feature.label != prev_split_feature
+                else -np.inf,
+            )
 
         if feature_with_highest_gain.get_criterion_value(criterion=self.criterion) < self.criterion_threshold:
             return ("", [], {})
@@ -170,7 +187,10 @@ class BaseTree(AbstractTree):
                 return
 
             binned_features = self.bin(encoded_data=encoded_data, curr_node=node)
-            feature, bins, stats = self.calculate_best_split(binned_features=binned_features)
+            feature, bins, stats = self.calculate_best_split(
+                binned_features=binned_features,
+                prev_split_feature=node.split_variable,
+            )
 
             if not bins:
                 self._leafify_node(node=node, y=encoded_data.y, y_label=y_label)

@@ -28,6 +28,7 @@ if __name__ == "__main__":
         # criterion_threshold=10.0,
         logging_enabled=True,
         statistics_enabled=True,
+        # consecutive_splits_on_same_feature_enabled=False,
     )
 
     print("============================== Start ==============================")
