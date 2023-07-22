@@ -41,12 +41,11 @@ class TestResults:
 
     def __str__(self) -> str:
         return (
-            "Test Results:\n"
-            f"  Test Sample Size {len(self.labeled_data)}\n"
-            f"  Missclassified Records Count {len(self.misclassified_indexes)}\n"
-            f"  Misclassification rate: {self.misclassification_error_perc:.2f}%\n"
-            f"  Accuracy: {self.accuracy:.2f}%\n"
-            f"  Misclassified indexes: {', '.join(str(v) for v in self.misclassified_indexes.values)}\n"
+            f"Test Sample Size {len(self.labeled_data)}\n"
+            f"Missclassified Records Count {len(self.misclassified_indexes)}\n"
+            f"Misclassification rate: {self.misclassification_error_perc:.2f}%\n"
+            f"Accuracy: {self.accuracy:.2f}%\n"
+            f"Misclassified Records indexes: {', '.join(str(v) for v in self.misclassified_indexes.values)}\n"
         )
 
     @property

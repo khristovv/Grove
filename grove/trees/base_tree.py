@@ -13,6 +13,7 @@ from grove.ds import EncodedData, TestResults
 from grove.nodes import Node
 from grove.trees.abstract import AbstractTree
 from grove.utils import first
+from grove.utils.logging import Logger
 
 
 class BaseTree(AbstractTree):
@@ -48,6 +49,7 @@ class BaseTree(AbstractTree):
         self.min_samples_per_node = min_samples_per_node
 
         self.logging_enabled = logging_enabled
+        self.logger = Logger(name=self.__class__.__name__, logging_enabled=self.logging_enabled)
         self.statistics_enabled = statistics_enabled
         self.consecutive_splits_on_same_feature_enabled = consecutive_splits_on_same_feature_enabled
 
@@ -101,6 +103,8 @@ class BaseTree(AbstractTree):
             raise ValueError(f"'criterion' must be one of {Criteria.ALL}")
 
     def encode(self, x: pd.DataFrame, y: pd.DataFrame) -> EncodedData:
+        self.logger.log_section("Encoding - Start")
+
         cname = self.encoding_config["cname"].tolist()
         x = x[cname]
         xtp = self.encoding_config["xtp"]
@@ -118,6 +122,8 @@ class BaseTree(AbstractTree):
             dsp=self.logging_enabled,
         )
 
+        self.logger.log_section("Encoding - Complete")
+
         return EncodedData(
             x=encoded_x,
             xtp=xtp,
@@ -128,6 +134,7 @@ class BaseTree(AbstractTree):
         )
 
     def bin(self, encoded_data: EncodedData, curr_node: Node) -> list[BinnedFeature]:
+        self.logger.log(f"Binning node: '{curr_node}'")
         rows_to_include = curr_node.indexes
 
         # run unsupervised binning
@@ -175,6 +182,8 @@ class BaseTree(AbstractTree):
         return feature_with_highest_gain.label, valid_bins, feature_with_highest_gain.stats
 
     def train(self, x: pd.DataFrame, y: pd.DataFrame):
+        self.logger.log_section("Training - Start", add_newline=False)
+
         encoded_data = self.encode(x=x, y=y)
         y_label = y.columns[0]
 
@@ -215,6 +224,13 @@ class BaseTree(AbstractTree):
                 _grow(node=child_node, curr_depth=curr_depth + 1)
 
         _grow(node=self.root)
+
+        self.logger.log_section("Training - Complete")
+        self.logger.log(self)
+
+        if self.statistics_enabled:
+            self.logger.log_section("Statistics")
+            self.logger.log(self.get_statistics())
 
     def _leafify_node(self, node: Node, y: pd.DataFrame, y_label: str):
         """Each tree implmentation should provide its own logic to leafify a node"""
@@ -339,6 +355,8 @@ class BaseTree(AbstractTree):
         output_dir: str = None,
     ):
         """Test the model on a test dataset."""
+        self.logger.log_section("Testing", add_newline=False)
+
         y_label = y.columns[0]
         predicted_column = f"PREDICTED_{y_label}"
         actual_column = f"ACTUAL_{y_label}"
@@ -363,5 +381,8 @@ class BaseTree(AbstractTree):
 
         if save_results:
             test_results.save(output_dir=output_dir)
+
+        self.logger.log_section("Test Results:")
+        self.logger.log(test_results)
 
         return test_results

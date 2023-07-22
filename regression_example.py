@@ -31,28 +31,13 @@ if __name__ == "__main__":
         # consecutive_splits_on_same_feature_enabled=False,
     )
 
-    print("============================== Start ==============================")
-    print("============================== Training Model ==============================\n")
-
     tree_model.train(
         x=x_train,
         y=pd.DataFrame(y_train),
     )
-    print(tree_model)
-
-    print("============================== Training Complete ==============================\n")
-    print("============================== Statistics ==============================\n")
-
-    print(tree_model.get_statistics())
-
-    print("\n============================== Test Results ==============================\n")
-
     test_results = tree_model.test(
         x=x_test,
         y=pd.DataFrame(y_test),
         save_results=True,
         output_dir="test_results_regression",
     )
-    print(test_results)
-
-    print("============================== Done ==============================\n")
