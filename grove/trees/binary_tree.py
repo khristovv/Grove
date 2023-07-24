@@ -7,7 +7,7 @@ import pandas as pd
 
 from grove.nodes import BinaryNode
 from grove.trees.abstract import BaseTree
-from grove.ds import SplitResult
+from grove.entities import SplitResult
 
 
 # WARNING: Do not use! This was the initial attempt for a simple tree implementation.

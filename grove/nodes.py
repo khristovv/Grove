@@ -5,7 +5,7 @@ import numpy as np
 from pandas import DataFrame
 import numpy.typing as npt
 
-from grove.ds import Coordinates
+from grove.entities import Coordinates
 
 TAbstractNode = TypeVar("TAbstractNode", bound="AbstractNode")
 
