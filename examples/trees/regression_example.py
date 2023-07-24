@@ -2,7 +2,16 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-from grove.trees import RegressionTree
+import os
+import sys
+
+# Add the parent directory (Grove) to the Python path
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
+grove_dir = os.path.join(current_dir, "..", '..')
+sys.path.append(grove_dir)
+
+from grove.trees import RegressionTree  # noqa
 
 DATA_PATH = "./data/Regression/data.csv"
 CONFIG_PATH = "./data/Regression/config.csv"
