@@ -28,4 +28,4 @@ class RandomForestRegressor(BaseRandomForest):
         )
 
     def _vote(self, predictions_df: pd.DataFrame):
-        return predictions_df.apply(lambda row: row.mean()[0], axis=1)
+        return predictions_df.apply(lambda row: row.mean(), axis=1)
