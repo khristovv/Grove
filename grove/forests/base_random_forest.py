@@ -8,6 +8,7 @@ from grove.bagging import BaggingMixin
 from grove.forests.abstract import AbstractForest
 
 from grove.forests.constants import DEFAULT_TREE_ARGS
+from grove.utils.logging import Logger
 
 
 class BaseRandomForest(AbstractForest, BaggingMixin):
@@ -26,6 +27,7 @@ class BaseRandomForest(AbstractForest, BaggingMixin):
         # когато ще избираме следващите N случайни велични от X
         # важното е seed-a да ни е същия
         seed: int | str = None,
+        logging_enabled: bool = True,
     ):
         """A random forest model that uses decision trees as base learners."""
         self.n_trees = n_trees
@@ -39,6 +41,9 @@ class BaseRandomForest(AbstractForest, BaggingMixin):
 
         self.trees = []
 
+        self.logging_enabled = logging_enabled
+        self.logger = Logger(name=self.__class__.__name__, logging_enabled=self.logging_enabled)
+
     def train(self, x: pd.DataFrame, y: pd.DataFrame):
         """A method that trains the random forest model from the training set (x, y)."""
         # y_column_name = y.columns[0]
@@ -48,6 +53,7 @@ class BaseRandomForest(AbstractForest, BaggingMixin):
             We use a generator so we don't store all the data used to train each individual tree in memory.
             """
             for i in range(self.n_trees):
+                identifier = f"Tree_{i}"
                 x_subset = x[self.encoding_config["cname"]]
 
                 if self.m_split:
@@ -62,7 +68,9 @@ class BaseRandomForest(AbstractForest, BaggingMixin):
                 encoding_config_subset = self.encoding_config.loc[self.encoding_config["cname"].isin(x_subset.columns)]
                 encoding_config_subset.reset_index(drop=True, inplace=True)
 
-                yield (encoding_config_subset, bootstrap_dataset, y_subset)
+                yield (identifier, encoding_config_subset, bootstrap_dataset, y_subset)
+
+        self.logger.log_section("Training - Start", add_newline=False)
 
         if self.train_in_parallel:
             with mp.Pool() as process_pool:
@@ -72,18 +80,24 @@ class BaseRandomForest(AbstractForest, BaggingMixin):
 
         self.trees.extend(trained_trees)
 
+        self.logger.log_section("Training - Complete")
+
     def _train_tree(
         self,
+        identifier,
         encoding_config_subset: pd.DataFrame,
         bootstrap_dataset: pd.DataFrame,
         y_subset: pd.DataFrame,
     ):
-        tree = self.tree_model(encoding_config=encoding_config_subset, **self.tree_args)
+        self.logger.log(f"Training '{identifier}'")
+        tree = self.tree_model(identifier=identifier, encoding_config=encoding_config_subset, **self.tree_args)
 
         tree.train(
             x=bootstrap_dataset,
             y=y_subset,
         )
+        self.logger.log(f"Training '{identifier}' - Complete - Tree:")
+        self.logger.log(tree)
 
         return tree
 

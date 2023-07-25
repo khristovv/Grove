@@ -18,6 +18,7 @@ class RegressionTree(BaseTree):
         statistics_enabled: bool = False,
         consecutive_splits_on_same_feature_enabled: bool = True,
         config_values_delimiter: str = "|",
+        identifier: str = "",
     ):
         self.allowed_criteria = [Criteria.F]
         self.allowed_diff = allowed_diff
@@ -33,6 +34,7 @@ class RegressionTree(BaseTree):
             statistics_enabled=statistics_enabled,
             consecutive_splits_on_same_feature_enabled=consecutive_splits_on_same_feature_enabled,
             config_values_delimiter=config_values_delimiter,
+            identifier=identifier,
         )
 
     def _get_misclassified_values(

@@ -1,5 +1,6 @@
 from collections import deque
 from typing import Literal
+from uuid import uuid4
 
 import numpy as np
 import numpy.typing as npt
@@ -30,6 +31,7 @@ class BaseTree(AbstractTree):
         statistics_enabled: bool = False,
         consecutive_splits_on_same_feature_enabled: bool = True,
         config_values_delimiter: str = "|",
+        identifier: str = "",
     ):
         self.validate_init(
             max_children=max_children,
@@ -54,6 +56,8 @@ class BaseTree(AbstractTree):
         self.consecutive_splits_on_same_feature_enabled = consecutive_splits_on_same_feature_enabled
 
         self.config_values_delimiter = config_values_delimiter
+
+        self.identifier = identifier or str(uuid4())
 
         self.root = None
         self.allowed_criteria = [Criteria.ALL]

@@ -41,16 +41,5 @@ if __name__ == "__main__":
         seed=1,
     )
 
-    print("============================== Start ==============================")
-    print("============================== Training Model ==============================\n")
-
     random_forest_model.train(x=x_train, y=pd.DataFrame(y_train))
-    print(random_forest_model)
-
-    print("============================== Training Complete ==============================\n")
-
-    [print(tree) for tree in random_forest_model.trees]
-    print("============================== Test Results  ==============================\n")
-
     random_forest_model.predict(x=x_test, y_label=y_test.name)
-    print("============================== Done ==============================\n")
