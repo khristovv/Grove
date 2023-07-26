@@ -10,7 +10,8 @@ from aislab import dp_feng
 
 from grove.binning import Bin, parse_supervised_binning_results, BinnedFeature
 from grove.constants import Criteria, SpecialChars, TreeStatistics
-from grove.entities import EncodedData, TestResults
+from grove.entities import EncodedData
+from grove.validation import TestResults
 from grove.nodes import Node
 from grove.trees.abstract import AbstractTree
 from grove.utils import first
