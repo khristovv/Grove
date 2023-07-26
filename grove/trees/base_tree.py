@@ -142,6 +142,9 @@ class BaseTree(AbstractTree):
         self.logger.log(f"Binning node: '{curr_node}'")
         rows_to_include = curr_node.indexes
 
+        if len(rows_to_include) < self.min_samples_per_node:
+            return []
+
         # run unsupervised binning
         unsupervised_binning_results = dp_feng.ubng(
             x=encoded_data.x.iloc[rows_to_include],
@@ -166,6 +169,9 @@ class BaseTree(AbstractTree):
         binned_features: list[BinnedFeature],
         prev_split_feature: str = None,
     ) -> tuple[str, list[Bin], dict[str, npt.ArrayLike]]:
+        if not binned_features:
+            return ("", [], {})
+
         if self.consecutive_splits_on_same_feature_enabled:
             feature_with_highest_gain: BinnedFeature = max(
                 binned_features, key=lambda feature: feature.get_criterion_value(criterion=self.criterion)
