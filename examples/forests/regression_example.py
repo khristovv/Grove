@@ -26,15 +26,14 @@ if __name__ == "__main__":
     x_train, x_test, y_train, y_test = train_test_split(x, y, random_state=1)
 
     random_forest_model = RandomForestRegressor(
-        n_trees=4,
+        n_trees=10,
         encoding_config=encoding_config,
-        allowed_diff=3.0,
+        allowed_diff=3.0,  # 3 months allowed difference
         # train_in_parallel=False,
         tree_args={
             "max_children": 4,
             "min_samples_per_node": 100,
             "max_depth": 5,
-            "allowed_diff": 3.0,  # 3 months allowed difference
             # "consecutive_splits_on_same_feature_enabled": False,
         },
         m_split=4,

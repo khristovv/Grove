@@ -48,5 +48,5 @@ if __name__ == "__main__":
         x=x_test,
         y=pd.DataFrame(y_test),
         save_results=True,
-        output_dir="test_results_regression",
+        output_dir="test_results_DT_regression",
     )

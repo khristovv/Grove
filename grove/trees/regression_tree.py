@@ -11,7 +11,7 @@ class RegressionTree(BaseTree):
         encoding_config: pd.DataFrame,
         max_children: int,
         min_samples_per_node: int,
-        allowed_diff: float,
+        allowed_diff: float = None,
         criterion_threshold: float = 1,
         max_depth: int = None,
         logging_enabled: bool = False,
@@ -55,3 +55,9 @@ class RegressionTree(BaseTree):
 
         node.children = []
         node.predicted_value = predicted_value
+
+    def test(self, x: pd.DataFrame, y: pd.DataFrame, save_results: bool = False, output_dir: str = None):
+        if self.allowed_diff is None:
+            raise ValueError("The 'allowed_diff' parameter must be set to use the RegressionTree.test method.")
+
+        return super().test(x, y, save_results, output_dir)

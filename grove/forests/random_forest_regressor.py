@@ -10,7 +10,7 @@ class RandomForestRegressor(BaseRandomForest):
         self,
         n_trees: int,
         encoding_config: pd.DataFrame,
-        allowed_diff: float,
+        allowed_diff: float = None,
         train_in_parallel: bool = True,
         tree_args: dict = None,
         m_split: int = None,
@@ -43,3 +43,9 @@ class RandomForestRegressor(BaseRandomForest):
         abs_diff = diff.abs()
 
         return abs_diff > self.allowed_diff
+
+    def test(self, x: pd.DataFrame, y: pd.DataFrame, save_results: bool = False, output_dir: str = None):
+        if self.allowed_diff is None:
+            raise ValueError("The 'allowed_diff' parameter must be set to use the RandomForestRegressor.test method.")
+
+        return super().test(x, y, save_results, output_dir)

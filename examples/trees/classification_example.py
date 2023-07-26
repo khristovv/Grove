@@ -73,7 +73,7 @@ def main(x: pd.DataFrame, y: pd.Series, config: pd.DataFrame, y_dtype: str) -> N
         x=x_test,
         y=pd.DataFrame(y_test),
         save_results=True,
-        output_dir="test_results_classification",
+        output_dir="test_results_DT_classification",
     )
 
 
