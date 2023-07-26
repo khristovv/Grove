@@ -10,12 +10,14 @@ class RandomForestRegressor(BaseRandomForest):
         self,
         n_trees: int,
         encoding_config: pd.DataFrame,
+        allowed_diff: float,
         train_in_parallel: bool = True,
         tree_args: dict = None,
         m_split: int = None,
         n_bag: int = None,
         seed: int | str = None,
     ):
+        self.allowed_diff = allowed_diff
         super().__init__(
             n_trees=n_trees,
             encoding_config=encoding_config,
@@ -29,3 +31,15 @@ class RandomForestRegressor(BaseRandomForest):
 
     def _vote(self, predictions_df: pd.DataFrame):
         return predictions_df.apply(lambda row: row.mean(), axis=1)
+
+    def _get_misclassified_values(
+        self,
+        labeled_data: pd.DataFrame,
+        actual_column: str,
+        predicted_column: str,
+    ) -> pd.Series:
+        """Get the misclassified values."""
+        diff = labeled_data[actual_column] - labeled_data[predicted_column]
+        abs_diff = diff.abs()
+
+        return abs_diff > self.allowed_diff

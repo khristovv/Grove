@@ -28,6 +28,7 @@ if __name__ == "__main__":
     random_forest_model = RandomForestRegressor(
         n_trees=4,
         encoding_config=encoding_config,
+        allowed_diff=3.0,
         # train_in_parallel=False,
         tree_args={
             "max_children": 4,
@@ -42,4 +43,9 @@ if __name__ == "__main__":
     )
 
     random_forest_model.train(x=x_train, y=pd.DataFrame(y_train))
-    random_forest_model.predict(x=x_test, y_label=y_test.name)
+    random_forest_model.test(
+        x=x_test,
+        y=pd.DataFrame(y_test),
+        save_results=True,
+        output_dir="test_results_RF_regression",
+    )

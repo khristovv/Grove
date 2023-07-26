@@ -29,3 +29,11 @@ class RandomForestClassifer(BaseRandomForest):
 
     def _vote(self, predictions_df: pd.DataFrame):
         return predictions_df.apply(lambda row: row.mode()[0], axis=1)
+
+    def _get_misclassified_values(
+        self,
+        labeled_data: pd.DataFrame,
+        actual_column: str,
+        predicted_column: str,
+    ) -> pd.Series:
+        return labeled_data[actual_column] != labeled_data[predicted_column]

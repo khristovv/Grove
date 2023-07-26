@@ -9,6 +9,7 @@ from grove.forests.abstract import AbstractForest
 
 from grove.forests.constants import DEFAULT_TREE_ARGS
 from grove.utils.logging import Logger
+from grove.validation import TestResults
 
 
 class BaseRandomForest(AbstractForest, BaggingMixin):
@@ -116,3 +117,51 @@ class BaseRandomForest(AbstractForest, BaggingMixin):
         labeled_data[y_label] = self._vote(predictions_df=predictions_df)
 
         return labeled_data
+
+    def _get_misclassified_values(
+        self,
+        labeled_data: pd.DataFrame,
+        actual_column: str,
+        predicted_column: str,
+    ) -> pd.Series:
+        """Get the misclassified values."""
+        raise NotImplementedError
+
+    def test(
+        self,
+        x: pd.DataFrame,
+        y: pd.DataFrame,
+        save_results: bool = False,
+        output_dir: str = None,
+    ):
+        """Test the model on a test dataset."""
+        self.logger.log_section("Testing", add_newline=False)
+
+        y_label = y.columns[0]
+        predicted_column = f"PREDICTED_{y_label}"
+        actual_column = f"ACTUAL_{y_label}"
+
+        labeled_data = self.predict(x=x, y_label=predicted_column)
+        labeled_data[actual_column] = y
+
+        misclassifed_values = self._get_misclassified_values(
+            labeled_data=labeled_data,
+            actual_column=actual_column,
+            predicted_column=predicted_column,
+        )
+        misclassifed_values_count = misclassifed_values.value_counts()[True]
+        misclassification_error = misclassifed_values_count / len(labeled_data)
+
+        test_results = TestResults(
+            labeled_data=labeled_data,
+            misclassification_error=misclassification_error,
+            misclassified_indexes=labeled_data[misclassifed_values].index,
+        )
+
+        if save_results:
+            test_results.save(output_dir=output_dir)
+
+        self.logger.log_section("Test Results:")
+        self.logger.log(test_results)
+
+        return test_results
