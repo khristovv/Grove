@@ -33,7 +33,7 @@ class BaseTree(AbstractTree):
         config_values_delimiter: str = "|",
         identifier: str = "",
     ):
-        self.validate_init(
+        self._validate_init(
             max_children=max_children,
             min_samples_per_node=min_samples_per_node,
             criterion=criterion.capitalize(),
@@ -96,7 +96,7 @@ class BaseTree(AbstractTree):
         """A property that returns whether the decision tree has been trained."""
         return self.root is not None
 
-    def validate_init(self, *, max_children: int, min_samples_per_node: int, criterion: int):
+    def _validate_init(self, *, max_children: int, min_samples_per_node: int, criterion: int):
         if max_children < 2:
             raise ValueError("'max_children' must be greater than 1")
 
@@ -106,7 +106,7 @@ class BaseTree(AbstractTree):
         if criterion not in self.allowed_criteria:
             raise ValueError(f"'criterion' must be one of {Criteria.ALL}")
 
-    def encode(self, x: pd.DataFrame, y: pd.DataFrame) -> EncodedData:
+    def _encode(self, x: pd.DataFrame, y: pd.DataFrame) -> EncodedData:
         self.logger.log_section("Encoding - Start")
 
         cname = self.encoding_config["cname"].tolist()
@@ -137,7 +137,7 @@ class BaseTree(AbstractTree):
             vtp=vtp,
         )
 
-    def bin(self, encoded_data: EncodedData, curr_node: Node) -> list[BinnedFeature]:
+    def _bin(self, encoded_data: EncodedData, curr_node: Node) -> list[BinnedFeature]:
         self.logger.log(f"Binning node: '{curr_node}'")
         rows_to_include = curr_node.indexes
 
@@ -160,7 +160,7 @@ class BaseTree(AbstractTree):
 
         return parse_supervised_binning_results(binned_features=supervised_binning_results)
 
-    def calculate_best_split(
+    def _calculate_best_split(
         self,
         binned_features: list[BinnedFeature],
         prev_split_feature: str = None,
@@ -188,7 +188,7 @@ class BaseTree(AbstractTree):
     def train(self, x: pd.DataFrame, y: pd.DataFrame):
         self.logger.log_section("Training - Start", add_newline=False)
 
-        encoded_data = self.encode(x=x, y=y)
+        encoded_data = self._encode(x=x, y=y)
         y_label = y.columns[0]
 
         self.root = Node(indexes=encoded_data.x.index, label="Root", split_variable=None)
@@ -199,8 +199,8 @@ class BaseTree(AbstractTree):
                 self._log_node_statistics(node=node, depth=curr_depth)
                 return
 
-            binned_features = self.bin(encoded_data=encoded_data, curr_node=node)
-            feature, bins, stats = self.calculate_best_split(
+            binned_features = self._bin(encoded_data=encoded_data, curr_node=node)
+            feature, bins, stats = self._calculate_best_split(
                 binned_features=binned_features,
                 prev_split_feature=node.split_variable,
             )
@@ -329,7 +329,7 @@ class BaseTree(AbstractTree):
         if not self.is_training_complete:
             raise Exception("Model is not trained yet.")
 
-        encoded_data = self.encode(x=x, y=pd.DataFrame()).x
+        encoded_data = self._encode(x=x, y=pd.DataFrame()).x
         # keep the original indexes
         encoded_data.set_index(x.index, inplace=True)
 
