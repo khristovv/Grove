@@ -9,10 +9,8 @@ class TestResults:
     DEFAULT_OUTPUT_DIR = "test_results"
     DEFAULT_LABELED_DATA_FILENAME = "labeled_data.csv"
     DEFAULT_SCORE_FILENAME = "score.csv"
-    DEFAULT_TREE_STATISTICS_FILENAME = "tree_statistics.csv"
 
     labeled_data: pd.DataFrame
-    tree_statistics: pd.DataFrame
     misclassification_error: float
     misclassified_indexes: pd.Series
 
@@ -38,13 +36,11 @@ class TestResults:
         output_dir: str = None,
         labeled_data_filename: str = None,
         score_filename: str = None,
-        tree_statistics_filename: str = None,
     ):
         """Save the test results to a file."""
         output_dir = output_dir or self.DEFAULT_OUTPUT_DIR
         labeled_data_filename = labeled_data_filename or self.DEFAULT_LABELED_DATA_FILENAME
         score_filename = score_filename or self.DEFAULT_SCORE_FILENAME
-        tree_statistics_filename = tree_statistics_filename or self.DEFAULT_TREE_STATISTICS_FILENAME
 
         # save labeled data to file
         labeled_data = self.labeled_data
@@ -67,8 +63,3 @@ class TestResults:
         score_filepath = Path(f"{output_dir}/{score_filename}")
         score_filepath.parent.mkdir(parents=True, exist_ok=True)
         score_df.to_csv(score_filepath, index=False)
-
-        # save tree statistics to file
-        tree_statistics_filepath = Path(f"{output_dir}/{tree_statistics_filename}")
-        tree_statistics_filepath.parent.mkdir(parents=True, exist_ok=True)
-        self.tree_statistics.to_csv(tree_statistics_filepath)

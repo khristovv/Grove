@@ -11,7 +11,7 @@ from aislab import dp_feng
 from grove.binning import Bin, parse_supervised_binning_results, BinnedFeature
 from grove.constants import Criteria, SpecialChars, TreeStatistics
 from grove.entities import EncodedData
-from grove.validation import TestResults
+from grove.trees.validation import TreeTestResults
 from grove.nodes import Node
 from grove.trees.abstract import AbstractTree
 from grove.utils import first
@@ -377,7 +377,7 @@ class BaseTree(AbstractTree):
         misclassifed_values_count = misclassifed_values.value_counts()[True]
         misclassification_error = misclassifed_values_count / len(labeled_data)
 
-        test_results = TestResults(
+        test_results = TreeTestResults(
             labeled_data=labeled_data,
             tree_statistics=self.get_statistics(),
             misclassification_error=misclassification_error,
