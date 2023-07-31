@@ -23,7 +23,6 @@ class ClassificationTree(BaseTree):
         config_values_delimiter: str = "|",
         identifier: str = "",
     ):
-        self.allowed_criteria = [Criteria.GINI, Criteria.CHI2]
         super().__init__(
             encoding_config=encoding_config,
             y_dtype=y_dtype,
@@ -38,6 +37,10 @@ class ClassificationTree(BaseTree):
             config_values_delimiter=config_values_delimiter,
             identifier=identifier,
         )
+
+    @property
+    def allowed_criteria(self) -> list[Criteria]:
+        return [Criteria.GINI, Criteria.CHI2]
 
     def _get_misclassified_values(
         self,

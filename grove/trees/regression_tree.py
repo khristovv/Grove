@@ -37,6 +37,10 @@ class RegressionTree(BaseTree):
             identifier=identifier,
         )
 
+    @property
+    def allowed_criteria(self) -> list[Criteria]:
+        return [Criteria.F]
+
     def _get_misclassified_values(
         self,
         labeled_data: pd.DataFrame,

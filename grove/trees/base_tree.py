@@ -40,7 +40,6 @@ class BaseTree(AbstractTree):
             criterion=criterion.capitalize(),
         )
 
-        super().__init__()
         self.encoding_config = encoding_config
         self.y_dtype = y_dtype
 
@@ -61,7 +60,6 @@ class BaseTree(AbstractTree):
         self.identifier = identifier or str(uuid4())
 
         self.root = None
-        self.allowed_criteria = [Criteria.ALL]
 
         self.statistics = pd.DataFrame(columns=TreeStatistics.ALL)
 
@@ -91,6 +89,10 @@ class BaseTree(AbstractTree):
         _next_line(node=self.root)
 
         return "".join(lines)
+
+    @property
+    def allowed_criteria(self) -> list[Criteria]:
+        return Criteria.ALL
 
     @property
     def is_training_complete(self) -> bool:
