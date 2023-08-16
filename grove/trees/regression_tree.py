@@ -20,7 +20,6 @@ class RegressionTree(BaseTree):
         config_values_delimiter: str = "|",
         identifier: str = "",
     ):
-        self.allowed_criteria = [Criteria.F]
         self.allowed_diff = allowed_diff
         super().__init__(
             encoding_config=encoding_config,
