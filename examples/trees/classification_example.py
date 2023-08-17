@@ -3,10 +3,10 @@
 import argparse
 
 import pandas as pd
-from sklearn.model_selection import train_test_split
 
 import os
 import sys
+
 
 # Add the parent directory (Grove) to the Python path
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -16,6 +16,7 @@ sys.path.append(grove_dir)
 
 
 from grove.trees import ClassificationTree  # noqa
+from grove.utils.sampling import Sampler  # noqa
 
 
 def load_simple_dataset() -> tuple[pd.DataFrame, pd.Series, pd.DataFrame, str]:
@@ -51,14 +52,14 @@ def load_intermediate_dataset() -> tuple[pd.DataFrame, pd.Series, pd.DataFrame, 
 
 
 def main(x: pd.DataFrame, y: pd.Series, config: pd.DataFrame, y_dtype: str) -> None:
-    x_train, x_test, y_train, y_test = train_test_split(x, y, random_state=1)
+    x_train, y_train, x_test, y_test = Sampler().get_train_test_split(x=x, y=y, random_state=1)
 
     tree_model = ClassificationTree(
         encoding_config=config,
         y_dtype=y_dtype,
-        max_children=3,
-        min_samples_per_node=50,
-        max_depth=5,
+        max_children=4,
+        min_samples_per_node=100,
+        max_depth=10,
         # criterion_threshold=10.0,
         logging_enabled=True,
         statistics_enabled=True,

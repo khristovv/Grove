@@ -1,17 +1,18 @@
 # training data is used from https://www.kaggle.com/competitions/playground-series-s3e16/data?select=test.csv
 import pandas as pd
-from sklearn.model_selection import train_test_split
 
 import os
 import sys
 
+
 # Add the parent directory (Grove) to the Python path
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
-grove_dir = os.path.join(current_dir, "..", '..')
+grove_dir = os.path.join(current_dir, "..", "..")
 sys.path.append(grove_dir)
 
 from grove.trees import RegressionTree  # noqa
+from grove.utils.sampling import Sampler  # noqa
 
 DATA_PATH = "./data/Regression/data.csv"
 CONFIG_PATH = "./data/Regression/config.csv"
@@ -26,7 +27,7 @@ if __name__ == "__main__":
     y = x["Age"]
     x = x.drop(columns=["Age"])
 
-    x_train, x_test, y_train, y_test = train_test_split(x, y, random_state=1)
+    x_train, y_train, x_test, y_test = Sampler().get_train_test_split(x=x, y=y, random_state=1)
 
     tree_model = RegressionTree(
         encoding_config=config,
