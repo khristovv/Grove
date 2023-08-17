@@ -52,14 +52,14 @@ class RegressionTree(BaseTree):
 
         return abs_diff > self.allowed_diff
 
-    def _leafify_node(self, node: Node, y: pd.DataFrame, y_label: str):
+    def _leafify_node(self, node: Node, y: pd.Series):
         """Leafify node by calculating the mean of the target variable"""
-        predicted_value = y.iloc[node.indexes][y_label].mean()
+        predicted_value = y.iloc[node.indexes].mean()
 
         node.children = []
         node.predicted_value = predicted_value
 
-    def test(self, x: pd.DataFrame, y: pd.DataFrame, save_results: bool = False, output_dir: str = None):
+    def test(self, x: pd.DataFrame, y: pd.Series, save_results: bool = False, output_dir: str = None):
         if self.allowed_diff is None:
             raise ValueError("The 'allowed_diff' parameter must be set to use the RegressionTree.test method.")
 

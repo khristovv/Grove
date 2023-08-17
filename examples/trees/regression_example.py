@@ -41,13 +41,10 @@ if __name__ == "__main__":
         # consecutive_splits_on_same_feature_enabled=False,
     )
 
-    tree_model.train(
-        x=x_train,
-        y=pd.DataFrame(y_train),
-    )
+    tree_model.train(x=x_train, y=y_train)
     test_results = tree_model.test(
         x=x_test,
-        y=pd.DataFrame(y_test),
+        y=y_test,
         save_results=True,
         output_dir="test_results_DT_regression",
     )

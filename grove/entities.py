@@ -10,7 +10,7 @@ class EncodedData:
 
     x: pd.DataFrame
     xtp: pd.Series
-    y: pd.DataFrame
+    y: pd.Series
     ytp: str
     features: Iterable[str]
     vtp: pd.Series  # ?

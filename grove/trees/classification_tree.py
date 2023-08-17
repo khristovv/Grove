@@ -51,9 +51,9 @@ class ClassificationTree(BaseTree):
         """Get the misclassified values."""
         return labeled_data[actual_column] != labeled_data[predicted_column]
 
-    def _leafify_node(self, node: Node, y: pd.DataFrame, y_label: str):
+    def _leafify_node(self, node: Node, y: pd.Series):
         """Leafify node by calculating the majority class and its probability"""
-        predicted_value = y.iloc[node.indexes][y_label].mode()[0]
+        predicted_value = y.iloc[node.indexes].mode()[0]
 
         node.children = []
         node.predicted_value = predicted_value

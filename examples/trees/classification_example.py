@@ -1,5 +1,3 @@
-# all training data is used from https://www.kaggle.com/datasets/yersever/500-person-gender-height-weight-bodymassindex
-
 import argparse
 
 import pandas as pd
@@ -20,17 +18,15 @@ from grove.utils.sampling import Sampler  # noqa
 
 
 def load_simple_dataset() -> tuple[pd.DataFrame, pd.Series, pd.DataFrame, str]:
-    # DATA_PATH = "./data/Classification/Simple/data.csv"
-    X_PATH = "./data/Classification/Simple/data_x.csv"
-    Y_PATH = "./data/Classification/Simple/data_y.csv"
+    # all training data is used from https://www.kaggle.com/datasets/yersever/500-person-gender-height-weight-bodymassindex  # noqa
+
+    X_PATH = "./data/Classification/Simple/data.csv"
     CONFIG_PATH = "./data/Classification/Simple/config.csv"
 
-    x = pd.read_csv(X_PATH)
-    y = pd.read_csv(Y_PATH)
+    data = pd.read_csv(X_PATH)
+    y = pd.Series(name="Overweight", data=(data["Index"] >= 3).replace({True: 1, False: 0}))
+    x = data.drop("Index", axis=1)
     config = pd.read_csv(CONFIG_PATH)
-
-    # y = x["Index"]
-    # x.drop("Index", axis=1, inplace=True)
 
     y_dtype = "bin"
 
@@ -38,12 +34,13 @@ def load_simple_dataset() -> tuple[pd.DataFrame, pd.Series, pd.DataFrame, str]:
 
 
 def load_intermediate_dataset() -> tuple[pd.DataFrame, pd.Series, pd.DataFrame, str]:
+    # all training data is used from https://www.kaggle.com/datasets/stephanmatzka/predictive-maintenance-dataset-ai4i-2020  # noqa
     DATA_PATH = "./data/Classification/Intermediate/data.csv"
     CONFIG_PATH = "./data/Classification/Intermediate/config.csv"
 
-    x = pd.read_csv(DATA_PATH, index_col="UDI")
-    y = x["Machine failure"]
-    x.drop("Machine failure", axis=1, inplace=True)
+    data = pd.read_csv(DATA_PATH, index_col="UDI")
+    y = data["Machine failure"]
+    x = data.drop("Machine failure", axis=1)
     config = pd.read_csv(CONFIG_PATH)
 
     y_dtype = "bin"
@@ -66,13 +63,10 @@ def main(x: pd.DataFrame, y: pd.Series, config: pd.DataFrame, y_dtype: str) -> N
         # consecutive_splits_on_same_feature_enabled=False,
     )
 
-    tree_model.train(
-        x=x_train,
-        y=pd.DataFrame(y_train),
-    )
+    tree_model.train(x=x_train, y=y_train)
     tree_model.test(
         x=x_test,
-        y=pd.DataFrame(y_test),
+        y=y_test,
         save_results=True,
         output_dir="test_results_DT_classification",
     )

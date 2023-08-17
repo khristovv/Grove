@@ -109,7 +109,7 @@ class BaseTree(AbstractTree):
         if criterion not in self.allowed_criteria:
             raise ValueError(f"'criterion' must be one of {Criteria.ALL}")
 
-    def _encode(self, x: pd.DataFrame, y: pd.DataFrame) -> EncodedData:
+    def _encode(self, x: pd.DataFrame, y: pd.Series) -> EncodedData:
         self.logger.log_section("Encoding - Start")
 
         cname = self.encoding_config["cname"].tolist()
@@ -151,7 +151,7 @@ class BaseTree(AbstractTree):
         unsupervised_binning_results = dp_feng.ubng(
             x=encoded_data.x.iloc[rows_to_include],
             xtp=encoded_data.xtp,
-            y=encoded_data.y.iloc[rows_to_include].values,
+            y=encoded_data.y.to_frame().iloc[rows_to_include].values,
             ytp=encoded_data.ytp,
             cnames=encoded_data.features,
             md=self.max_children,
@@ -194,17 +194,19 @@ class BaseTree(AbstractTree):
 
         return feature_with_highest_gain.label, valid_bins, feature_with_highest_gain.stats
 
-    def train(self, x: pd.DataFrame, y: pd.DataFrame):
+    def train(self, x: pd.DataFrame, y: pd.Series):
         self.logger.log_section("Training - Start", add_newline=False)
 
         encoded_data = self._encode(x=x, y=y)
-        y_label = y.columns[0]
 
         self.root = Node(indexes=encoded_data.x.index, label="Root", split_variable=None)
 
         def _grow(node: Node, curr_depth: int = 0):
+            x_encoded = encoded_data.x
+            y_encoded = encoded_data.y
+
             if self.max_depth and curr_depth == self.max_depth:
-                self._leafify_node(node=node, y=encoded_data.y, y_label=y_label)
+                self._leafify_node(node=node, y=y_encoded)
                 self._log_node_statistics(node=node, depth=curr_depth)
                 return
 
@@ -215,12 +217,12 @@ class BaseTree(AbstractTree):
             )
 
             if not bins:
-                self._leafify_node(node=node, y=encoded_data.y, y_label=y_label)
+                self._leafify_node(node=node, y=y_encoded)
                 self._log_node_statistics(node=node, depth=curr_depth)
                 return
 
             for index, bin in enumerate(bins):
-                curr_node_data = encoded_data.x.iloc[node.indexes]
+                curr_node_data = x_encoded.iloc[node.indexes]
                 child_node = self._build_node(
                     bin=bin,
                     data=curr_node_data,
@@ -245,7 +247,7 @@ class BaseTree(AbstractTree):
             self.logger.log_section("Statistics")
             self.logger.log(self.get_statistics())
 
-    def _leafify_node(self, node: Node, y: pd.DataFrame, y_label: str):
+    def _leafify_node(self, node: Node, y: pd.Series, y_label: str):
         """Each tree implmentation should provide its own logic to leafify a node"""
         raise NotImplementedError
 
@@ -338,7 +340,7 @@ class BaseTree(AbstractTree):
         if not self.is_training_complete:
             raise Exception("Model is not trained yet.")
 
-        encoded_data = self._encode(x=x, y=pd.DataFrame()).x
+        encoded_data = self._encode(x=x, y=pd.Series()).x
         # keep the original indexes
         encoded_data.set_index(x.index, inplace=True)
 
@@ -363,14 +365,14 @@ class BaseTree(AbstractTree):
     def test(
         self,
         x: pd.DataFrame,
-        y: pd.DataFrame,
+        y: pd.Series,
         save_results: bool = False,
         output_dir: str = None,
     ) -> TreeTestResults:
         """Test the model on a test dataset."""
         self.logger.log_section("Testing", add_newline=False)
 
-        y_label = y.columns[0]
+        y_label = y.name
         predicted_column = f"PREDICTED_{y_label}"
         actual_column = f"ACTUAL_{y_label}"
 

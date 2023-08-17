@@ -132,7 +132,7 @@ class BaseRandomForest(AbstractForest, BaggingMixin):
         self.logger.log(f"Training '{identifier}'")
         tree = self.tree_model(identifier=identifier, encoding_config=encoding_config_subset, **self.tree_args)
 
-        tree.train(x=x_bootstrap, y=y_bootstrap.to_frame())
+        tree.train(x=x_bootstrap, y=y_bootstrap)
         self.logger.log(f"Training '{identifier}' - Complete - Tree:")
         self.logger.log(tree)
 
@@ -140,7 +140,7 @@ class BaseRandomForest(AbstractForest, BaggingMixin):
         if self.oob_score_enabled:
             self.logger.log(f"Testing '{identifier}' on its out-of-bag dataset")
 
-            test_results = tree.test(x=x_out_of_bag, y=y_out_of_bag.to_frame())
+            test_results = tree.test(x=x_out_of_bag, y=y_out_of_bag)
 
             y_label = y_out_of_bag.name
             oob_predictions = pd.DataFrame({identifier: test_results.labeled_data[f"PREDICTED_{y_label}"]})
