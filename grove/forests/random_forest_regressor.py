@@ -3,6 +3,7 @@ import pandas as pd
 from grove.trees import RegressionTree
 
 from grove.forests.base_random_forest import BaseRandomForest
+from grove.utils.sampling import Sampler
 
 
 class RandomForestRegressor(BaseRandomForest):
@@ -16,6 +17,8 @@ class RandomForestRegressor(BaseRandomForest):
         m_split: int = None,
         n_bag: int = None,
         seed: int | str = None,
+        oob_score_enabled: bool = False,
+        auto_split: bool = False,
     ):
         self.allowed_diff = allowed_diff
         super().__init__(
@@ -27,7 +30,14 @@ class RandomForestRegressor(BaseRandomForest):
             m_split=m_split,
             n_bag=n_bag,
             seed=seed,
+            oob_score_enabled=oob_score_enabled,
+            auto_split=auto_split,
         )
+
+    def _get_test_train_split(
+        self, x: pd.DataFrame, y: pd.Series
+    ) -> tuple[pd.DataFrame, pd.Series, pd.DataFrame, pd.Series]:
+        return Sampler().get_train_test_split(x, y)
 
     def _vote(self, predictions_df: pd.DataFrame):
         return predictions_df.apply(lambda row: row.mean(), axis=1)
@@ -44,7 +54,7 @@ class RandomForestRegressor(BaseRandomForest):
 
         return abs_diff > self.allowed_diff
 
-    def test(self, x: pd.DataFrame, y: pd.DataFrame, save_results: bool = False, output_dir: str = None):
+    def test(self, x: pd.DataFrame, y: pd.Series, save_results: bool = False, output_dir: str = None):
         if self.allowed_diff is None:
             raise ValueError("The 'allowed_diff' parameter must be set to use the RandomForestRegressor.test method.")
 

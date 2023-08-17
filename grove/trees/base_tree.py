@@ -366,7 +366,7 @@ class BaseTree(AbstractTree):
         y: pd.DataFrame,
         save_results: bool = False,
         output_dir: str = None,
-    ):
+    ) -> TreeTestResults:
         """Test the model on a test dataset."""
         self.logger.log_section("Testing", add_newline=False)
 

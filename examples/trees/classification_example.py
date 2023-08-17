@@ -11,7 +11,7 @@ import sys
 # Add the parent directory (Grove) to the Python path
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
-grove_dir = os.path.join(current_dir, "..", '..')
+grove_dir = os.path.join(current_dir, "..", "..")
 sys.path.append(grove_dir)
 
 
@@ -62,7 +62,7 @@ def main(x: pd.DataFrame, y: pd.Series, config: pd.DataFrame, y_dtype: str) -> N
         # criterion_threshold=10.0,
         logging_enabled=True,
         statistics_enabled=True,
-        # consecutive_splits_on_same_feature_enabled=False
+        # consecutive_splits_on_same_feature_enabled=False,
     )
 
     tree_model.train(

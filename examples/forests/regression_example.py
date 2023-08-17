@@ -1,10 +1,9 @@
 # all training data is used from https://www.kaggle.com/datasets/yersever/500-person-gender-height-weight-bodymassindex
 import pandas as pd
 
-from sklearn.model_selection import train_test_split
-
 import os
 import sys
+
 
 # Add the parent directory (Grove) to the Python path
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -13,6 +12,7 @@ grove_dir = os.path.join(current_dir, "..", "..")
 sys.path.append(grove_dir)
 
 from grove.forests import RandomForestRegressor  # noqa
+from grove.utils.sampling import Sampler  # noqa
 
 DATA_PATH = "./data/Regression/data.csv"
 CONFIG_PATH = "./data/Regression/config.csv"
@@ -23,7 +23,7 @@ if __name__ == "__main__":
     x.drop("Age", axis=1, inplace=True)
     encoding_config = pd.read_csv(CONFIG_PATH)
 
-    x_train, x_test, y_train, y_test = train_test_split(x, y, random_state=1)
+    x_train, y_train, x_test, y_test = Sampler().get_train_test_split(x=x, y=y, random_state=1)
 
     random_forest_model = RandomForestRegressor(
         n_trees=10,
@@ -41,10 +41,10 @@ if __name__ == "__main__":
         seed=1,
     )
 
-    random_forest_model.train(x=x_train, y=pd.DataFrame(y_train))
+    random_forest_model.train(x=x_train, y=y_train)
     random_forest_model.test(
         x=x_test,
-        y=pd.DataFrame(y_test),
+        y=y_test,
         save_results=True,
         output_dir="test_results_RF_regression",
     )
