@@ -23,8 +23,6 @@ if __name__ == "__main__":
     x.drop("Age", axis=1, inplace=True)
     encoding_config = pd.read_csv(CONFIG_PATH)
 
-    x_train, y_train, x_test, y_test = Sampler().get_train_test_split(x=x, y=y, random_state=1)
-
     random_forest_model = RandomForestRegressor(
         n_trees=10,
         encoding_config=encoding_config,
@@ -36,15 +34,14 @@ if __name__ == "__main__":
             "max_depth": 5,
             # "consecutive_splits_on_same_feature_enabled": False,
         },
+        auto_split=True,
         m_split=4,
         n_bag=5_000,
         seed=1,
     )
 
-    random_forest_model.train(x=x_train, y=y_train)
+    random_forest_model.train(x=x, y=y)
     random_forest_model.test(
-        x=x_test,
-        y=y_test,
         save_results=True,
         output_dir="test_results_RF_regression",
     )

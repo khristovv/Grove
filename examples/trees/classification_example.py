@@ -30,7 +30,27 @@ def load_simple_dataset() -> tuple[pd.DataFrame, pd.Series, pd.DataFrame, str]:
 
     y_dtype = "bin"
 
-    return x, y, config, y_dtype
+    tree_model = ClassificationTree(
+        encoding_config=config,
+        y_dtype=y_dtype,
+        max_children=3,
+        min_samples_per_node=20,
+        max_depth=7,
+        # criterion_threshold=10.0,
+        logging_enabled=True,
+        statistics_enabled=True,
+        # consecutive_splits_on_same_feature_enabled=False,
+    )
+
+    x_train, y_train, x_test, y_test = Sampler().get_y_proportional_train_test_split(x=x, y=y, random_state=1)
+
+    tree_model.train(x=x_train, y=y_train)
+    tree_model.test(
+        x=x_test,
+        y=y_test,
+        save_results=True,
+        output_dir="test_results_DT_classification",
+    )
 
 
 def load_intermediate_dataset() -> tuple[pd.DataFrame, pd.Series, pd.DataFrame, str]:
@@ -45,12 +65,6 @@ def load_intermediate_dataset() -> tuple[pd.DataFrame, pd.Series, pd.DataFrame, 
 
     y_dtype = "bin"
 
-    return x, y, config, y_dtype
-
-
-def main(x: pd.DataFrame, y: pd.Series, config: pd.DataFrame, y_dtype: str) -> None:
-    x_train, y_train, x_test, y_test = Sampler().get_train_test_split(x=x, y=y, random_state=1)
-
     tree_model = ClassificationTree(
         encoding_config=config,
         y_dtype=y_dtype,
@@ -63,13 +77,10 @@ def main(x: pd.DataFrame, y: pd.Series, config: pd.DataFrame, y_dtype: str) -> N
         # consecutive_splits_on_same_feature_enabled=False,
     )
 
+    x_train, y_train, x_test, y_test = Sampler().get_y_proportional_train_test_split(x=x, y=y, random_state=1)
+
     tree_model.train(x=x_train, y=y_train)
-    tree_model.test(
-        x=x_test,
-        y=y_test,
-        save_results=True,
-        output_dir="test_results_DT_classification",
-    )
+    tree_model.test(x=x_test, y=y_test, save_results=True, output_dir="test_results_DT_classification")
 
 
 SIMPLE = "s"
@@ -90,10 +101,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.dataset == SIMPLE:
-        x, y, config, y_dtype = load_simple_dataset()
+        load_simple_dataset()
     elif args.dataset == INTERMEDIATE:
-        x, y, config, y_dtype = load_intermediate_dataset()
+        load_intermediate_dataset()
     else:
-        x, y, config, y_dtype = load_simple_dataset()
-
-    main(x=x, y=y, config=config, y_dtype=y_dtype)
+        load_simple_dataset()
