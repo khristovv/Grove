@@ -174,6 +174,10 @@ class BaseTree(AbstractTree):
         if not binned_features:
             return ("", [], {})
 
+        criterion_values = [feature.get_criterion_value(criterion=self.criterion) for feature in binned_features]
+        if all([np.isnan(value) or value == 0 for value in criterion_values]):
+            return ("", [], {})
+
         if self.consecutive_splits_on_same_feature_enabled:
             feature_with_highest_gain: BinnedFeature = max(
                 binned_features, key=lambda feature: feature.get_criterion_value(criterion=self.criterion)
