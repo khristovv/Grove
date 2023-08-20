@@ -54,8 +54,14 @@ class RandomForestRegressor(BaseRandomForest):
 
         return abs_diff > self.allowed_diff
 
-    def test(self, x: pd.DataFrame, y: pd.Series, save_results: bool = False, output_dir: str = None):
+    def test(
+        self,
+        x_test: pd.DataFrame | None = None,
+        y_test: pd.Series | None = None,
+        save_results: bool = False,
+        output_dir: str | None = None,
+    ):
         if self.allowed_diff is None:
             raise ValueError("The 'allowed_diff' parameter must be set to use the RandomForestRegressor.test method.")
 
-        return super().test(x, y, save_results, output_dir)
+        return super().test(x_test=x_test, y_test=y_test, save_results=save_results, output_dir=output_dir)
