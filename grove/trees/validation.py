@@ -1,16 +1,17 @@
 from pathlib import Path
-from dataclasses import dataclass
 
 import pandas as pd
 
 from grove.validation import TestResults
 
 
-@dataclass
 class TreeTestResults(TestResults):
     DEFAULT_TREE_STATISTICS_FILENAME = "tree_statistics.csv"
 
-    tree_statistics: pd.DataFrame
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.tree_statistics = pd.DataFrame()
 
     def save(
         self,

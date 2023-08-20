@@ -5,6 +5,8 @@ import pandas as pd
 from grove.constants import Criteria
 from grove.nodes import Node
 from grove.trees.base_tree import BaseTree
+from grove.trees.validation import TreeTestResults
+from grove.utils.metrics import accuracy, precision, recall
 
 
 class ClassificationTree(BaseTree):
@@ -42,18 +44,39 @@ class ClassificationTree(BaseTree):
     def allowed_criteria(self) -> list[Criteria]:
         return [Criteria.GINI, Criteria.CHI2]
 
-    def _get_misclassified_values(
-        self,
-        labeled_data: pd.DataFrame,
-        actual_column: str,
-        predicted_column: str,
-    ) -> pd.Series:
-        """Get the misclassified values."""
-        return labeled_data[actual_column] != labeled_data[predicted_column]
-
     def _leafify_node(self, node: Node, y: pd.Series):
         """Leafify node by calculating the majority class and its probability"""
         predicted_value = y.iloc[node.indexes].mode()[0]
 
         node.children = []
         node.predicted_value = predicted_value
+
+    def _build_test_results(
+        self,
+        labeled_data: pd.DataFrame,
+        actual_column: str,
+        predicted_column: str,
+    ) -> TreeTestResults:
+        """Build the test results."""
+        test_results = TreeTestResults(labeled_data=labeled_data)
+
+        misclassified_records = labeled_data[labeled_data[actual_column] != labeled_data[predicted_column]]
+
+        test_results.add_metric(
+            label="Missclassified Records Count",
+            value=len(misclassified_records),
+        )
+        test_results.add_metric(
+            label="Accuracy",
+            value=f"{accuracy(actual=labeled_data[actual_column], predicted=labeled_data[predicted_column]):.2}",
+        )
+        test_results.add_metric(
+            label="Precision",
+            value=f"{precision(actual=labeled_data[actual_column], predicted=labeled_data[predicted_column]):.2}",
+        )
+        test_results.add_metric(
+            label="Recall",
+            value=f"{recall(actual=labeled_data[actual_column], predicted=labeled_data[predicted_column]):.2}",
+        )
+
+        return test_results

@@ -366,6 +366,15 @@ class BaseTree(AbstractTree):
         """Get the misclassified values."""
         raise NotImplementedError
 
+    def _build_test_results(
+        self,
+        labeled_data: pd.DataFrame,
+        actual_column: str,
+        predicted_column: str,
+    ) -> TreeTestResults:
+        """Build the test results."""
+        raise NotImplementedError
+
     def test(
         self,
         x: pd.DataFrame,
@@ -383,19 +392,10 @@ class BaseTree(AbstractTree):
         labeled_data = self.predict(x=x, y_label=predicted_column)
         labeled_data[actual_column] = y
 
-        misclassifed_values = self._get_misclassified_values(
+        test_results = self._build_test_results(
             labeled_data=labeled_data,
             actual_column=actual_column,
             predicted_column=predicted_column,
-        )
-        misclassifed_values_count = misclassifed_values.value_counts()[True]
-        misclassification_error = misclassifed_values_count / len(labeled_data)
-
-        test_results = TreeTestResults(
-            labeled_data=labeled_data,
-            tree_statistics=self.get_statistics(),
-            misclassification_error=misclassification_error,
-            misclassified_indexes=labeled_data[misclassifed_values].index,
         )
 
         if save_results:

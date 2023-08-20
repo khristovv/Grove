@@ -1,35 +1,36 @@
 from pathlib import Path
-from dataclasses import dataclass
 
 import pandas as pd
 
 
-@dataclass
 class TestResults:
     DEFAULT_OUTPUT_DIR = "test_results"
     DEFAULT_LABELED_DATA_FILENAME = "labeled_data.csv"
     DEFAULT_SCORE_FILENAME = "score.csv"
 
-    labeled_data: pd.DataFrame
-    misclassification_error: float
-    misclassified_indexes: pd.Series
+    def __init__(
+        self,
+        labeled_data: pd.DataFrame,
+        # misclassified_indexes: pd.Series,
+    ):
+        self.labeled_data = labeled_data
+        # self.misclassified_indexes = misclassified_indexes
+
+        self.metrics = {}
+        self._set_default_metrics()
 
     def __str__(self) -> str:
-        return (
-            f"Test Sample Size {len(self.labeled_data)}\n"
-            f"Missclassified Records Count {len(self.misclassified_indexes)}\n"
-            f"Misclassification rate: {self.misclassification_error_perc:.2f}%\n"
-            f"Accuracy: {self.accuracy:.2f}%\n"
-            f"Misclassified Records indexes: {', '.join(str(v) for v in self.misclassified_indexes.values)}\n"
-        )
+        return "\n".join(f"{label} {value}" for label, value in self.metrics.items())
 
-    @property
-    def misclassification_error_perc(self):
-        return self.misclassification_error * 100
+    def add_metric(self, label: str, value: float | int):
+        self.metrics[label] = value
 
-    @property
-    def accuracy(self):
-        return 100 - self.misclassification_error_perc
+    def _set_default_metrics(self) -> dict[str, float | int]:
+        self.metrics = {
+            "Test Sample Size": len(self.labeled_data),
+            # "Missclassified Records Count": len(self.misclassified_indexes),
+            # "Misclassified indexes": [", ".join(str(v) for v in self.misclassified_indexes.values)],
+        }
 
     def save(
         self,
@@ -50,15 +51,7 @@ class TestResults:
         labeled_data.to_csv(labeled_data_filepath)
 
         # save score data to file
-        score_df = pd.DataFrame(
-            {
-                "Test Sample Size": [len(self.labeled_data)],
-                "Missclassified Records Count": [len(self.misclassified_indexes)],
-                "Misclassification Rate": [self.misclassification_error_perc],
-                "Accuracy": [self.accuracy],
-                "Misclassified indexes": [", ".join(str(v) for v in self.misclassified_indexes.values)],
-            }
-        )
+        score_df = pd.DataFrame({k: [v] for k, v in self.metrics.items()})
 
         score_filepath = Path(f"{output_dir}/{score_filename}")
         score_filepath.parent.mkdir(parents=True, exist_ok=True)
