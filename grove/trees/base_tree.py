@@ -357,15 +357,6 @@ class BaseTree(AbstractTree):
 
         return labeled_data
 
-    def _get_misclassified_values(
-        self,
-        labeled_data: pd.DataFrame,
-        actual_column: str,
-        predicted_column: str,
-    ) -> pd.Series:
-        """Get the misclassified values."""
-        raise NotImplementedError
-
     def _build_test_results(
         self,
         labeled_data: pd.DataFrame,
