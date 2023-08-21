@@ -6,7 +6,7 @@ from grove.constants import Criteria
 from grove.nodes import Node
 from grove.trees.base_tree import BaseTree
 from grove.trees.validation import TreeTestResults
-from grove.utils.metrics import accuracy, precision, recall
+from grove.utils.metrics import accuracy, f1_score, precision, recall
 
 
 class ClassificationTree(BaseTree):
@@ -77,6 +77,10 @@ class ClassificationTree(BaseTree):
         test_results.add_metric(
             label="Recall",
             value=f"{recall(actual=labeled_data[actual_column], predicted=labeled_data[predicted_column]):.2}",
+        )
+        test_results.add_metric(
+            label="F1 Score",
+            value=f"{f1_score(actual=labeled_data[actual_column], predicted=labeled_data[predicted_column]):.2}",
         )
 
         return test_results
