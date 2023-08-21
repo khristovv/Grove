@@ -82,3 +82,14 @@ def recall(actual: pd.Series, predicted: pd.Series) -> float:
         return tp / (tp + fn)
     except ZeroDivisionError:
         return 0.0
+
+
+def f1_score(actual: pd.Series, predicted: pd.Series) -> float:
+    """Calculate the F1 score."""
+    p = precision(actual, predicted)
+    r = recall(actual, predicted)
+
+    try:
+        return 2 * ((p * r) / (p + r))
+    except ZeroDivisionError:
+        return 0.0
