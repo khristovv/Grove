@@ -11,6 +11,16 @@ def r2_score(actual: pd.Series, predicted: pd.Series) -> float:
     return 1 - (ss_res / ss_tot)
 
 
+def mean_absolute_error(actual: pd.Series, predicted: pd.Series) -> float:
+    """Calculate the mean absolute error."""
+    return (actual - predicted).abs().mean()
+
+
+def mean_squared_error(actual: pd.Series, predicted: pd.Series) -> float:
+    """Calculate the root mean squared error."""
+    return ((actual - predicted)**2).mean()
+
+
 def confusion_matrix_values(actual: pd.Series, predicted: pd.Series) -> [float, float, float, float]:
     """Calculate the confusion matrix."""
 
