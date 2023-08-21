@@ -37,7 +37,7 @@ class RandomForestRegressor(BaseRandomForest):
     def _get_test_train_split(
         self, x: pd.DataFrame, y: pd.Series
     ) -> tuple[pd.DataFrame, pd.Series, pd.DataFrame, pd.Series]:
-        return Sampler().get_train_test_split(x, y)
+        return Sampler().get_train_test_split(x=x, y=y, seed=self.seed)
 
     def _vote(self, predictions_df: pd.DataFrame):
         return predictions_df.apply(lambda row: row.mean(), axis=1)

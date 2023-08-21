@@ -7,14 +7,14 @@ class Sampler:
         x: pd.DataFrame,
         y: pd.DataFrame,
         training_portion: float = 0.7,  # 70 % of the data is used for training
-        random_state: int | None = None,
+        seed: int | None = None,
     ) -> tuple[pd.DataFrame, pd.Series, pd.DataFrame, pd.Series]:
         if not (0 < training_portion < 1):
             raise ValueError(f"'training_portion' must be between 0 and 1, inclusive. Got {training_portion}")
 
         n = round(len(x) * training_portion)
 
-        x_train = x.sample(n=n, random_state=random_state)
+        x_train = x.sample(n=n, random_state=seed)
         y_train = y.loc[x_train.index]
 
         x_test = x.drop(index=x_train.index)
@@ -27,7 +27,7 @@ class Sampler:
         x: pd.DataFrame,
         y: pd.Series,
         training_portion: float = 0.8,  # 70 % of the data is used for training
-        random_state: int | None = None,
+        seed: int | None = None,
     ) -> tuple[pd.DataFrame, pd.Series, pd.DataFrame, pd.Series]:
         if not (0 < training_portion < 1):
             raise ValueError(f"'training_portion' must be between 0 and 1, inclusive. Got {training_portion}")
@@ -40,7 +40,7 @@ class Sampler:
 
             label_proportion = round(len(label_subset) * training_portion)
 
-            proportional_label_subset = label_subset.sample(n=label_proportion, random_state=random_state)
+            proportional_label_subset = label_subset.sample(n=label_proportion, random_state=seed)
 
             y_train = pd.concat([y_train, proportional_label_subset])
 
