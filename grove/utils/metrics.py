@@ -26,7 +26,7 @@ def confusion_matrix_values(actual: pd.Series, predicted: pd.Series) -> [float, 
 
     cross_tab = pd.crosstab(actual, predicted)
 
-    tp, fn, fp, tn = 0, 0, 0, 0
+    tp, fn, fp, tn = 0.0, 0.0, 0.0, 0.0
 
     # ['ACTUAL']['POSITIVE']
 
@@ -71,7 +71,7 @@ def precision(actual: pd.Series, predicted: pd.Series) -> float:
     try:
         return tp / (tp + fp)
     except ZeroDivisionError:
-        return 0
+        return 0.0
 
 
 def recall(actual: pd.Series, predicted: pd.Series) -> float:
@@ -81,4 +81,4 @@ def recall(actual: pd.Series, predicted: pd.Series) -> float:
     try:
         return tp / (tp + fn)
     except ZeroDivisionError:
-        return 0
+        return 0.0
