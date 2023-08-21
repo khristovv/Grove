@@ -28,8 +28,6 @@ class TestResults:
     def _set_default_metrics(self) -> dict[str, float | int]:
         self.metrics = {
             "Test Sample Size": len(self.labeled_data),
-            # "Missclassified Records Count": len(self.misclassified_indexes),
-            # "Misclassified indexes": [", ".join(str(v) for v in self.misclassified_indexes.values)],
         }
 
     def save(

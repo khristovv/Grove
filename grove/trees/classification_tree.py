@@ -63,7 +63,7 @@ class ClassificationTree(BaseTree):
         misclassified_records = labeled_data[labeled_data[actual_column] != labeled_data[predicted_column]]
 
         test_results.add_metric(
-            label="Missclassified Records Count",
+            label="Misclassified Records Count",
             value=len(misclassified_records),
         )
         test_results.add_metric(
