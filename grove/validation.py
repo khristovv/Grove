@@ -22,7 +22,7 @@ class TestResults:
     def __str__(self) -> str:
         return "\n".join(f"{label} {value}" for label, value in self.metrics.items())
 
-    def add_metric(self, label: str, value: float | int):
+    def add_metric(self, label: str, value: float | int | str):
         self.metrics[label] = value
 
     def _set_default_metrics(self) -> dict[str, float | int]:

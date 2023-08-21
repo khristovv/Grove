@@ -22,7 +22,7 @@ if __name__ == "__main__":
     config = pd.read_csv(CONFIG_PATH)
 
     # get a subset of the data for faster development
-    x = x.sample(n=5000, replace=False, random_state=1)
+    x = x.sample(n=20_000, replace=False, random_state=1)
 
     y = x["Age"]
     x = x.drop(columns=["Age"])
@@ -31,14 +31,13 @@ if __name__ == "__main__":
 
     tree_model = RegressionTree(
         encoding_config=config,
-        max_children=3,
-        min_samples_per_node=100,
-        allowed_diff=3.0,  # 3 months allowed difference
-        max_depth=5,
+        max_children=5,
+        min_samples_per_node=500,
+        max_depth=6,
         # criterion_threshold=10.0,
         logging_enabled=True,
         statistics_enabled=True,
-        # consecutive_splits_on_same_feature_enabled=False,
+        consecutive_splits_on_same_feature_enabled=False,
     )
 
     tree_model.train(x=x_train, y=y_train)
