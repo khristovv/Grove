@@ -24,7 +24,7 @@ if __name__ == "__main__":
     encoding_config = pd.read_csv(CONFIG_PATH)
 
     random_forest_model = RandomForestRegressor(
-        n_trees=2,
+        n_trees=10,
         encoding_config=encoding_config,
         # train_in_parallel=False,
         tree_args={

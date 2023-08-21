@@ -28,14 +28,14 @@ if __name__ == "__main__":
     y_dtype = "bin"
 
     random_forest_model = RandomForestClassifer(
-        n_trees=50,
+        n_trees=10,
         encoding_config=encoding_config,
         # train_in_parallel=False,
         tree_args={
             "y_dtype": y_dtype,
             "max_children": 4,
-            "min_samples_per_node": 100,
-            "max_depth": 4,
+            "min_samples_per_node": 10,
+            "max_depth": 6,
             "statistics_enabled": True,
             "consecutive_splits_on_same_feature_enabled": False,
         },

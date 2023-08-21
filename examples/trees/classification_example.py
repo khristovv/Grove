@@ -70,11 +70,11 @@ def load_intermediate_dataset() -> tuple[pd.DataFrame, pd.Series, pd.DataFrame, 
         y_dtype=y_dtype,
         max_children=4,
         min_samples_per_node=10,
-        max_depth=10,
+        max_depth=6,
         # criterion_threshold=10.0,
         logging_enabled=True,
         statistics_enabled=True,
-        # consecutive_splits_on_same_feature_enabled=False,
+        consecutive_splits_on_same_feature_enabled=False,
     )
 
     x_train, y_train, x_test, y_test = Sampler().get_y_proportional_train_test_split(x=x, y=y, random_state=1)
