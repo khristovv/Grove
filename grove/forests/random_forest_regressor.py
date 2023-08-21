@@ -3,7 +3,9 @@ import pandas as pd
 from grove.trees import RegressionTree
 
 from grove.forests.base_random_forest import BaseRandomForest
+from grove.utils.metrics import mean_absolute_error, mean_squared_error, r2_score
 from grove.utils.sampling import Sampler
+from grove.validation import TestResults
 
 
 class RandomForestRegressor(BaseRandomForest):
@@ -11,7 +13,6 @@ class RandomForestRegressor(BaseRandomForest):
         self,
         n_trees: int,
         encoding_config: pd.DataFrame,
-        allowed_diff: float = None,
         train_in_parallel: bool = True,
         tree_args: dict = None,
         m_split: int = None,
@@ -20,7 +21,6 @@ class RandomForestRegressor(BaseRandomForest):
         oob_score_enabled: bool = False,
         auto_split: bool = False,
     ):
-        self.allowed_diff = allowed_diff
         super().__init__(
             n_trees=n_trees,
             encoding_config=encoding_config,
@@ -42,26 +42,32 @@ class RandomForestRegressor(BaseRandomForest):
     def _vote(self, predictions_df: pd.DataFrame):
         return predictions_df.apply(lambda row: row.mean(), axis=1)
 
-    def _get_misclassified_values(
+    def _build_test_results(
         self,
         labeled_data: pd.DataFrame,
         actual_column: str,
         predicted_column: str,
-    ) -> pd.Series:
-        """Get the misclassified values."""
-        diff = labeled_data[actual_column] - labeled_data[predicted_column]
-        abs_diff = diff.abs()
+    ) -> TestResults:
+        """Build the test results."""
+        test_results = TestResults(labeled_data=labeled_data)
 
-        return abs_diff > self.allowed_diff
+        test_results.add_metric(
+            label="R2 Score",
+            value=f"{r2_score(actual=labeled_data[actual_column], predicted=labeled_data[predicted_column]):.2}",
+        )
+        mean_absolute_error_value = mean_absolute_error(
+            actual=labeled_data[actual_column], predicted=labeled_data[predicted_column]
+        )
+        test_results.add_metric(
+            label="Mean Absolute Error",
+            value=f"{mean_absolute_error_value:.2}",
+        )
+        mean_squared_error_value = mean_squared_error(
+            actual=labeled_data[actual_column], predicted=labeled_data[predicted_column]
+        )
+        test_results.add_metric(
+            label="Mean Squared Error",
+            value=f"{mean_squared_error_value:.2}",
+        )
 
-    def test(
-        self,
-        x_test: pd.DataFrame | None = None,
-        y_test: pd.Series | None = None,
-        save_results: bool = False,
-        output_dir: str | None = None,
-    ):
-        if self.allowed_diff is None:
-            raise ValueError("The 'allowed_diff' parameter must be set to use the RandomForestRegressor.test method.")
-
-        return super().test(x_test=x_test, y_test=y_test, save_results=save_results, output_dir=output_dir)
+        return test_results

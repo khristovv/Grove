@@ -169,13 +169,13 @@ class BaseRandomForest(AbstractForest, BaggingMixin):
 
         return labeled_data
 
-    def _get_misclassified_values(
+    def _build_test_results(
         self,
         labeled_data: pd.DataFrame,
         actual_column: str,
         predicted_column: str,
-    ) -> pd.Series:
-        """Get the misclassified values."""
+    ) -> TestResults:
+        """Build the test results."""
         raise NotImplementedError
 
     def test(
@@ -208,18 +208,10 @@ class BaseRandomForest(AbstractForest, BaggingMixin):
         labeled_data = self.predict(x=x_test, y_label=predicted_column)
         labeled_data[actual_column] = y_test
 
-        misclassifed_values = self._get_misclassified_values(
+        test_results = self._build_test_results(
             labeled_data=labeled_data,
             actual_column=actual_column,
             predicted_column=predicted_column,
-        )
-        misclassifed_values_count = misclassifed_values.value_counts()[True]
-        misclassification_error = misclassifed_values_count / len(labeled_data)
-
-        test_results = TestResults(
-            labeled_data=labeled_data,
-            misclassification_error=misclassification_error,
-            misclassified_indexes=labeled_data[misclassifed_values].index,
         )
 
         if save_results:
