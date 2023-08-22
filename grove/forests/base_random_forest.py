@@ -178,12 +178,22 @@ class BaseRandomForest(AbstractForest, BaggingMixin):
         """Build the test results."""
         raise NotImplementedError
 
+    def plot(
+        self,
+        labeled_data: pd.DataFrame,
+        actual_column: str,
+        predicted_column: str,
+    ):
+        """Plot tes results."""
+        raise NotImplementedError
+
     def test(
         self,
         x_test: pd.DataFrame | None = None,
         y_test: pd.Series | None = None,
         save_results: bool = False,
         output_dir: str | None = None,
+        plot: bool = False,
     ):
         """Test the model on a test dataset."""
         self.logger.log_section("Testing", add_newline=False)
@@ -220,6 +230,13 @@ class BaseRandomForest(AbstractForest, BaggingMixin):
         self.logger.log_section("Test Results:")
         self.logger.log(test_results)
 
+        if plot:
+            self.plot(
+                labeled_data=labeled_data,
+                actual_column=actual_column,
+                predicted_column=predicted_column,
+            )
+
         return test_results
 
     def get_oob_score(self) -> pd.DataFrame:
@@ -229,8 +246,12 @@ class BaseRandomForest(AbstractForest, BaggingMixin):
                 "Set `oob_score_enabled` to `True` and re-train the model to access this metric."
             )
 
+        y_label = self.initial_y.name
+        predicted_column = f"PREDICTED_{y_label}"
+        actual_column = f"ACTUAL_{y_label}"
+
         oob_score_df = self.oob_dataset.copy()
-        oob_score_df["PREDICTED"] = self._vote(predictions_df=oob_score_df)
-        oob_score_df["ACTUAL"] = self.initial_y
+        oob_score_df[predicted_column] = self._vote(predictions_df=oob_score_df)
+        oob_score_df[actual_column] = self.initial_y
 
         return oob_score_df

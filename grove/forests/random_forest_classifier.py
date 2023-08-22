@@ -85,7 +85,23 @@ class RandomForestClassifer(BaseRandomForest):
 
         return test_results
 
-    def build_confusion_matrix(self) -> pd.DataFrame:
-        oob_score_df = self.get_oob_score()
+    def plot(
+        self,
+        labeled_data: pd.DataFrame,
+        actual_column: str,
+        predicted_column: str,
+    ):
+        with Plotter() as plotter:
+            cm = confusion_matrix(
+                actual=labeled_data[actual_column],
+                predicted=labeled_data[predicted_column],
+            )
+            plotter.plot_confusion_matrix(confusion_matrix=cm)
 
-        return pd.crosstab(oob_score_df["ACTUAL"], oob_score_df["PREDICTED"])
+            if self.oob_score_enabled:
+                oob_df = self.get_oob_score()
+                oob_cm = confusion_matrix(
+                    actual=oob_df[actual_column],
+                    predicted=oob_df[predicted_column],
+                )
+                plotter.plot_confusion_matrix(oob_cm, title="Out-of-Bag Confusion Matrix")

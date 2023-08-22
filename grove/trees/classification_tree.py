@@ -93,8 +93,9 @@ class ClassificationTree(BaseTree):
         predicted_column: str,
     ):
         """Plot the test results."""
-        cm = confusion_matrix(
-            actual=labeled_data[actual_column],
-            predicted=labeled_data[predicted_column],
-        )
-        self.plot_confusion_matrix(confusion_matrix=cm)
+        with Plotter() as plotter:
+            cm = confusion_matrix(
+                actual=labeled_data[actual_column],
+                predicted=labeled_data[predicted_column],
+            )
+            plotter.plot_confusion_matrix(confusion_matrix=cm)

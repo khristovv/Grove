@@ -51,6 +51,5 @@ if __name__ == "__main__":
     random_forest_model.test(
         save_results=True,
         output_dir="test_results_RF_classification",
+        plot=True,
     )
-    confusion_matrix = random_forest_model.build_confusion_matrix()
-    random_forest_model.plot_confusion_matrix(confusion_matrix=confusion_matrix)
