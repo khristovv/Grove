@@ -49,8 +49,8 @@ class TestResults:
         labeled_data.to_csv(labeled_data_filepath)
 
         # save score data to file
-        score_df = pd.DataFrame({k: [v] for k, v in self.metrics.items()})
+        score_df = pd.Series(self.metrics, name="Value")
 
         score_filepath = Path(f"{output_dir}/{score_filename}")
         score_filepath.parent.mkdir(parents=True, exist_ok=True)
-        score_df.to_csv(score_filepath, index=False)
+        score_df.to_csv(score_filepath, index_label="Metric")
