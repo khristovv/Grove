@@ -18,55 +18,41 @@ def mean_absolute_error(actual: pd.Series, predicted: pd.Series) -> float:
 
 def mean_squared_error(actual: pd.Series, predicted: pd.Series) -> float:
     """Calculate the root mean squared error."""
-    return ((actual - predicted)**2).mean()
+    return ((actual - predicted) ** 2).mean()
 
 
-def confusion_matrix_values(actual: pd.Series, predicted: pd.Series) -> [float, float, float, float]:
+def confusion_matrix(
+    actual: pd.Series,
+    predicted: pd.Series,
+    as_tuple=False,
+) -> pd.DataFrame | tuple[float, float, float, float]:
     """Calculate the confusion matrix."""
 
-    cross_tab = pd.crosstab(actual, predicted)
-
-    tp, fn, fp, tn = 0.0, 0.0, 0.0, 0.0
-
-    # ['ACTUAL']['POSITIVE']
-
     # the positive sample was correctly identified by the classifier
-    try:
-        tp = cross_tab.loc[1][1]
-    except KeyError:
-        pass
-
+    tp = len(predicted[actual == 1][predicted == 1])
     # the positive sample is incorrectly identified by the classifier as being negative
-    try:
-        fn = cross_tab.loc[0][1]
-    except KeyError:
-        pass
-
+    fn = len(predicted[actual == 1][predicted == 0])
     # negative sample is incorrectly identified by the classifier as being positive
-    try:
-        fp = cross_tab.loc[1][0]
-    except KeyError:
-        pass
-
+    fp = len(predicted[actual == 0][predicted == 1])
     # the negative sample gets correctly identified by the classifier
-    try:
-        tn = cross_tab.loc[0][0]
-    except KeyError:
-        pass
+    tn = len(predicted[actual == 0][predicted == 0])
 
-    return (tp, fn, fp, tn)
+    if as_tuple:
+        return tp, fn, fp, tn
+
+    return pd.DataFrame([{"PP": tp, "PN": fn}, {"PP": fp, "PN": tn}], index=["P", "N"])
 
 
 def accuracy(actual: pd.Series, predicted: pd.Series) -> float:
     """Calculate how many observations, both positive and negative, were correctly classified."""
-    tp, fn, fp, tn = confusion_matrix_values(actual, predicted)
+    tp, fn, fp, tn = confusion_matrix(actual=actual, predicted=predicted, as_tuple=True)
 
     return (tp + tn) / (tp + tn + fp + fn)
 
 
 def precision(actual: pd.Series, predicted: pd.Series) -> float:
     """Calculate how many of the positive samples were correctly classified."""
-    tp, _, fp, _ = confusion_matrix_values(actual, predicted)
+    tp, _, fp, _ = confusion_matrix(actual=actual, predicted=predicted, as_tuple=True)
 
     try:
         return tp / (tp + fp)
@@ -76,7 +62,7 @@ def precision(actual: pd.Series, predicted: pd.Series) -> float:
 
 def recall(actual: pd.Series, predicted: pd.Series) -> float:
     """Calculate how many of the positive samples were correctly classified."""
-    tp, fn, _, _ = confusion_matrix_values(actual, predicted)
+    tp, fn, _, _ = confusion_matrix(actual=actual, predicted=predicted, as_tuple=True)
 
     try:
         return tp / (tp + fn)
