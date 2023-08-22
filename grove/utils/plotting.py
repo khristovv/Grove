@@ -5,8 +5,10 @@ import seaborn
 
 
 class PlottingMixin:
-    def plot_confusion_matrix(self, confusion_matrix: pd.DataFrame):
+    def plot_confusion_matrix(self, confusion_matrix: pd.DataFrame, title: str = "Confusion Matrix"):
         seaborn.heatmap(confusion_matrix, annot=True, cmap="crest", linewidth=0.5, fmt="d").set(
-            title="Confusion Matrix"
+            title=title,
+            xlabel="Predicted",
+            ylabel="Actual",
         )
         plt.show()

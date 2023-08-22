@@ -50,6 +50,7 @@ def load_simple_dataset() -> tuple[pd.DataFrame, pd.Series, pd.DataFrame, str]:
         y=y_test,
         save_results=True,
         output_dir="test_results_DT_classification",
+        plot=True,
     )
 
 
@@ -80,7 +81,7 @@ def load_intermediate_dataset() -> tuple[pd.DataFrame, pd.Series, pd.DataFrame, 
     x_train, y_train, x_test, y_test = Sampler().get_y_proportional_train_test_split(x=x, y=y, seed=1)
 
     tree_model.train(x=x_train, y=y_train)
-    tree_model.test(x=x_test, y=y_test, save_results=True, output_dir="test_results_DT_classification")
+    tree_model.test(x=x_test, y=y_test, save_results=True, output_dir="test_results_DT_classification", plot=True)
 
 
 SIMPLE = "s"
