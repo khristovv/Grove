@@ -7,10 +7,10 @@ from grove.nodes import Node
 from grove.trees.base_tree import BaseTree
 from grove.trees.validation import TreeTestResults
 from grove.utils.metrics import accuracy, confusion_matrix, f1_score, precision, recall
-from grove.utils.plotting import PlottingMixin
+from grove.utils.plotting import Plotter
 
 
-class ClassificationTree(BaseTree, PlottingMixin):
+class ClassificationTree(BaseTree):
     def __init__(
         self,
         encoding_config: pd.DataFrame,
