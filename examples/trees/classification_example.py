@@ -13,6 +13,7 @@ grove_dir = os.path.join(current_dir, "..", "..")
 sys.path.append(grove_dir)
 
 
+from grove.utils.plotting import Plotter  # noqa
 from grove.trees import ClassificationTree  # noqa
 from grove.utils.sampling import Sampler  # noqa
 
@@ -50,8 +51,16 @@ def load_simple_dataset() -> tuple[pd.DataFrame, pd.Series, pd.DataFrame, str]:
         y=y_test,
         save_results=True,
         output_dir="test_results_DT_classification",
-        plot=True,
     )
+
+    test_results = tree_model.test(x=x_test, y=y_test, save_results=True, output_dir="test_results_DT_classification")
+    labeled_data = test_results.labeled_data
+
+    with Plotter() as plotter:
+        plotter.plot_confusion_matrix(
+            actual_column=labeled_data[f"ACTUAL_{y.name}"],
+            predicted_column=labeled_data[f"PREDICTED_{y.name}"],
+        )
 
 
 def load_intermediate_dataset() -> tuple[pd.DataFrame, pd.Series, pd.DataFrame, str]:
@@ -81,7 +90,20 @@ def load_intermediate_dataset() -> tuple[pd.DataFrame, pd.Series, pd.DataFrame, 
     x_train, y_train, x_test, y_test = Sampler().get_y_proportional_train_test_split(x=x, y=y, seed=1)
 
     tree_model.train(x=x_train, y=y_train)
-    tree_model.test(x=x_test, y=y_test, save_results=True, output_dir="test_results_DT_classification", plot=True)
+
+    test_results = tree_model.test(
+        x=x_test,
+        y=y_test,
+        save_results=True,
+        output_dir="test_results_DT_classification",
+    )
+    labeled_data = test_results.labeled_data
+
+    with Plotter() as plotter:
+        plotter.plot_confusion_matrix(
+            actual_column=labeled_data[f"ACTUAL_{y.name}"],
+            predicted_column=labeled_data[f"PREDICTED_{y.name}"],
+        )
 
 
 SIMPLE = "s"

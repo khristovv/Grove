@@ -6,8 +6,7 @@ from grove.constants import Criteria
 from grove.nodes import Node
 from grove.trees.base_tree import BaseTree
 from grove.trees.validation import TreeTestResults
-from grove.utils.metrics import accuracy, confusion_matrix, f1_score, precision, recall
-from grove.utils.plotting import Plotter
+from grove.utils.metrics import accuracy, f1_score, precision, recall
 
 
 class ClassificationTree(BaseTree):
@@ -85,17 +84,3 @@ class ClassificationTree(BaseTree):
         )
 
         return test_results
-
-    def plot(
-        self,
-        labeled_data: pd.DataFrame,
-        actual_column: str,
-        predicted_column: str,
-    ):
-        """Plot the test results."""
-        with Plotter() as plotter:
-            cm = confusion_matrix(
-                actual=labeled_data[actual_column],
-                predicted=labeled_data[predicted_column],
-            )
-            plotter.plot_confusion_matrix(confusion_matrix=cm)

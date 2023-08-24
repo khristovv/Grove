@@ -6,8 +6,7 @@ import pandas as pd
 from grove.trees import ClassificationTree
 
 from grove.forests.base_random_forest import BaseRandomForest
-from grove.utils.metrics import accuracy, confusion_matrix, f1_score, precision, recall
-from grove.utils.plotting import Plotter
+from grove.utils.metrics import accuracy, f1_score, precision, recall
 from grove.utils.sampling import Sampler
 from grove.validation import TestResults
 
@@ -84,15 +83,3 @@ class RandomForestClassifer(BaseRandomForest):
         )
 
         return test_results
-
-    def plot(
-        self,
-        labeled_data: pd.DataFrame,
-        actual_column: str,
-        predicted_column: str,
-    ):
-        cm = confusion_matrix(
-            actual=labeled_data[actual_column],
-            predicted=labeled_data[predicted_column],
-        )
-        Plotter().plot_confusion_matrix(confusion_matrix=cm)

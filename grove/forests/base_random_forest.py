@@ -175,15 +175,6 @@ class BaseRandomForest(AbstractForest, BaggingMixin):
         """Build the test results."""
         raise NotImplementedError
 
-    def plot(
-        self,
-        labeled_data: pd.DataFrame,
-        actual_column: str,
-        predicted_column: str,
-    ):
-        """Plot tes results."""
-        raise NotImplementedError
-
     def test(
         self,
         x_test: pd.DataFrame | None = None,
@@ -192,7 +183,6 @@ class BaseRandomForest(AbstractForest, BaggingMixin):
         output_dir: str | None = None,
         labeled_data_filename: str = None,
         score_filename: str = None,
-        plot: bool = False,
     ):
         """Test the model on a test dataset."""
         self.logger.log_section("Testing", add_newline=False)
@@ -233,13 +223,6 @@ class BaseRandomForest(AbstractForest, BaggingMixin):
         self.logger.log_section("Test Results:")
         self.logger.log(test_results)
 
-        if plot:
-            self.plot(
-                labeled_data=labeled_data,
-                actual_column=actual_column,
-                predicted_column=predicted_column,
-            )
-
         return test_results
 
     def oob_test(
@@ -249,7 +232,6 @@ class BaseRandomForest(AbstractForest, BaggingMixin):
         output_dir: str | None = None,
         labeled_data_filename: str = None,
         score_filename: str = None,
-        plot: bool = False,
     ):
         """Test the model on a test dataset."""
         self.logger.log_section("Testing", add_newline=False)
@@ -279,13 +261,6 @@ class BaseRandomForest(AbstractForest, BaggingMixin):
                 output_dir=output_dir,
                 labeled_data_filename=labeled_data_filename,
                 score_filename=score_filename,
-            )
-
-        if plot:
-            self.plot(
-                labeled_data=oob_score_df,
-                actual_column=actual_column,
-                predicted_column=predicted_column,
             )
 
         self.logger.log_section("OOB Test Results:")

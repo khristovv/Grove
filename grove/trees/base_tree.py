@@ -366,22 +366,12 @@ class BaseTree(AbstractTree):
         """Build the test results."""
         raise NotImplementedError
 
-    def plot(
-        self,
-        labeled_data: pd.DataFrame,
-        actual_column: str,
-        predicted_column: str,
-    ):
-        """Plot tes results."""
-        raise NotImplementedError
-
     def test(
         self,
         x: pd.DataFrame,
         y: pd.Series,
         save_results: bool = False,
         output_dir: str = None,
-        plot: bool = False,
     ) -> TreeTestResults:
         """Test the model on a test dataset."""
         self.logger.log_section("Testing", add_newline=False)
@@ -404,12 +394,5 @@ class BaseTree(AbstractTree):
 
         self.logger.log_section("Test Results:")
         self.logger.log(test_results)
-
-        if plot:
-            self.plot(
-                labeled_data=labeled_data,
-                actual_column=actual_column,
-                predicted_column=predicted_column,
-            )
 
         return test_results

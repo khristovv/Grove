@@ -37,7 +37,6 @@ if __name__ == "__main__":
             "min_samples_per_node": 10,
             "max_depth": 6,
             "statistics_enabled": True,
-            "logging_enabled": False,
             "consecutive_splits_on_same_feature_enabled": False,
         },
         m_split=3,
@@ -50,33 +49,52 @@ if __name__ == "__main__":
 
     random_forest_model.train(x=x_train, y=y_train)
 
-    with Plotter():
-        random_forest_model.test(
+    actual_column = f"ACTUAL_{y.name}"
+    predicted_column = f"PREDICTED_{y.name}"
+
+    with Plotter() as plotter:
+        test_results_on_train_split = random_forest_model.test(
             x_test=x_train,
             y_test=y_train,
             save_results=True,
             output_dir="test_results_RF_classification",
             labeled_data_filename="labeled_data(train).csv",
             score_filename="score(train).csv",
-            plot=True,
         )
-        random_forest_model.test(
+        labeled_data = test_results_on_train_split.labeled_data
+        plotter.plot_confusion_matrix(
+            actual_column=labeled_data[actual_column],
+            predicted_column=labeled_data[predicted_column],
+            title="Confusion Matrix on Train Split",
+        )
+
+        test_results_on_test_split = random_forest_model.test(
             x_test=x_test,
             y_test=y_test,
             save_results=True,
             output_dir="test_results_RF_classification",
             labeled_data_filename="labeled_data(test).csv",
             score_filename="score(test).csv",
-            plot=True,
+        )
+        labeled_data = test_results_on_test_split.labeled_data
+        plotter.plot_confusion_matrix(
+            actual_column=labeled_data[actual_column],
+            predicted_column=labeled_data[predicted_column],
+            title="Confusion Matrix on Test Split",
         )
 
         oob_df = random_forest_model.oob_dataset
 
-        random_forest_model.oob_test(
+        test_results_on_oob = random_forest_model.oob_test(
             original_y=y,
             save_results=True,
             output_dir="test_results_RF_classification",
             labeled_data_filename="labeled_data(OOB).csv",
             score_filename="score(OOB).csv",
-            plot=True,
+        )
+        labeled_data = test_results_on_oob.labeled_data
+        plotter.plot_confusion_matrix(
+            actual_column=labeled_data[actual_column],
+            predicted_column=labeled_data[predicted_column],
+            title="Confusion Matrix Out-of-Bag matrix",
         )
