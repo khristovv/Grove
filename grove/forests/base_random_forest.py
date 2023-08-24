@@ -97,9 +97,6 @@ class BaseRandomForest(AbstractForest, BaggingMixin):
 
         self.logger.log_section("Training - Start", add_newline=False)
 
-        if self.oob_score_enabled:
-            self.initial_y = y_train.copy()
-
         if self.train_in_parallel:
             with mp.Pool() as process_pool:
                 results = process_pool.starmap(self._train_tree, _get_training_data())
@@ -193,6 +190,8 @@ class BaseRandomForest(AbstractForest, BaggingMixin):
         y_test: pd.Series | None = None,
         save_results: bool = False,
         output_dir: str | None = None,
+        labeled_data_filename: str = None,
+        score_filename: str = None,
         plot: bool = False,
     ):
         """Test the model on a test dataset."""
@@ -225,7 +224,11 @@ class BaseRandomForest(AbstractForest, BaggingMixin):
         )
 
         if save_results:
-            test_results.save(output_dir=output_dir)
+            test_results.save(
+                output_dir=output_dir,
+                labeled_data_filename=labeled_data_filename,
+                score_filename=score_filename,
+            )
 
         self.logger.log_section("Test Results:")
         self.logger.log(test_results)
@@ -239,19 +242,53 @@ class BaseRandomForest(AbstractForest, BaggingMixin):
 
         return test_results
 
-    def get_oob_score(self) -> pd.DataFrame:
+    def oob_test(
+        self,
+        original_y: pd.DataFrame,
+        save_results: bool = False,
+        output_dir: str | None = None,
+        labeled_data_filename: str = None,
+        score_filename: str = None,
+        plot: bool = False,
+    ):
+        """Test the model on a test dataset."""
+        self.logger.log_section("Testing", add_newline=False)
+
         if not self.oob_score_enabled:
             raise ValueError(
                 "OOB datasets were not saved during training. "
                 "Set `oob_score_enabled` to `True` and re-train the model to access this metric."
             )
 
-        y_label = self.initial_y.name
+        y_label = original_y.name
         predicted_column = f"PREDICTED_{y_label}"
         actual_column = f"ACTUAL_{y_label}"
 
         oob_score_df = self.oob_dataset.copy()
         oob_score_df[predicted_column] = self._vote(predictions_df=oob_score_df)
-        oob_score_df[actual_column] = self.initial_y
+        oob_score_df[actual_column] = original_y
 
-        return oob_score_df
+        test_results = self._build_test_results(
+            labeled_data=oob_score_df,
+            actual_column=actual_column,
+            predicted_column=predicted_column,
+        )
+
+        if save_results:
+            test_results.save(
+                output_dir=output_dir,
+                labeled_data_filename=labeled_data_filename,
+                score_filename=score_filename,
+            )
+
+        if plot:
+            self.plot(
+                labeled_data=oob_score_df,
+                actual_column=actual_column,
+                predicted_column=predicted_column,
+            )
+
+        self.logger.log_section("OOB Test Results:")
+        self.logger.log(test_results)
+
+        return test_results

@@ -91,17 +91,8 @@ class RandomForestClassifer(BaseRandomForest):
         actual_column: str,
         predicted_column: str,
     ):
-        with Plotter() as plotter:
-            cm = confusion_matrix(
-                actual=labeled_data[actual_column],
-                predicted=labeled_data[predicted_column],
-            )
-            plotter.plot_confusion_matrix(confusion_matrix=cm)
-
-            if self.oob_score_enabled:
-                oob_df = self.get_oob_score()
-                oob_cm = confusion_matrix(
-                    actual=oob_df[actual_column],
-                    predicted=oob_df[predicted_column],
-                )
-                plotter.plot_confusion_matrix(oob_cm, title="Out-of-Bag Confusion Matrix")
+        cm = confusion_matrix(
+            actual=labeled_data[actual_column],
+            predicted=labeled_data[predicted_column],
+        )
+        Plotter().plot_confusion_matrix(confusion_matrix=cm)
