@@ -49,7 +49,7 @@ class BaseRandomForest(AbstractForest, BaggingMixin):
         self.logger = Logger(name=self.__class__.__name__, logging_enabled=self.logging_enabled)
 
         self.oob_score_enabled = oob_score_enabled
-        self.oob_dataset = pd.DataFrame()
+        self.oob_predictions = pd.DataFrame()
 
         self.auto_split = auto_split
         self.test_set: tuple[pd.DataFrame, pd.DataFrame] | None = None
@@ -105,8 +105,8 @@ class BaseRandomForest(AbstractForest, BaggingMixin):
 
         for tree, oob_predictions in results:
             if oob_predictions is not None:
-                self.oob_dataset = pd.merge(
-                    left=self.oob_dataset,
+                self.oob_predictions = pd.merge(
+                    left=self.oob_predictions,
                     right=oob_predictions,
                     left_index=True,
                     right_index=True,
@@ -243,12 +243,12 @@ class BaseRandomForest(AbstractForest, BaggingMixin):
         predicted_column = f"PREDICTED_{y_label}"
         actual_column = f"ACTUAL_{y_label}"
 
-        oob_score_df = self.oob_dataset.copy()
-        oob_score_df[predicted_column] = self._vote(predictions_df=oob_score_df)
-        oob_score_df[actual_column] = original_y
+        oob_predictions = self.oob_predictions.copy()
+        oob_predictions[predicted_column] = self._vote(predictions_df=oob_predictions)
+        oob_predictions[actual_column] = original_y
 
         test_results = self._build_test_results(
-            labeled_data=oob_score_df,
+            labeled_data=oob_predictions,
             actual_column=actual_column,
             predicted_column=predicted_column,
         )
