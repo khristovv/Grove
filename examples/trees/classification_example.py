@@ -18,7 +18,7 @@ from grove.trees import ClassificationTree  # noqa
 from grove.utils.sampling import Sampler  # noqa
 
 
-def load_simple_dataset() -> tuple[pd.DataFrame, pd.Series, pd.DataFrame, str]:
+def load_simple_dataset():
     # all training data is used from https://www.kaggle.com/datasets/yersever/500-person-gender-height-weight-bodymassindex  # noqa
 
     X_PATH = "./data/Classification/Simple/data.csv"
@@ -63,7 +63,7 @@ def load_simple_dataset() -> tuple[pd.DataFrame, pd.Series, pd.DataFrame, str]:
         )
 
 
-def load_intermediate_dataset() -> tuple[pd.DataFrame, pd.Series, pd.DataFrame, str]:
+def load_intermediate_dataset():
     # all training data is used from https://www.kaggle.com/datasets/stephanmatzka/predictive-maintenance-dataset-ai4i-2020  # noqa
     DATA_PATH = "./data/Classification/Intermediate/data.csv"
     CONFIG_PATH = "./data/Classification/Intermediate/config.csv"
