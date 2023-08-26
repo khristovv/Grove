@@ -83,8 +83,6 @@ if __name__ == "__main__":
             title="Confusion Matrix on Test Split",
         )
 
-        oob_df = random_forest_model.oob_dataset
-
         test_results_on_oob = random_forest_model.oob_test(
             original_y=y,
             save_results=True,

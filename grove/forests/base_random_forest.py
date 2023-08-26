@@ -151,10 +151,7 @@ class BaseRandomForest(AbstractForest, BaggingMixin):
         """A method that returns the most common prediction from the predictions_df."""
         raise NotImplementedError
 
-    def predict(self, x: pd.DataFrame, y_label: str, trees: list[Trees] = []) -> pd.DataFrame:
-        if not trees:
-            trees = self.trees
-
+    def predict(self, x: pd.DataFrame, y_label: str) -> pd.DataFrame:
         predictions_df = pd.DataFrame()
         labeled_data = x.copy()
 
