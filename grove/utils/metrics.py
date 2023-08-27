@@ -29,13 +29,16 @@ def confusion_matrix(
     """Calculate the confusion matrix."""
 
     # the positive sample was correctly identified by the classifier
-    tp = len(predicted[actual == 1][predicted == 1])
+    subset = predicted[actual == 1]
+    tp = len(subset[subset == 1])
     # the positive sample is incorrectly identified by the classifier as being negative
-    fn = len(predicted[actual == 1][predicted == 0])
+    fn = len(subset[subset == 0])
+
     # negative sample is incorrectly identified by the classifier as being positive
-    fp = len(predicted[actual == 0][predicted == 1])
+    subset = predicted[actual == 0]
+    fp = len(subset[subset == 1])
     # the negative sample gets correctly identified by the classifier
-    tn = len(predicted[actual == 0][predicted == 0])
+    tn = len(subset[subset == 0])
 
     if as_tuple:
         return tp, fn, fp, tn
