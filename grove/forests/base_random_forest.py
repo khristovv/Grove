@@ -31,6 +31,7 @@ class BaseRandomForest(AbstractForest, BaggingMixin):
         seed: int | str = None,
         logging_enabled: bool = True,
         oob_score_enabled: bool = False,
+        test_on_in_bag_samples_enabled: bool = False,
         auto_split: bool = False,
     ):
         """A random forest model that uses decision trees as base learners."""
@@ -49,7 +50,9 @@ class BaseRandomForest(AbstractForest, BaggingMixin):
         self.logger = Logger(name=self.__class__.__name__, logging_enabled=self.logging_enabled)
 
         self.oob_score_enabled = oob_score_enabled
+        self.test_on_in_bag_samples_enabled = test_on_in_bag_samples_enabled
         self.oob_predictions = pd.DataFrame()
+        self.in_bag_predictions = pd.DataFrame()
 
         self.auto_split = auto_split
         self.test_set: tuple[pd.DataFrame, pd.DataFrame] | None = None
@@ -103,11 +106,20 @@ class BaseRandomForest(AbstractForest, BaggingMixin):
         else:
             results = [self._train_tree(*args) for args in _get_training_data()]
 
-        for tree, oob_predictions in results:
+        for tree, oob_predictions, in_bag_predctions in results:
             if oob_predictions is not None:
                 self.oob_predictions = pd.merge(
                     left=self.oob_predictions,
                     right=oob_predictions,
+                    left_index=True,
+                    right_index=True,
+                    how="outer",
+                )
+
+            if in_bag_predctions is not None:
+                self.in_bag_predictions = pd.merge(
+                    left=self.in_bag_predictions,
+                    right=in_bag_predctions,
                     left_index=True,
                     right_index=True,
                     how="outer",
@@ -125,7 +137,7 @@ class BaseRandomForest(AbstractForest, BaggingMixin):
         y_bootstrap: pd.Series,
         x_out_of_bag: pd.DataFrame,
         y_out_of_bag: pd.Series,
-    ) -> tuple[Trees, pd.DataFrame] | tuple[Trees, None]:
+    ) -> tuple[Trees, pd.DataFrame, pd.DataFrame] | tuple[Trees, None, None]:
         self.logger.log(f"Training '{identifier}'")
         tree = self.tree_model(identifier=identifier, encoding_config=encoding_config_subset, **self.tree_args)
 
@@ -145,7 +157,19 @@ class BaseRandomForest(AbstractForest, BaggingMixin):
             self.logger.log(f"Testing '{identifier}' on its out-of-bag dataset - Complete - Results:")
             self.logger.log(test_results)
 
-        return tree, oob_predictions
+        in_bag_predictions = None
+        if self.test_on_in_bag_samples_enabled:
+            self.logger.log(f"Testing '{identifier}' on its in-bag(bootstrap) dataset")
+
+            test_results = tree.test(x=x_bootstrap, y=y_bootstrap)
+
+            y_label = y_out_of_bag.name
+            in_bag_predictions = pd.DataFrame({identifier: test_results.labeled_data[f"PREDICTED_{y_label}"]})
+
+            self.logger.log(f"Testing '{identifier}' on its in-bag(bootstrap) dataset - Complete - Results:")
+            self.logger.log(test_results)
+
+        return tree, oob_predictions, in_bag_predictions
 
     def _vote(self, predictions_df: pd.DataFrame) -> pd.Series:
         """A method that returns the most common prediction from the predictions_df."""
@@ -229,7 +253,7 @@ class BaseRandomForest(AbstractForest, BaggingMixin):
         output_dir: str | None = None,
         labeled_data_filename: str = None,
         score_filename: str = None,
-    ):
+    ) -> TestResults | tuple[TestResults, TestResults]:
         """Test the model on a test dataset."""
         self.logger.log_section("Testing", add_newline=False)
 
@@ -243,24 +267,49 @@ class BaseRandomForest(AbstractForest, BaggingMixin):
         predicted_column = f"PREDICTED_{y_label}"
         actual_column = f"ACTUAL_{y_label}"
 
+        in_bag_test_results = None
+        if self.test_on_in_bag_samples_enabled:
+            in_bag_predictions = self.in_bag_predictions.copy()
+            in_bag_predictions[predicted_column] = self._vote(predictions_df=in_bag_predictions)
+            in_bag_predictions[actual_column] = original_y
+
+            in_bag_test_results = self._build_test_results(
+                labeled_data=in_bag_predictions,
+                actual_column=actual_column,
+                predicted_column=predicted_column,
+            )
+
+            if save_results:
+                in_bag_test_results.save(
+                    output_dir=output_dir,
+                    labeled_data_filename=labeled_data_filename,
+                    score_filename=score_filename,
+                )
+
+            self.logger.log_section("In Bag Test Results:")
+            self.logger.log(in_bag_test_results)
+
         oob_predictions = self.oob_predictions.copy()
         oob_predictions[predicted_column] = self._vote(predictions_df=oob_predictions)
         oob_predictions[actual_column] = original_y
 
-        test_results = self._build_test_results(
+        oob_test_results = self._build_test_results(
             labeled_data=oob_predictions,
             actual_column=actual_column,
             predicted_column=predicted_column,
         )
 
         if save_results:
-            test_results.save(
+            oob_test_results.save(
                 output_dir=output_dir,
                 labeled_data_filename=labeled_data_filename,
                 score_filename=score_filename,
             )
 
         self.logger.log_section("OOB Test Results:")
-        self.logger.log(test_results)
+        self.logger.log(oob_test_results)
 
-        return test_results
+        if in_bag_test_results:
+            return oob_test_results, in_bag_test_results
+
+        return oob_test_results

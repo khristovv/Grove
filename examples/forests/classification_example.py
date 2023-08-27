@@ -44,6 +44,7 @@ if __name__ == "__main__":
         seed=1,
         # auto_split=True,
         oob_score_enabled=True,
+        test_on_in_bag_samples_enabled=True,
         min_number_of_classes=200,
     )
 
@@ -83,7 +84,7 @@ if __name__ == "__main__":
             title="Confusion Matrix on Test Split",
         )
 
-        test_results_on_oob = random_forest_model.oob_test(
+        test_results_on_oob, test_results_on_in_bag = random_forest_model.oob_test(
             original_y=y,
             save_results=True,
             output_dir="test_results_RF_classification",
@@ -95,4 +96,11 @@ if __name__ == "__main__":
             actual_column=labeled_data[actual_column],
             predicted_column=labeled_data[predicted_column],
             title="Confusion Matrix Out-of-Bag matrix",
+        )
+
+        labeled_data = test_results_on_in_bag.labeled_data
+        plotter.plot_confusion_matrix(
+            actual_column=labeled_data[actual_column],
+            predicted_column=labeled_data[predicted_column],
+            title="Confusion Matrix In-Bag matrix",
         )
