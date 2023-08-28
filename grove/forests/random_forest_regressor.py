@@ -27,6 +27,7 @@ class RandomForestRegressor(BaseRandomForest):
         n_bag: int = None,
         seed: int | str = None,
         oob_score_enabled: bool = False,
+        test_on_in_bag_samples_enabled: bool = False,
         auto_split: bool = False,
         cut_off: float | None = None,
     ):
@@ -40,6 +41,7 @@ class RandomForestRegressor(BaseRandomForest):
             n_bag=n_bag,
             seed=seed,
             oob_score_enabled=oob_score_enabled,
+            test_on_in_bag_samples_enabled=test_on_in_bag_samples_enabled,
             auto_split=auto_split,
         )
         self.cut_off = cut_off
