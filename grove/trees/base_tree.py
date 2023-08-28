@@ -368,20 +368,20 @@ class BaseTree(AbstractTree):
 
     def test(
         self,
-        x: pd.DataFrame,
-        y: pd.Series,
+        x_test: pd.DataFrame,
+        y_test: pd.Series,
         save_results: bool = False,
         output_dir: str = None,
     ) -> TreeTestResults:
         """Test the model on a test dataset."""
         self.logger.log_section("Testing", add_newline=False)
 
-        y_label = y.name
+        y_label = y_test.name
         predicted_column = f"PREDICTED_{y_label}"
         actual_column = f"ACTUAL_{y_label}"
 
-        labeled_data = self.predict(x=x, y_label=predicted_column)
-        labeled_data[actual_column] = y
+        labeled_data = self.predict(x=x_test, y_label=predicted_column)
+        labeled_data[actual_column] = y_test
 
         test_results = self._build_test_results(
             labeled_data=labeled_data,

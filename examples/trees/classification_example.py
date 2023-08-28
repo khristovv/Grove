@@ -47,13 +47,15 @@ def load_simple_dataset():
 
     tree_model.train(x=x_train, y=y_train)
     tree_model.test(
-        x=x_test,
-        y=y_test,
+        x_test=x_test,
+        y_test=y_test,
         save_results=True,
         output_dir="test_results_DT_classification",
     )
 
-    test_results = tree_model.test(x=x_test, y=y_test, save_results=True, output_dir="test_results_DT_classification")
+    test_results = tree_model.test(
+        x_test=x_test, y_test=y_test, save_results=True, output_dir="test_results_DT_classification"
+    )
     labeled_data = test_results.labeled_data
 
     with Plotter() as plotter:
@@ -92,8 +94,8 @@ def load_intermediate_dataset():
     tree_model.train(x=x_train, y=y_train)
 
     test_results = tree_model.test(
-        x=x_test,
-        y=y_test,
+        x_test=x_test,
+        y_test=y_test,
         save_results=True,
         output_dir="test_results_DT_classification",
     )

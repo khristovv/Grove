@@ -82,15 +82,19 @@ class BaseRandomForest(AbstractForest, BaggingMixin):
             for i in range(self.n_trees):
                 identifier = f"Tree_{i}"
                 x_subset = x_train[self.encoding_config["cname"]]
+                seed = self.seed + i if self.seed else None
 
                 if self.m_split:
                     # get `m_split` random columns from `x`
-                    x_subset = x_subset.sample(n=self.m_split, axis="columns", random_state=self.seed + i)
+                    x_subset = x_subset.sample(n=self.m_split, axis="columns", random_state=seed)
 
                 sampling_method = self._get_sampling_method()
 
                 x_bootstrap, y_bootstrap, x_out_of_bag, y_out_of_bag = sampling_method(
-                    x=x_subset, y=y_train, bootstrap_size=self.n_bag, seed=self.seed + i
+                    x=x_subset,
+                    y=y_train,
+                    bootstrap_size=self.n_bag,
+                    seed=seed,
                 )
 
                 encoding_config_subset = self.encoding_config.loc[self.encoding_config["cname"].isin(x_subset.columns)]
@@ -149,7 +153,7 @@ class BaseRandomForest(AbstractForest, BaggingMixin):
         if self.oob_score_enabled:
             self.logger.log(f"Testing '{identifier}' on its out-of-bag dataset")
 
-            test_results = tree.test(x=x_out_of_bag, y=y_out_of_bag)
+            test_results = tree.test(x_test=x_out_of_bag, y_test=y_out_of_bag)
 
             y_label = y_out_of_bag.name
             oob_predictions = pd.DataFrame({identifier: test_results.labeled_data[f"PREDICTED_{y_label}"]})
@@ -161,7 +165,7 @@ class BaseRandomForest(AbstractForest, BaggingMixin):
         if self.test_on_in_bag_samples_enabled:
             self.logger.log(f"Testing '{identifier}' on its in-bag(bootstrap) dataset")
 
-            test_results = tree.test(x=x_bootstrap, y=y_bootstrap)
+            test_results = tree.test(x_test=x_bootstrap, y_test=y_bootstrap)
 
             y_label = y_out_of_bag.name
             in_bag_predictions = pd.DataFrame({identifier: test_results.labeled_data[f"PREDICTED_{y_label}"]})
