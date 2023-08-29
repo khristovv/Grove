@@ -26,7 +26,7 @@ class Sampler:
         self,
         x: pd.DataFrame,
         y: pd.Series,
-        training_portion: float = 0.8,  # 70 % of the data is used for training
+        training_portion: float = 0.8,  # 80 % of the data is used for training
         seed: int | None = None,
     ) -> tuple[pd.DataFrame, pd.Series, pd.DataFrame, pd.Series]:
         if not (0 < training_portion < 1):

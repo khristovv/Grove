@@ -1,3 +1,5 @@
+from functools import partial
+from typing import Callable
 import pandas as pd
 
 from grove.trees import RegressionTree
@@ -26,9 +28,11 @@ class RandomForestRegressor(BaseRandomForest):
         m_split: int = None,
         n_bag: int = None,
         seed: int | str = None,
+        logging_enabled: bool = True,
         oob_score_enabled: bool = False,
         test_on_in_bag_samples_enabled: bool = False,
         auto_split: bool = False,
+        min_number_of_classes: int | None = None,
         cut_off: float | None = None,
     ):
         super().__init__(
@@ -40,11 +44,16 @@ class RandomForestRegressor(BaseRandomForest):
             m_split=m_split,
             n_bag=n_bag,
             seed=seed,
+            logging_enabled=logging_enabled,
             oob_score_enabled=oob_score_enabled,
             test_on_in_bag_samples_enabled=test_on_in_bag_samples_enabled,
             auto_split=auto_split,
         )
+        self.min_number_of_classes = min_number_of_classes
         self.cut_off = cut_off
+
+    def _get_sampling_method(self) -> Callable:
+        return partial(self.bootstrap_balanced, min_number_of_classes=self.min_number_of_classes)
 
     def _get_test_train_split(
         self, x: pd.DataFrame, y: pd.Series

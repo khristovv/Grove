@@ -110,7 +110,7 @@ class BaseRandomForest(AbstractForest, BaggingMixin):
         else:
             results = [self._train_tree(*args) for args in _get_training_data()]
 
-        for tree, oob_predictions, in_bag_predctions in results:
+        for tree, oob_predictions, in_bag_preditcions in results:
             if oob_predictions is not None:
                 self.oob_predictions = pd.merge(
                     left=self.oob_predictions,
@@ -120,10 +120,10 @@ class BaseRandomForest(AbstractForest, BaggingMixin):
                     how="outer",
                 )
 
-            if in_bag_predctions is not None:
+            if in_bag_preditcions is not None:
                 self.in_bag_predictions = pd.merge(
                     left=self.in_bag_predictions,
-                    right=in_bag_predctions,
+                    right=in_bag_preditcions,
                     left_index=True,
                     right_index=True,
                     how="outer",
@@ -257,7 +257,7 @@ class BaseRandomForest(AbstractForest, BaggingMixin):
         output_dir: str | None = None,
         labeled_data_filename: str = None,
         score_filename: str = None,
-    ) -> TestResults | tuple[TestResults, TestResults]:
+    ) -> tuple[TestResults, None]:
         """Test the model on a test dataset."""
         self.logger.log_section("Testing", add_newline=False)
 
@@ -313,7 +313,4 @@ class BaseRandomForest(AbstractForest, BaggingMixin):
         self.logger.log_section("OOB Test Results:")
         self.logger.log(oob_test_results)
 
-        if in_bag_test_results:
-            return oob_test_results, in_bag_test_results
-
-        return oob_test_results
+        return oob_test_results, in_bag_test_results
