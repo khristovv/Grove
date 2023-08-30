@@ -108,7 +108,7 @@ class BaseRandomForest(AbstractForest, BaggingMixin):
             with mp.Pool() as process_pool:
                 results = process_pool.starmap(self._train_tree, _get_training_data())
         else:
-            results = [self._train_tree(*args) for args in _get_training_data()]
+            results = (self._train_tree(*args) for args in _get_training_data())
 
         for tree, oob_predictions, in_bag_preditcions in results:
             if oob_predictions is not None:
@@ -169,6 +169,9 @@ class BaseRandomForest(AbstractForest, BaggingMixin):
 
             y_label = y_out_of_bag.name
             in_bag_predictions = pd.DataFrame({identifier: test_results.labeled_data[f"PREDICTED_{y_label}"]})
+            # remove duplicated rows as they cause a memory leak for large datasests
+            # and don't really bring anything meaningful in terms of metrics
+            in_bag_predictions = in_bag_predictions[~in_bag_predictions.index.duplicated(keep="first")]
 
             self.logger.log(f"Testing '{identifier}' on its in-bag(bootstrap) dataset - Complete - Results:")
             self.logger.log(test_results)
