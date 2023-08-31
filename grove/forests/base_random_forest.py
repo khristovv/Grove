@@ -188,7 +188,8 @@ class BaseRandomForest(AbstractForest, BaggingMixin):
 
         for index, tree in enumerate(self.trees):
             predictions = tree.predict(x=x, y_label=y_label, return_y_only=True)
-            predictions_df[f"{y_label}_tree_{index}"] = predictions
+            predictions.name = f"{y_label}_tree_{index}"
+            predictions_df = pd.concat([predictions_df, predictions], axis=1)
 
         labeled_data[y_label] = self._vote(predictions_df=predictions_df)
 
