@@ -4,6 +4,7 @@ import pandas as pd
 
 from grove.trees import RegressionTree
 
+from grove.constants import Metrics
 from grove.forests.base_random_forest import BaseRandomForest
 from grove.utils.metrics import (
     accuracy,
@@ -88,35 +89,35 @@ class RandomForestRegressor(BaseRandomForest):
                 value=len(misclassified_records),
             )
             test_results.add_metric(
-                label="Accuracy",
+                label=Metrics.ACCURACY,
                 value=f"{accuracy(actual=actual_column, predicted=predicted_column):.2}",
             )
             test_results.add_metric(
-                label="Precision",
+                label=Metrics.PRECISION,
                 value=f"{precision(actual=actual_column, predicted=predicted_column):.2}",
             )
             test_results.add_metric(
-                label="Recall",
+                label=Metrics.RECALL,
                 value=f"{recall(actual=actual_column, predicted=predicted_column):.2}",
             )
             test_results.add_metric(
-                label="F1 Score",
+                label=Metrics.F1_SCORE,
                 value=f"{f1_score(actual=actual_column, predicted=predicted_column):.2}",
             )
 
             return test_results
 
         test_results.add_metric(
-            label="R2 Score",
+            label=Metrics.R2_SCORE,
             value=f"{r2_score(actual=actual_column, predicted=predicted_column):.2}",
         )
         mean_absolute_error_value = mean_absolute_error(actual=actual_column, predicted=predicted_column)
         test_results.add_metric(
-            label="Mean Absolute Error",
+            label=Metrics.MEAN_ABSOLUTE_ERROR,
             value=f"{mean_absolute_error_value:.2}",
         )
         test_results.add_metric(
-            label="Mean Squared Error",
+            label=Metrics.MEAN_SQUARED_ERROR,
             value=f"{mean_squared_error(actual=actual_column, predicted=predicted_column):.2}",
         )
 

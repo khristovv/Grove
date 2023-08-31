@@ -2,7 +2,7 @@ from typing import Literal
 
 import pandas as pd
 
-from grove.constants import Criteria
+from grove.constants import Criteria, Metrics
 from grove.nodes import Node
 from grove.trees.base_tree import BaseTree
 from grove.trees.validation import TreeTestResults
@@ -67,19 +67,19 @@ class ClassificationTree(BaseTree):
             value=len(misclassified_records),
         )
         test_results.add_metric(
-            label="Accuracy",
+            label=Metrics.ACCURACY,
             value=f"{accuracy(actual=labeled_data[actual_column], predicted=labeled_data[predicted_column]):.2}",
         )
         test_results.add_metric(
-            label="Precision",
+            label=Metrics.PRECISION,
             value=f"{precision(actual=labeled_data[actual_column], predicted=labeled_data[predicted_column]):.2}",
         )
         test_results.add_metric(
-            label="Recall",
+            label=Metrics.RECALL,
             value=f"{recall(actual=labeled_data[actual_column], predicted=labeled_data[predicted_column]):.2}",
         )
         test_results.add_metric(
-            label="F1 Score",
+            label=Metrics.F1_SCORE,
             value=f"{f1_score(actual=labeled_data[actual_column], predicted=labeled_data[predicted_column]):.2}",
         )
 

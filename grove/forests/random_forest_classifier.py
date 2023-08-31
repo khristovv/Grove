@@ -5,6 +5,7 @@ import pandas as pd
 
 from grove.trees import ClassificationTree
 
+from grove.constants import Metrics
 from grove.forests.base_random_forest import BaseRandomForest
 from grove.utils.metrics import accuracy, f1_score, precision, recall
 from grove.utils.sampling import Sampler
@@ -70,19 +71,19 @@ class RandomForestClassifer(BaseRandomForest):
             value=len(misclassified_records),
         )
         test_results.add_metric(
-            label="Accuracy",
+            label=Metrics.ACCURACY,
             value=f"{accuracy(actual=labeled_data[actual_column], predicted=labeled_data[predicted_column]):.2}",
         )
         test_results.add_metric(
-            label="Precision",
+            label=Metrics.PRECISION,
             value=f"{precision(actual=labeled_data[actual_column], predicted=labeled_data[predicted_column]):.2}",
         )
         test_results.add_metric(
-            label="Recall",
+            label=Metrics.RECALL,
             value=f"{recall(actual=labeled_data[actual_column], predicted=labeled_data[predicted_column]):.2}",
         )
         test_results.add_metric(
-            label="F1 Score",
+            label=Metrics.F1_SCORE,
             value=f"{f1_score(actual=labeled_data[actual_column], predicted=labeled_data[predicted_column]):.2}",
         )
 
