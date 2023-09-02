@@ -72,19 +72,19 @@ class RandomForestClassifer(BaseRandomForest):
         )
         test_results.add_metric(
             label=Metrics.ACCURACY,
-            value=f"{accuracy(actual=labeled_data[actual_column], predicted=labeled_data[predicted_column]):.2}",
+            value=accuracy(actual=labeled_data[actual_column], predicted=labeled_data[predicted_column]),
         )
         test_results.add_metric(
             label=Metrics.PRECISION,
-            value=f"{precision(actual=labeled_data[actual_column], predicted=labeled_data[predicted_column]):.2}",
+            value=precision(actual=labeled_data[actual_column], predicted=labeled_data[predicted_column]),
         )
         test_results.add_metric(
             label=Metrics.RECALL,
-            value=f"{recall(actual=labeled_data[actual_column], predicted=labeled_data[predicted_column]):.2}",
+            value=recall(actual=labeled_data[actual_column], predicted=labeled_data[predicted_column]),
         )
         test_results.add_metric(
             label=Metrics.F1_SCORE,
-            value=f"{f1_score(actual=labeled_data[actual_column], predicted=labeled_data[predicted_column]):.2}",
+            value=f1_score(actual=labeled_data[actual_column], predicted=labeled_data[predicted_column]),
         )
 
         return test_results

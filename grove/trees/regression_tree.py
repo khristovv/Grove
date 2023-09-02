@@ -58,21 +58,15 @@ class RegressionTree(BaseTree):
 
         test_results.add_metric(
             label="R2 Score",
-            value=f"{r2_score(actual=labeled_data[actual_column], predicted=labeled_data[predicted_column]):.2}",
-        )
-        mean_absolute_error_value = mean_absolute_error(
-            actual=labeled_data[actual_column], predicted=labeled_data[predicted_column]
+            value=r2_score(actual=labeled_data[actual_column], predicted=labeled_data[predicted_column]),
         )
         test_results.add_metric(
             label="Mean Absolute Error",
-            value=f"{mean_absolute_error_value:.2}",
-        )
-        mean_squared_error_value = mean_squared_error(
-            actual=labeled_data[actual_column], predicted=labeled_data[predicted_column]
+            value=mean_absolute_error(actual=labeled_data[actual_column], predicted=labeled_data[predicted_column]),
         )
         test_results.add_metric(
             label="Mean Squared Error",
-            value=f"{mean_squared_error_value:.2}",
+            value=mean_squared_error(actual=labeled_data[actual_column], predicted=labeled_data[predicted_column]),
         )
 
         return test_results

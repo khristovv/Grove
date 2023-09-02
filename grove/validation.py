@@ -20,9 +20,9 @@ class TestResults:
         self._set_default_metrics()
 
     def __str__(self) -> str:
-        return "\n".join(f"{label} {value}" for label, value in self.metrics.items())
+        return "\n".join(f"{label} {value:.2f}" for label, value in self.metrics.items())
 
-    def add_metric(self, label: str, value: float | int | str):
+    def add_metric(self, label: str, value: float | int):
         self.metrics[label] = value
 
     def _set_default_metrics(self) -> dict[str, float | int]:

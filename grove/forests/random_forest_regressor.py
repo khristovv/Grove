@@ -90,35 +90,34 @@ class RandomForestRegressor(BaseRandomForest):
             )
             test_results.add_metric(
                 label=Metrics.ACCURACY,
-                value=f"{accuracy(actual=actual_column, predicted=predicted_column):.2}",
+                value=accuracy(actual=actual_column, predicted=predicted_column),
             )
             test_results.add_metric(
                 label=Metrics.PRECISION,
-                value=f"{precision(actual=actual_column, predicted=predicted_column):.2}",
+                value=precision(actual=actual_column, predicted=predicted_column),
             )
             test_results.add_metric(
                 label=Metrics.RECALL,
-                value=f"{recall(actual=actual_column, predicted=predicted_column):.2}",
+                value=recall(actual=actual_column, predicted=predicted_column),
             )
             test_results.add_metric(
                 label=Metrics.F1_SCORE,
-                value=f"{f1_score(actual=actual_column, predicted=predicted_column):.2}",
+                value=f1_score(actual=actual_column, predicted=predicted_column),
             )
 
             return test_results
 
         test_results.add_metric(
             label=Metrics.R2_SCORE,
-            value=f"{r2_score(actual=actual_column, predicted=predicted_column):.2}",
+            value=r2_score(actual=actual_column, predicted=predicted_column),
         )
-        mean_absolute_error_value = mean_absolute_error(actual=actual_column, predicted=predicted_column)
         test_results.add_metric(
             label=Metrics.MEAN_ABSOLUTE_ERROR,
-            value=f"{mean_absolute_error_value:.2}",
+            value=mean_absolute_error(actual=actual_column, predicted=predicted_column),
         )
         test_results.add_metric(
             label=Metrics.MEAN_SQUARED_ERROR,
-            value=f"{mean_squared_error(actual=actual_column, predicted=predicted_column):.2}",
+            value=mean_squared_error(actual=actual_column, predicted=predicted_column),
         )
 
         return test_results
