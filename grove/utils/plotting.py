@@ -24,3 +24,16 @@ class Plotter:
             xlabel="Predicted",
             ylabel="Actual",
         )
+
+    def plot_metric_grid(self, metrics_df: pd.DataFrame, title: str, x_label: str, y_label: str):
+        fig, axs = plt.subplots(2, 2)
+        fig.suptitle(title)
+
+        x = metrics_df.index
+
+        for ax, (label, y) in zip(axs.flat, metrics_df.items()):
+            ax.plot(x, y)
+            ax.set_title(label)
+            ax.set(xlabel=x_label, ylabel=y_label)
+            # Hide x labels and tick labels for top plots and y ticks for right plots.
+            # ax.label_outer()
