@@ -31,8 +31,6 @@ if __name__ == "__main__":
     actual_column = f"ACTUAL_{y.name}"
     predicted_column = f"PREDICTED_{y.name}"
 
-    # number_of_trees = [10, 20, 50, 100, 200]  # would it work with 500 ?
-    # number_of_trees = [10, 20, 40, 80, 160, 320]
     number_of_trees = [1, 2, 4, 8, 16, 32, 64, 128, 256]
 
     columns = ["Train", "Test", "In-Bag", "OOB"]
@@ -95,54 +93,54 @@ if __name__ == "__main__":
         f1_score_change_df.loc[n_trees, "OOB"] = test_results_on_oob.metrics[Metrics.F1_SCORE]
 
     with Plotter() as plotter:
-        plotter.plot_metric_grid(
-            metrics_df=accuracy_change_df[["Train", "Test"]],
+        plotter.plot_metric(
             title="RF Regressor Accuracy on Train & Test datasets",
             x_label="Number of Trees",
             y_label="Accuracy",
+            metrics=[accuracy_change_df["Train"], accuracy_change_df["Test"]],
         )
-        plotter.plot_metric_grid(
-            metrics_df=accuracy_change_df[["In-Bag", "OOB"]],
+        plotter.plot_metric(
             title="RF Regressor Accuracy on In-Bag & OOB datasets",
             x_label="Number of Trees",
             y_label="Accuracy",
+            metrics=[accuracy_change_df["In-Bag"], accuracy_change_df["OOB"]],
         )
 
-        plotter.plot_metric_grid(
-            metrics_df=precision_change_df[["Train", "Test"]],
+        plotter.plot_metric(
             title="RF Regressor Precision on Train & Test datasets",
             x_label="Number of Trees",
             y_label="Precision",
+            metrics=[precision_change_df["Train"], precision_change_df["Test"]],
         )
-        plotter.plot_metric_grid(
-            metrics_df=precision_change_df[["In-Bag", "OOB"]],
+        plotter.plot_metric(
             title="RF Regressor Precision on In-Bag & OOB datasets",
             x_label="Number of Trees",
             y_label="Precision",
+            metrics=[precision_change_df["In-Bag"], precision_change_df["OOB"]],
         )
 
-        plotter.plot_metric_grid(
-            metrics_df=recall_change_df[["Train", "Test"]],
+        plotter.plot_metric(
             title="RF Regressor Recall on Train & Test datasets",
             x_label="Number of Trees",
             y_label="Recall",
+            metrics=[recall_change_df["Train"], recall_change_df["Test"]],
         )
-        plotter.plot_metric_grid(
-            metrics_df=recall_change_df[["In-Bag", "OOB"]],
+        plotter.plot_metric(
             title="RF Regressor Recall on In-Bag & OOB datasets",
             x_label="Number of Trees",
             y_label="Recall",
+            metrics=[recall_change_df["In-Bag"], recall_change_df["OOB"]],
         )
 
-        plotter.plot_metric_grid(
-            metrics_df=f1_score_change_df[["Train", "Test"]],
+        plotter.plot_metric(
             title="RF Regressor F1 Score on Train & Test datasets",
             x_label="Number of Trees",
             y_label="F1 Score",
+            metrics=[f1_score_change_df["Train"], f1_score_change_df["Test"]],
         )
-        plotter.plot_metric_grid(
-            metrics_df=f1_score_change_df[["In-Bag", "OOB"]],
+        plotter.plot_metric(
             title="RF Regressor F1 Score on In-Bag & OOB datasets",
             x_label="Number of Trees",
             y_label="F1 Score",
+            metrics=[f1_score_change_df["In-Bag"], f1_score_change_df["OOB"]],
         )

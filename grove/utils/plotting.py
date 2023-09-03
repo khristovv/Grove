@@ -25,6 +25,19 @@ class Plotter:
             ylabel="Actual",
         )
 
+    def plot_metric(self, title: str, x_label: str, y_label: str, metrics: list[pd.Series]):
+        fig, ax = plt.subplots()
+        fig.suptitle(title)
+
+        for metric in metrics:
+            x = metric.index
+            y = metric
+            ax.plot(x, y, marker=".", label=metric.name)
+            ax.set(xlabel=x_label, ylabel=y_label)
+
+        ax.legend()
+        ax.grid()
+
     def plot_metric_grid(self, metrics_df: pd.DataFrame, title: str, x_label: str, y_label: str):
         fig, axs = plt.subplots(2, 1)
         fig.suptitle(title)
