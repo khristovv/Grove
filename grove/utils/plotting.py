@@ -26,14 +26,20 @@ class Plotter:
         )
 
     def plot_metric_grid(self, metrics_df: pd.DataFrame, title: str, x_label: str, y_label: str):
-        fig, axs = plt.subplots(2, 2)
+        fig, axs = plt.subplots(2, 1)
         fig.suptitle(title)
 
         x = metrics_df.index
 
         for ax, (label, y) in zip(axs.flat, metrics_df.items()):
-            ax.plot(x, y)
+            ax.plot(x, y, marker=".")
             ax.set_title(label)
             ax.set(xlabel=x_label, ylabel=y_label)
-            # Hide x labels and tick labels for top plots and y ticks for right plots.
+            ax.grid()
+
+            # # display value over each marker
+            # for i in x:
+            #     ax.annotate(text=f"{y.loc[i]:.3f}", xy=(i, y.loc[i]), textcoords="offset points", xytext=(0, 15))
+
+            # # Hide x labels and tick labels for top plots and y ticks for right plots.
             # ax.label_outer()
