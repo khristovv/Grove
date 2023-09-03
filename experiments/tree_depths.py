@@ -32,17 +32,18 @@ if __name__ == "__main__":
     predicted_column = f"PREDICTED_{y.name}"
 
     max_depths = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    columns = ["Train", "Test", "In-Bag", "OOB"]
 
-    train_metrics_df = pd.DataFrame(index=max_depths, columns=Metrics.CLASSIFICATION)
-    test_metrics_df = pd.DataFrame(index=max_depths, columns=Metrics.CLASSIFICATION)
-    oob_metrics_df = pd.DataFrame(index=max_depths, columns=Metrics.CLASSIFICATION)
-    in_bag_metrics_df = pd.DataFrame(index=max_depths, columns=Metrics.CLASSIFICATION)
+    accuracy_change_df = pd.DataFrame(index=max_depths, columns=columns)
+    precision_change_df = pd.DataFrame(index=max_depths, columns=columns)
+    recall_change_df = pd.DataFrame(index=max_depths, columns=columns)
+    f1_score_change_df = pd.DataFrame(index=max_depths, columns=columns)
 
     for max_depth in max_depths:
         cut_off = 0.25
 
         random_forest_regressor = RandomForestRegressor(
-            n_trees=10,
+            n_trees=20,
             encoding_config=encoding_config,
             # train_in_parallel=False,
             tree_args={
@@ -66,51 +67,79 @@ if __name__ == "__main__":
 
         test_results_on_train_split = random_forest_regressor.test(x_test=x_train, y_test=y_train)
 
-        train_metrics_df.loc[max_depth] = {
-            label: value
-            for label, value in test_results_on_train_split.metrics.items()
-            if label in Metrics.CLASSIFICATION
-        }
+        accuracy_change_df.loc[max_depth, "Train"] = test_results_on_train_split.metrics[Metrics.ACCURACY]
+        precision_change_df.loc[max_depth, "Train"] = test_results_on_train_split.metrics[Metrics.PRECISION]
+        recall_change_df.loc[max_depth, "Train"] = test_results_on_train_split.metrics[Metrics.RECALL]
+        f1_score_change_df.loc[max_depth, "Train"] = test_results_on_train_split.metrics[Metrics.F1_SCORE]
 
         test_results_on_test_split = random_forest_regressor.test(x_test=x_test, y_test=y_test)
 
-        test_metrics_df.loc[max_depth] = {
-            label: value
-            for label, value in test_results_on_test_split.metrics.items()
-            if label in Metrics.CLASSIFICATION
-        }
+        accuracy_change_df.loc[max_depth, "Test"] = test_results_on_test_split.metrics[Metrics.ACCURACY]
+        precision_change_df.loc[max_depth, "Test"] = test_results_on_test_split.metrics[Metrics.PRECISION]
+        recall_change_df.loc[max_depth, "Test"] = test_results_on_test_split.metrics[Metrics.RECALL]
+        f1_score_change_df.loc[max_depth, "Test"] = test_results_on_test_split.metrics[Metrics.F1_SCORE]
 
         test_results_on_oob, test_results_on_in_bag = random_forest_regressor.oob_test(original_y=y)
 
-        oob_metrics_df.loc[max_depth] = {
-            label: value for label, value in test_results_on_oob.metrics.items() if label in Metrics.CLASSIFICATION
-        }
-        in_bag_metrics_df.loc[max_depth] = {
-            label: value for label, value in test_results_on_in_bag.metrics.items() if label in Metrics.CLASSIFICATION
-        }
+        accuracy_change_df.loc[max_depth, "In-Bag"] = test_results_on_in_bag.metrics[Metrics.ACCURACY]
+        precision_change_df.loc[max_depth, "In-Bag"] = test_results_on_in_bag.metrics[Metrics.PRECISION]
+        recall_change_df.loc[max_depth, "In-Bag"] = test_results_on_in_bag.metrics[Metrics.RECALL]
+        f1_score_change_df.loc[max_depth, "In-Bag"] = test_results_on_in_bag.metrics[Metrics.F1_SCORE]
+
+        accuracy_change_df.loc[max_depth, "OOB"] = test_results_on_oob.metrics[Metrics.ACCURACY]
+        precision_change_df.loc[max_depth, "OOB"] = test_results_on_oob.metrics[Metrics.PRECISION]
+        recall_change_df.loc[max_depth, "OOB"] = test_results_on_oob.metrics[Metrics.RECALL]
+        f1_score_change_df.loc[max_depth, "OOB"] = test_results_on_oob.metrics[Metrics.F1_SCORE]
 
     with Plotter() as plotter:
         plotter.plot_metric_grid(
-            metrics_df=train_metrics_df,
-            title="RF Regressor Metrics on Train Dataset",
-            x_label="Maximum depth of each tree",
-            y_label="Metric",
+            metrics_df=accuracy_change_df[["Train", "Test"]],
+            title="RF Regressor Accuracy on Train & Test datasets",
+            x_label="Tree Depth",
+            y_label="Accuracy",
         )
         plotter.plot_metric_grid(
-            metrics_df=test_metrics_df,
-            title="RF Regressor Metrics on Test Dataset",
-            x_label="Maximum depth of each tree",
-            y_label="Metric",
+            metrics_df=accuracy_change_df[["In-Bag", "OOB"]],
+            title="RF Regressor Accuracy on In-Bag & OOB datasets",
+            x_label="Tree Depth",
+            y_label="Accuracy",
+        )
+
+        plotter.plot_metric_grid(
+            metrics_df=precision_change_df[["Train", "Test"]],
+            title="RF Regressor Precision on Train & Test datasets",
+            x_label="Tree Depth",
+            y_label="Precision",
         )
         plotter.plot_metric_grid(
-            metrics_df=oob_metrics_df,
-            title="RF Regressor Metrics on OOB Dataset",
-            x_label="Maximum depth of each tree",
-            y_label="Metric",
+            metrics_df=precision_change_df[["In-Bag", "OOB"]],
+            title="RF Regressor Precision on In-Bag & OOB datasets",
+            x_label="Tree Depth",
+            y_label="Precision",
+        )
+
+        plotter.plot_metric_grid(
+            metrics_df=recall_change_df[["Train", "Test"]],
+            title="RF Regressor Recall on Train & Test datasets",
+            x_label="Tree Depth",
+            y_label="Recall",
         )
         plotter.plot_metric_grid(
-            metrics_df=in_bag_metrics_df,
-            title="RF Regressor Metrics on In-Bag Dataset",
-            x_label="Maximum depth of each tree",
-            y_label="Metric",
+            metrics_df=recall_change_df[["In-Bag", "OOB"]],
+            title="RF Regressor Recall on In-Bag & OOB datasets",
+            x_label="Tree Depth",
+            y_label="Recall",
+        )
+
+        plotter.plot_metric_grid(
+            metrics_df=f1_score_change_df[["Train", "Test"]],
+            title="RF Regressor F1 Score on Train & Test datasets",
+            x_label="Tree Depth",
+            y_label="F1 Score",
+        )
+        plotter.plot_metric_grid(
+            metrics_df=f1_score_change_df[["In-Bag", "OOB"]],
+            title="RF Regressor F1 Score on In-Bag & OOB datasets",
+            x_label="Tree Depth",
+            y_label="F1 Score",
         )
