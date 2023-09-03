@@ -35,10 +35,12 @@ if __name__ == "__main__":
     # number_of_trees = [10, 20, 40, 80, 160, 320]
     number_of_trees = [1, 2, 4, 8, 16, 32, 64, 128]
 
-    train_metrics_df = pd.DataFrame(index=number_of_trees, columns=Metrics.CLASSIFICATION)
-    test_metrics_df = pd.DataFrame(index=number_of_trees, columns=Metrics.CLASSIFICATION)
-    oob_metrics_df = pd.DataFrame(index=number_of_trees, columns=Metrics.CLASSIFICATION)
-    in_bag_metrics_df = pd.DataFrame(index=number_of_trees, columns=Metrics.CLASSIFICATION)
+    columns = ["Train", "Test", "In-Bag", "OOB"]
+
+    accuracy_change_df = pd.DataFrame(index=number_of_trees, columns=columns)
+    precision_change_df = pd.DataFrame(index=number_of_trees, columns=columns)
+    recall_change_df = pd.DataFrame(index=number_of_trees, columns=columns)
+    f1_score_change_df = pd.DataFrame(index=number_of_trees, columns=columns)
 
     for n_trees in number_of_trees:
         cut_off = 0.25
@@ -68,53 +70,79 @@ if __name__ == "__main__":
 
         test_results_on_train_split = random_forest_regressor.test(x_test=x_train, y_test=y_train)
 
-        train_metrics_df.loc[n_trees] = {
-            label: value
-            for label, value in test_results_on_train_split.metrics.items()
-            if label in Metrics.CLASSIFICATION
-        }
+        accuracy_change_df.loc[n_trees, "Train"] = test_results_on_train_split.metrics[Metrics.ACCURACY]
+        precision_change_df.loc[n_trees, "Train"] = test_results_on_train_split.metrics[Metrics.PRECISION]
+        recall_change_df.loc[n_trees, "Train"] = test_results_on_train_split.metrics[Metrics.RECALL]
+        f1_score_change_df.loc[n_trees, "Train"] = test_results_on_train_split.metrics[Metrics.F1_SCORE]
 
         test_results_on_test_split = random_forest_regressor.test(x_test=x_test, y_test=y_test)
 
-        test_metrics_df.loc[n_trees] = {
-            label: value
-            for label, value in test_results_on_test_split.metrics.items()
-            if label in Metrics.CLASSIFICATION
-        }
+        accuracy_change_df.loc[n_trees, "Test"] = test_results_on_test_split.metrics[Metrics.ACCURACY]
+        precision_change_df.loc[n_trees, "Test"] = test_results_on_test_split.metrics[Metrics.PRECISION]
+        recall_change_df.loc[n_trees, "Test"] = test_results_on_test_split.metrics[Metrics.RECALL]
+        f1_score_change_df.loc[n_trees, "Test"] = test_results_on_test_split.metrics[Metrics.F1_SCORE]
 
         test_results_on_oob, test_results_on_in_bag = random_forest_regressor.oob_test(original_y=y)
 
-        oob_metrics_df.loc[n_trees] = {
-            label: value for label, value in test_results_on_oob.metrics.items() if label in Metrics.CLASSIFICATION
-        }
-        in_bag_metrics_df.loc[n_trees] = {
-            label: value
-            for label, value in test_results_on_in_bag.metrics.items()
-            if label in Metrics.CLASSIFICATION
-        }
+        accuracy_change_df.loc[n_trees, "In-Bag"] = test_results_on_in_bag.metrics[Metrics.ACCURACY]
+        precision_change_df.loc[n_trees, "In-Bag"] = test_results_on_in_bag.metrics[Metrics.PRECISION]
+        recall_change_df.loc[n_trees, "In-Bag"] = test_results_on_in_bag.metrics[Metrics.RECALL]
+        f1_score_change_df.loc[n_trees, "In-Bag"] = test_results_on_in_bag.metrics[Metrics.F1_SCORE]
+
+        accuracy_change_df.loc[n_trees, "OOB"] = test_results_on_oob.metrics[Metrics.ACCURACY]
+        precision_change_df.loc[n_trees, "OOB"] = test_results_on_oob.metrics[Metrics.PRECISION]
+        recall_change_df.loc[n_trees, "OOB"] = test_results_on_oob.metrics[Metrics.RECALL]
+        f1_score_change_df.loc[n_trees, "OOB"] = test_results_on_oob.metrics[Metrics.F1_SCORE]
 
     with Plotter() as plotter:
         plotter.plot_metric_grid(
-            metrics_df=train_metrics_df,
-            title="RF Regressor Metrics on Train Dataset",
+            metrics_df=accuracy_change_df[["Train", "Test"]],
+            title="RF Regressor Accuracy on Train & Test datasets",
             x_label="Number of Trees",
-            y_label="Metric",
+            y_label="Accuracy",
         )
         plotter.plot_metric_grid(
-            metrics_df=test_metrics_df,
-            title="RF Regressor Metrics on Test Dataset",
+            metrics_df=accuracy_change_df[["In-Bag", "OOB"]],
+            title="RF Regressor Accuracy on In-Bag & OOB datasets",
             x_label="Number of Trees",
-            y_label="Metric",
+            y_label="Accuracy",
+        )
+
+        plotter.plot_metric_grid(
+            metrics_df=precision_change_df[["Train", "Test"]],
+            title="RF Regressor Precision on Train & Test datasets",
+            x_label="Number of Trees",
+            y_label="Precision",
         )
         plotter.plot_metric_grid(
-            metrics_df=oob_metrics_df,
-            title="RF Regressor Metrics on OOB Dataset",
+            metrics_df=precision_change_df[["In-Bag", "OOB"]],
+            title="RF Regressor Precision on In-Bag & OOB datasets",
             x_label="Number of Trees",
-            y_label="Metric",
+            y_label="Precision",
+        )
+
+        plotter.plot_metric_grid(
+            metrics_df=recall_change_df[["Train", "Test"]],
+            title="RF Regressor Recall on Train & Test datasets",
+            x_label="Number of Trees",
+            y_label="Recall",
         )
         plotter.plot_metric_grid(
-            metrics_df=in_bag_metrics_df,
-            title="RF Regressor Metrics on In-Bag Dataset",
+            metrics_df=recall_change_df[["In-Bag", "OOB"]],
+            title="RF Regressor Recall on In-Bag & OOB datasets",
             x_label="Number of Trees",
-            y_label="Metric",
+            y_label="Recall",
+        )
+
+        plotter.plot_metric_grid(
+            metrics_df=f1_score_change_df[["Train", "Test"]],
+            title="RF Regressor F1 Score on Train & Test datasets",
+            x_label="Number of Trees",
+            y_label="F1 Score",
+        )
+        plotter.plot_metric_grid(
+            metrics_df=f1_score_change_df[["In-Bag", "OOB"]],
+            title="RF Regressor F1 Score on In-Bag & OOB datasets",
+            x_label="Number of Trees",
+            y_label="F1 Score",
         )
