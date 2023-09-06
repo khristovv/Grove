@@ -14,7 +14,7 @@ from grove.entities import EncodedData
 from grove.trees.validation import TreeTestResults
 from grove.nodes import Node
 from grove.trees.abstract import AbstractTree
-from grove.utils import first
+from grove.utils.iteration import first
 from grove.utils.logging import Logger
 
 
