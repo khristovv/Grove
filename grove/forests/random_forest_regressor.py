@@ -6,7 +6,7 @@ from grove.trees import RegressionTree
 
 from grove.constants import Metrics
 from grove.forests.base_random_forest import BaseRandomForest
-from grove.utils.metrics import (
+from grove.metrics import (
     accuracy,
     f1_score,
     mean_absolute_error,

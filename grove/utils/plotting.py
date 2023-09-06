@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn
 
-from grove.utils.metrics import confusion_matrix
+from grove.metrics import confusion_matrix
 
 
 class Plotter:

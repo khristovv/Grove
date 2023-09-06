@@ -4,7 +4,7 @@ from grove.constants import Criteria, Metrics
 from grove.nodes import Node
 from grove.trees.base_tree import BaseTree
 from grove.trees.validation import TreeTestResults
-from grove.utils.metrics import mean_absolute_error, root_mean_squared_error, r2_score
+from grove.metrics import mean_absolute_error, root_mean_squared_error, r2_score
 
 
 class RegressionTree(BaseTree):

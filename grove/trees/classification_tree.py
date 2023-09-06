@@ -6,7 +6,7 @@ from grove.constants import Criteria, Metrics
 from grove.nodes import Node
 from grove.trees.base_tree import BaseTree
 from grove.trees.validation import TreeTestResults
-from grove.utils.metrics import accuracy, f1_score, precision, recall
+from grove.metrics import accuracy, f1_score, precision, recall
 
 
 class ClassificationTree(BaseTree):

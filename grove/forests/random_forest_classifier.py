@@ -7,7 +7,7 @@ from grove.trees import ClassificationTree
 
 from grove.constants import Metrics
 from grove.forests.base_random_forest import BaseRandomForest
-from grove.utils.metrics import accuracy, f1_score, precision, recall
+from grove.metrics import accuracy, f1_score, precision, recall
 from grove.utils.sampling import Sampler
 from grove.validation import TestResults
 
