@@ -37,9 +37,9 @@ class Metrics:
 
     # regression metrics
     R2_SCORE = "R2 Score"
-    MEAN_SQUARED_ERROR = "Mean Squared Error"
-    MEAN_ABSOLUTE_ERROR = "Mean Absolute Error"
+    MAE = "Mean Absolute Error"
+    RMSE = "Root Mean Squared Error"
 
-    REGRESSION = [R2_SCORE, MEAN_SQUARED_ERROR, MEAN_ABSOLUTE_ERROR]
+    REGRESSION = [R2_SCORE, MAE, RMSE]
 
     ALL = CLASSIFICATION + REGRESSION

@@ -1,10 +1,10 @@
 import pandas as pd
 
-from grove.constants import Criteria
+from grove.constants import Criteria, Metrics
 from grove.nodes import Node
 from grove.trees.base_tree import BaseTree
 from grove.trees.validation import TreeTestResults
-from grove.utils.metrics import mean_absolute_error, mean_squared_error, r2_score
+from grove.utils.metrics import mean_absolute_error, root_mean_squared_error, r2_score
 
 
 class RegressionTree(BaseTree):
@@ -57,16 +57,16 @@ class RegressionTree(BaseTree):
         test_results = TreeTestResults(labeled_data=labeled_data)
 
         test_results.add_metric(
-            label="R2 Score",
+            label=Metrics.R2_SCORE,
             value=r2_score(actual=labeled_data[actual_column], predicted=labeled_data[predicted_column]),
         )
         test_results.add_metric(
-            label="Mean Absolute Error",
+            label=Metrics.MAE,
             value=mean_absolute_error(actual=labeled_data[actual_column], predicted=labeled_data[predicted_column]),
         )
         test_results.add_metric(
-            label="Mean Squared Error",
-            value=mean_squared_error(actual=labeled_data[actual_column], predicted=labeled_data[predicted_column]),
+            label=Metrics.RMSE,
+            value=root_mean_squared_error(actual=labeled_data[actual_column], predicted=labeled_data[predicted_column]),
         )
 
         return test_results

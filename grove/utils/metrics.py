@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 
 
@@ -16,9 +17,9 @@ def mean_absolute_error(actual: pd.Series, predicted: pd.Series) -> float:
     return (actual - predicted).abs().mean()
 
 
-def mean_squared_error(actual: pd.Series, predicted: pd.Series) -> float:
+def root_mean_squared_error(actual: pd.Series, predicted: pd.Series) -> float:
     """Calculate the root mean squared error."""
-    return ((actual - predicted) ** 2).mean()
+    return np.sqrt(((actual - predicted) ** 2).mean())
 
 
 def confusion_matrix(

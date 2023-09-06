@@ -10,7 +10,7 @@ from grove.utils.metrics import (
     accuracy,
     f1_score,
     mean_absolute_error,
-    mean_squared_error,
+    root_mean_squared_error,
     precision,
     r2_score,
     recall,
@@ -112,12 +112,12 @@ class RandomForestRegressor(BaseRandomForest):
             value=r2_score(actual=actual_column, predicted=predicted_column),
         )
         test_results.add_metric(
-            label=Metrics.MEAN_ABSOLUTE_ERROR,
+            label=Metrics.MAE,
             value=mean_absolute_error(actual=actual_column, predicted=predicted_column),
         )
         test_results.add_metric(
-            label=Metrics.MEAN_SQUARED_ERROR,
-            value=mean_squared_error(actual=actual_column, predicted=predicted_column),
+            label=Metrics.RMSE,
+            value=root_mean_squared_error(actual=actual_column, predicted=predicted_column),
         )
 
         return test_results
