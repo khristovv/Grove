@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Literal
 
-import numpy.typing as npt
+import numpy as np
 
 from aislab import dp_feng
 
@@ -14,8 +14,8 @@ supervised_binning = dp_feng.sbng
 class Bin:
     """Placeholder for a bin"""
 
-    left_bound: npt.ArrayLike
-    right_bound: npt.ArrayLike
+    left_bound: np.ndarray
+    right_bound: np.ndarray
     type: Literal["Normal", "Special Values", "Missing", "Other"]
     size: int
 
@@ -35,7 +35,7 @@ class Bin:
 class BinnedFeature:
     label: str
     bins: list[Bin]
-    stats: dict[str, npt.ArrayLike]
+    stats: dict[str, np.array]
 
     def get_criterion_value(self, criterion: str) -> float | None:
         return self.stats.get(criterion, [None])[0]

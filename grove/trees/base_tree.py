@@ -3,7 +3,6 @@ from typing import Literal
 from uuid import uuid4
 
 import numpy as np
-import numpy.typing as npt
 import pandas as pd
 
 from aislab import dp_feng
@@ -176,7 +175,7 @@ class BaseTree(AbstractTree):
         self,
         binned_features: list[BinnedFeature],
         prev_split_feature: str = None,
-    ) -> tuple[str, list[Bin], dict[str, npt.ArrayLike]]:
+    ) -> tuple[str, list[Bin], dict[str, np.ndarray]]:
         if not binned_features:
             return ("", [], {})
 
@@ -282,7 +281,7 @@ class BaseTree(AbstractTree):
         bin: Bin,
         data: pd.DataFrame,
         feature: str,
-        split_stats: dict[str, npt.ArrayLike],
+        split_stats: dict[str, np.ndarray],
         depth: int,
         index: int,
     ) -> Node:

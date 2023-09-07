@@ -1,7 +1,6 @@
 from typing import Literal, TypeVar
 
 import numpy as np
-import numpy.typing as npt
 
 from grove.nodes.abstract import AbstractNode
 
@@ -18,7 +17,7 @@ class Node(AbstractNode):
         children: list[TNode] | None = None,
         split_variable: str | None = None,
         split_variable_type: Literal["Numerical", "Categorical"] | None = None,
-        split_stats: dict[str, npt.ArrayLike] = {},
+        split_stats: dict[str, np.ndarray] = {},
         bounds: list = None,
         *args,
         **kwargs,
