@@ -1,7 +1,7 @@
 from uuid import uuid4
 from typing import TypeVar
 
-from pandas import DataFrame
+from pandas import Index
 
 from grove.entities import Coordinates
 
@@ -11,14 +11,15 @@ TAbstractNode = TypeVar("TAbstractNode", bound="AbstractNode")
 class AbstractNode:
     def __init__(
         self,
-        indexes: DataFrame,
+        indexes: Index,
         coordinates: tuple[int, int] = None,
         label: str | None = "",
         ancestor: TAbstractNode | None = None,
     ):
         """
         Args:
-            indexes (DataFrame): The row indexes of the dataset that are in the node.
+            indexes (Index): The indexes of the dataset that are in the node.
+            coordinates (tuple[int, int], optional): The coordinates of the node in the tree. Defaults to None.
             label (str, optional): The label of the node. Defaults to "".
             ancestor (Node, optional): The ancestor of the node. Defaults to None.
         """
