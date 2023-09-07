@@ -30,14 +30,6 @@ class Node(AbstractNode):
         self.bounds = bounds or [-np.inf, np.inf]
         self.predicted_value = None
 
-    def is_within_bounds(self, value) -> bool:
-        if self.split_variable_type == self.CONTINUOUS:
-            left_bound, right_bound = self.bounds
-            return left_bound <= value < right_bound
-
-        if self.split_variable_type == self.CATEGORICAL:
-            return value in self.bounds
-
     @property
     def is_leaf(self) -> bool:
         return not len(self.children)
@@ -49,3 +41,11 @@ class Node(AbstractNode):
     def add_child(self, node: TNode):
         node.ancestor = self
         self.children.append(node)
+
+    def is_within_bounds(self, value) -> bool:
+        if self.split_variable_type == self.CONTINUOUS:
+            left_bound, right_bound = self.bounds
+            return left_bound <= value < right_bound
+
+        if self.split_variable_type == self.CATEGORICAL:
+            return value in self.bounds
