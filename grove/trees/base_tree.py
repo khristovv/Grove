@@ -8,7 +8,13 @@ import pandas as pd
 
 from aislab import dp_feng
 
-from grove.binning import Bin, parse_supervised_binning_results, BinnedFeature
+from grove.binning import (
+    Bin,
+    parse_supervised_binning_results,
+    BinnedFeature,
+    supervised_binning,
+    unsupervised_binning,
+)
 from grove.constants import Criteria, SpecialChars, TreeStatistics
 from grove.entities import EncodedData
 from grove.trees.validation import TreeTestResults
@@ -148,7 +154,7 @@ class BaseTree(AbstractTree):
             return []
 
         # run unsupervised binning
-        unsupervised_binning_results = dp_feng.ubng(
+        unsupervised_binning_results = unsupervised_binning(
             x=encoded_data.x.iloc[rows_to_include],
             xtp=encoded_data.xtp,
             y=encoded_data.y.to_frame().iloc[rows_to_include].values,
@@ -160,7 +166,7 @@ class BaseTree(AbstractTree):
         )
 
         # run supervised binning
-        supervised_binning_results = dp_feng.sbng(
+        supervised_binning_results = supervised_binning(
             bng=unsupervised_binning_results, md=self.max_children, dsp=self.logging_enabled
         )
 
