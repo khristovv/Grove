@@ -31,8 +31,8 @@ class BaseTree(TreeInterface):
         max_children: int,
         min_samples_per_node: int,
         criterion: str = Criteria.GINI,
-        criterion_threshold: float = 1.0,
-        max_depth: int = None,
+        criterion_threshold: float | None = None,
+        max_depth: int | None = None,
         logging_enabled: bool = False,
         statistics_enabled: bool = False,
         consecutive_splits_on_same_feature_enabled: bool = True,
@@ -46,6 +46,7 @@ class BaseTree(TreeInterface):
         )
 
         self.encoding_config = encoding_config
+        self.config_values_delimiter = config_values_delimiter
         self.y_dtype = y_dtype
 
         self.criterion = criterion.capitalize()
@@ -60,12 +61,8 @@ class BaseTree(TreeInterface):
         self.statistics_enabled = statistics_enabled
         self.consecutive_splits_on_same_feature_enabled = consecutive_splits_on_same_feature_enabled
 
-        self.config_values_delimiter = config_values_delimiter
-
         self.identifier = identifier or str(uuid4())
-
         self.root = None
-
         self.statistics = pd.DataFrame(columns=TreeStatistics.ALL)
 
     def __str__(self):
@@ -196,7 +193,10 @@ class BaseTree(TreeInterface):
                 else -np.inf,
             )
 
-        if feature_with_highest_gain.get_criterion_value(criterion=self.criterion) < self.criterion_threshold:
+        if (
+            self.criterion_threshold is not None
+            and feature_with_highest_gain.get_criterion_value(criterion=self.criterion) < self.criterion_threshold
+        ):
             return ("", [], {})
 
         valid_bins = [bin for bin in feature_with_highest_gain.bins if bin.size]
