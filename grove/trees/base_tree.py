@@ -338,7 +338,7 @@ class BaseTree(AbstractTree):
             column = child_node.split_variable
             value = row[column]
 
-            if value in child_node:
+            if child_node.is_within_bounds(value=value):
                 nodes.clear()
                 nodes.extend(child_node.children)
                 curr_node = child_node

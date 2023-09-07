@@ -31,7 +31,7 @@ class Node(AbstractNode):
         self.bounds = bounds or [-np.inf, np.inf]
         self.predicted_value = None
 
-    def __contains__(self, value) -> bool:
+    def is_within_bounds(self, value) -> bool:
         if self.split_variable_type == self.NUMERICAL:
             left_bound, right_bound = self.bounds
             return left_bound <= value < right_bound
