@@ -18,12 +18,12 @@ from grove.constants import Criteria, SpecialChars, TreeStatistics
 from grove.entities import EncodedData
 from grove.trees.validation import TreeTestResults
 from grove.nodes import Node
-from grove.trees.abstract import AbstractTree
+from grove.trees.abstract import TreeInterface
 from grove.utils.iteration import first
 from grove.utils.logging import Logger
 
 
-class BaseTree(AbstractTree):
+class BaseTree(TreeInterface):
     def __init__(
         self,
         encoding_config: pd.DataFrame,

@@ -1,7 +1,7 @@
 import pandas as pd
 
 
-class AbstractTree:
+class TreeInterface:
     def train(self, x: pd.DataFrame, y: pd.DataFrame):
         """A method that trains a decision tree model from the training set (x, y)."""
         raise NotImplementedError
