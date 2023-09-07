@@ -295,7 +295,7 @@ class BaseTree(AbstractTree):
             coordinates=(depth, index),
             label=self._build_node_label(feature=feature, bin=bin),
             split_variable=feature,
-            split_variable_type=Node.CATEGORICAL if bin.is_categorical else Node.NUMERICAL,
+            split_variable_type=Node.CATEGORICAL if bin.is_categorical else Node.CONTINUOUS,
             bounds=bin.bounds,
             split_stats=split_stats,
         )

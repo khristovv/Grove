@@ -9,14 +9,14 @@ TNode = TypeVar("TNode", bound="Node")
 
 
 class Node(AbstractNode):
-    NUMERICAL = "Numerical"
+    CONTINUOUS = "Continuous"
     CATEGORICAL = "Categorical"
 
     def __init__(
         self,
         children: list[TNode] | None = None,
         split_variable: str | None = None,
-        split_variable_type: Literal["Numerical", "Categorical"] | None = None,
+        split_variable_type: Literal["Continuous", "Categorical"] | None = None,
         split_stats: dict[str, np.ndarray] = {},
         bounds: list = None,
         *args,
@@ -31,7 +31,7 @@ class Node(AbstractNode):
         self.predicted_value = None
 
     def is_within_bounds(self, value) -> bool:
-        if self.split_variable_type == self.NUMERICAL:
+        if self.split_variable_type == self.CONTINUOUS:
             left_bound, right_bound = self.bounds
             return left_bound <= value < right_bound
 
