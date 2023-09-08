@@ -13,7 +13,6 @@ class EncodedData:
     y: pd.Series
     ytp: str
     features: Iterable[str]
-    vtp: pd.Series  # ?
 
 
 @dataclass

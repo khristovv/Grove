@@ -139,7 +139,6 @@ class BaseTree(TreeInterface):
             y=y,
             ytp=self.y_dtype,
             features=cname,
-            vtp=vtp,
         )
 
     def _bin(self, encoded_data: EncodedData, curr_node: Node) -> list[BinnedFeature]:
