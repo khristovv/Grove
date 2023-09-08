@@ -255,7 +255,7 @@ class BaseTree(TreeInterface):
             self.logger.log_section("Statistics")
             self.logger.log(self.get_statistics())
 
-    def _leafify_node(self, node: Node, y: pd.Series, y_label: str):
+    def _leafify_node(self, node: Node, y: pd.Series):
         """Each tree implmentation should provide its own logic to leafify a node"""
         raise NotImplementedError
 
