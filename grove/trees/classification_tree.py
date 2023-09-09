@@ -45,7 +45,7 @@ class ClassificationTree(BaseTree):
         return [Criteria.GINI, Criteria.CHI2]
 
     def _leafify_node(self, node: Node, y: pd.Series):
-        """Leafify node by calculating the majority class and its probability"""
+        """Leafify node by calculating the majority class"""
         predicted_value = y.iloc[node.indexes].mode()[0]
 
         node.children = []
