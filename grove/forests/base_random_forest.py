@@ -231,7 +231,7 @@ class BaseRandomForest(RandomForestInterface, BaggingMixin):
 
     def oob_test(
         self,
-        original_y: pd.DataFrame,
+        original_y: pd.Series,
         save_results: bool = False,
         output_dir: str | None = None,
         labeled_data_filename: str = None,
