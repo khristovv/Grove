@@ -51,7 +51,10 @@ def accuracy(actual: pd.Series, predicted: pd.Series) -> float:
     """Calculate how many observations, both positive and negative, were correctly classified."""
     tp, fn, fp, tn = confusion_matrix(actual=actual, predicted=predicted, as_tuple=True)
 
-    return (tp + tn) / (tp + tn + fp + fn)
+    try:
+        return (tp + tn) / (tp + tn + fp + fn)
+    except ZeroDivisionError:
+        return 0.0
 
 
 def precision(actual: pd.Series, predicted: pd.Series) -> float:
