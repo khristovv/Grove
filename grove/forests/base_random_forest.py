@@ -20,14 +20,15 @@ class BaseRandomForest(RandomForestInterface, BaggingMixin):
         encoding_config: pd.DataFrame,
         tree_model: Trees,
         train_in_parallel: bool = True,
-        tree_args: dict = None,
+        tree_args: dict | None = None,
         # колко броя от свойствата ще участват в обучението на всяко дърво
         # ако не е зададено, ще се ползват всички свойства
-        m_split: int = None,
+        m_split: int | None = None,
         # колко ще е голяма извадката, с която ще обучаваме дървото
-        n_bag: int = None,
+        n_bag: int | None = None,
         # когато ще избираме следващите N случайни велични от X
         # важното е seed-a да ни е същия
+        n_processes: int | None = None,
         seed: int | str = None,
         logging_enabled: bool = True,
         oob_score_enabled: bool = False,
@@ -41,6 +42,7 @@ class BaseRandomForest(RandomForestInterface, BaggingMixin):
         self.tree_args = tree_args or DEFAULT_TREE_ARGS
         self.m_split = m_split
         self.n_bag = n_bag
+        self.n_processes = n_processes
         self.seed = seed
 
         self.trees = []
@@ -91,7 +93,7 @@ class BaseRandomForest(RandomForestInterface, BaggingMixin):
         self.logger.log_section("Training - Start", add_newline=False)
 
         if self.train_in_parallel:
-            with mp.Pool() as process_pool:
+            with mp.Pool(processes=self.n_processes) as process_pool:
                 results = process_pool.starmap(self._train_tree, _get_training_data())
         else:
             results = (self._train_tree(*args) for args in _get_training_data())
