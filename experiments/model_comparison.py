@@ -57,7 +57,6 @@ if __name__ == "__main__":
         m_split=4,
         n_bag=1500,
         seed=seed,
-        # auto_split=True,
         oob_score_enabled=True,
         test_on_in_bag_samples_enabled=True,
         min_number_of_classes=200,

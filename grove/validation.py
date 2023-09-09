@@ -8,13 +8,8 @@ class TestResults:
     DEFAULT_LABELED_DATA_FILENAME = "labeled_data.csv"
     DEFAULT_SCORE_FILENAME = "score.csv"
 
-    def __init__(
-        self,
-        labeled_data: pd.DataFrame,
-        # misclassified_indexes: pd.Series,
-    ):
+    def __init__(self, labeled_data: pd.DataFrame):
         self.labeled_data = labeled_data
-        # self.misclassified_indexes = misclassified_indexes
 
         self.metrics = {}
         self._set_default_metrics()
