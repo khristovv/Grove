@@ -1,7 +1,7 @@
 import pandas as pd
 
 
-class AbstractForest:
+class RandomForestInterface:
     def train(self, x: pd.DataFrame, y: pd.DataFrame):
         """A method that trains the random forest model from the training set (x, y)."""
         raise NotImplementedError

@@ -6,14 +6,14 @@ import pandas as pd
 from grove.types import Trees
 
 from grove.bagging import BaggingMixin
-from grove.forests.abstract import AbstractForest
+from grove.forests.abstract import RandomForestInterface
 
 from grove.forests.constants import DEFAULT_TREE_ARGS
 from grove.utils.logging import Logger
 from grove.validation import TestResults
 
 
-class BaseRandomForest(AbstractForest, BaggingMixin):
+class BaseRandomForest(RandomForestInterface, BaggingMixin):
     def __init__(
         self,
         n_trees: int,
