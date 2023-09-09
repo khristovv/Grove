@@ -8,7 +8,6 @@ from grove.trees import ClassificationTree
 from grove.constants import Metrics
 from grove.forests.base_random_forest import BaseRandomForest
 from grove.metrics import accuracy, f1_score, precision, recall
-from grove.utils.sampling import Sampler
 from grove.validation import TestResults
 
 
@@ -25,7 +24,6 @@ class RandomForestClassifer(BaseRandomForest):
         logging_enabled: bool = True,
         oob_score_enabled: bool = False,
         test_on_in_bag_samples_enabled: bool = False,
-        auto_split: bool = False,
         min_number_of_classes: int | None = None,
     ):
         super().__init__(
@@ -40,17 +38,11 @@ class RandomForestClassifer(BaseRandomForest):
             logging_enabled=logging_enabled,
             oob_score_enabled=oob_score_enabled,
             test_on_in_bag_samples_enabled=test_on_in_bag_samples_enabled,
-            auto_split=auto_split,
         )
         self.min_number_of_classes = min_number_of_classes
 
     def _get_sampling_method(self) -> Callable:
         return partial(self.bootstrap_balanced, min_number_of_classes=self.min_number_of_classes)
-
-    def _get_test_train_split(
-        self, x: pd.DataFrame, y: pd.Series
-    ) -> tuple[pd.DataFrame, pd.Series, pd.DataFrame, pd.Series]:
-        return Sampler().get_y_proportional_train_test_split(x=x, y=y, seed=self.seed)
 
     def _vote(self, predictions_df: pd.DataFrame):
         return predictions_df.apply(lambda row: row.mode()[0], axis=1)

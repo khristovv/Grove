@@ -32,7 +32,6 @@ class BaseRandomForest(AbstractForest, BaggingMixin):
         logging_enabled: bool = True,
         oob_score_enabled: bool = False,
         test_on_in_bag_samples_enabled: bool = False,
-        auto_split: bool = False,
     ):
         """A random forest model that uses decision trees as base learners."""
         self.n_trees = n_trees
@@ -54,26 +53,13 @@ class BaseRandomForest(AbstractForest, BaggingMixin):
         self.oob_predictions = pd.DataFrame()
         self.in_bag_predictions = pd.DataFrame()
 
-        self.auto_split = auto_split
-        self.test_set: tuple[pd.DataFrame, pd.DataFrame] | None = None
-
     def _get_sampling_method(self) -> Callable:
         return self.bootstrap
-
-    def _get_test_train_split(
-        self, x: pd.DataFrame, y: pd.Series
-    ) -> tuple[pd.DataFrame, pd.Series, pd.DataFrame, pd.Series]:
-        """A method that splits the dataset into a training and test set."""
-        raise NotImplementedError
 
     def train(self, x: pd.DataFrame, y: pd.Series):
         """A method that trains the random forest model from the training set (x, y)."""
 
         x_train, y_train = x, y
-
-        if self.auto_split:
-            x_train, y_train, x_test, y_test = self._get_test_train_split(x=x, y=y)
-            self.test_set = x_test, y_test
 
         def _get_training_data():
             """
@@ -206,8 +192,8 @@ class BaseRandomForest(AbstractForest, BaggingMixin):
 
     def test(
         self,
-        x_test: pd.DataFrame | None = None,
-        y_test: pd.Series | None = None,
+        x_test: pd.DataFrame,
+        y_test: pd.Series,
         save_results: bool = False,
         output_dir: str | None = None,
         labeled_data_filename: str = None,
@@ -215,19 +201,6 @@ class BaseRandomForest(AbstractForest, BaggingMixin):
     ):
         """Test the model on a test dataset."""
         self.logger.log_section("Testing", add_newline=False)
-
-        if self.auto_split and (x_test is not None or y_test is not None):
-            raise ValueError(
-                "You cannot provide a test set when the model is configured to automatically split the dataset."
-            )
-
-        if not self.auto_split and (x_test is None or y_test is None):
-            raise ValueError(
-                "You must provide a test set when the model is not configured to automatically split the dataset."
-            )
-
-        if self.auto_split:
-            x_test, y_test = self.test_set
 
         y_label = y_test.name
         predicted_column = f"PREDICTED_{y_label}"
