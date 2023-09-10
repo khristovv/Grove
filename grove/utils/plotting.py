@@ -14,15 +14,20 @@ class Plotter:
         plt.show()
 
     def plot_confusion_matrix(
-        self, actual_column: pd.Series, predicted_column: pd.Series, title: str = "Confusion Matrix"
+        self,
+        actual_column: pd.Series,
+        predicted_column: pd.Series,
+        title: str = "Confusion Matrix",
+        xlabel: str = "Actual",
+        ylabel: str = "Predicted",
     ):
         cm = confusion_matrix(actual=actual_column, predicted=predicted_column)
 
         _, ax = plt.subplots()
         seaborn.heatmap(cm, annot=True, cmap="crest", linewidth=0.5, fmt="d", ax=ax).set(
             title=title,
-            xlabel="Predicted",
-            ylabel="Actual",
+            xlabel=xlabel,
+            ylabel=ylabel,
         )
 
     def plot_metric(self, title: str, x_label: str, y_label: str, metrics: list[pd.Series]):

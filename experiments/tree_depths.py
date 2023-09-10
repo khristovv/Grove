@@ -4,13 +4,13 @@ import pandas as pd
 import os
 import sys
 
-
 # Add the parent directory (Grove) to the Python path
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
 grove_dir = os.path.join(current_dir, "..", ".")
 sys.path.append(grove_dir)
 
+from grove.trees import ClassificationTree  # noqa
 from grove.constants import Metrics  # noqa
 from grove.forests import RandomForestRegressor  # noqa
 from grove.utils.sampling import Sampler  # noqa
@@ -34,18 +34,50 @@ if __name__ == "__main__":
     max_depths = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     columns = ["Train", "Test", "In-Bag", "OOB"]
 
-    accuracy_change_df = pd.DataFrame(index=max_depths, columns=columns)
-    precision_change_df = pd.DataFrame(index=max_depths, columns=columns)
-    recall_change_df = pd.DataFrame(index=max_depths, columns=columns)
-    f1_score_change_df = pd.DataFrame(index=max_depths, columns=columns)
+    accuracy_change_rf = pd.DataFrame(index=max_depths, columns=columns)
+    precision_change_rf = pd.DataFrame(index=max_depths, columns=columns)
+    recall_change_rf = pd.DataFrame(index=max_depths, columns=columns)
+    f1_score_change_rf = pd.DataFrame(index=max_depths, columns=columns)
+
+    accuracy_change_dt = pd.DataFrame(index=max_depths, columns=columns[:2])
+    precision_change_dt = pd.DataFrame(index=max_depths, columns=columns[:2])
+    recall_change_dt = pd.DataFrame(index=max_depths, columns=columns[:2])
+    f1_score_change_dt = pd.DataFrame(index=max_depths, columns=columns[:2])
 
     for max_depth in max_depths:
+        # Classification tree
+        classification_tree = ClassificationTree(
+            y_dtype='bin',
+            encoding_config=encoding_config,
+            max_children=4,
+            min_samples_per_node=20,
+            max_depth=max_depth,
+            logging_enabled=False,
+            statistics_enabled=False,
+            consecutive_splits_on_same_feature_enabled=False,
+        )
+        classification_tree.train(x=x_train, y=y_train)
+
+        test_results_on_train_split = classification_tree.test(x_test=x_train, y_test=y_train)
+
+        accuracy_change_dt.loc[max_depth, "Train"] = test_results_on_train_split.metrics[Metrics.ACCURACY]
+        precision_change_dt.loc[max_depth, "Train"] = test_results_on_train_split.metrics[Metrics.PRECISION]
+        recall_change_dt.loc[max_depth, "Train"] = test_results_on_train_split.metrics[Metrics.RECALL]
+        f1_score_change_dt.loc[max_depth, "Train"] = test_results_on_train_split.metrics[Metrics.F1_SCORE]
+
+        test_results_on_test_split = classification_tree.test(x_test=x_test, y_test=y_test)
+
+        accuracy_change_dt.loc[max_depth, "Test"] = test_results_on_test_split.metrics[Metrics.ACCURACY]
+        precision_change_dt.loc[max_depth, "Test"] = test_results_on_test_split.metrics[Metrics.PRECISION]
+        recall_change_dt.loc[max_depth, "Test"] = test_results_on_test_split.metrics[Metrics.RECALL]
+        f1_score_change_dt.loc[max_depth, "Test"] = test_results_on_test_split.metrics[Metrics.F1_SCORE]
+
         cut_off = 0.25
 
+        # Regression Forest
         random_forest_regressor = RandomForestRegressor(
             n_trees=20,
             encoding_config=encoding_config,
-            # train_in_parallel=False,
             tree_args={
                 "max_children": 4,
                 "min_samples_per_node": 20,
@@ -67,79 +99,102 @@ if __name__ == "__main__":
 
         test_results_on_train_split = random_forest_regressor.test(x_test=x_train, y_test=y_train)
 
-        accuracy_change_df.loc[max_depth, "Train"] = test_results_on_train_split.metrics[Metrics.ACCURACY]
-        precision_change_df.loc[max_depth, "Train"] = test_results_on_train_split.metrics[Metrics.PRECISION]
-        recall_change_df.loc[max_depth, "Train"] = test_results_on_train_split.metrics[Metrics.RECALL]
-        f1_score_change_df.loc[max_depth, "Train"] = test_results_on_train_split.metrics[Metrics.F1_SCORE]
+        accuracy_change_rf.loc[max_depth, "Train"] = test_results_on_train_split.metrics[Metrics.ACCURACY]
+        precision_change_rf.loc[max_depth, "Train"] = test_results_on_train_split.metrics[Metrics.PRECISION]
+        recall_change_rf.loc[max_depth, "Train"] = test_results_on_train_split.metrics[Metrics.RECALL]
+        f1_score_change_rf.loc[max_depth, "Train"] = test_results_on_train_split.metrics[Metrics.F1_SCORE]
 
         test_results_on_test_split = random_forest_regressor.test(x_test=x_test, y_test=y_test)
 
-        accuracy_change_df.loc[max_depth, "Test"] = test_results_on_test_split.metrics[Metrics.ACCURACY]
-        precision_change_df.loc[max_depth, "Test"] = test_results_on_test_split.metrics[Metrics.PRECISION]
-        recall_change_df.loc[max_depth, "Test"] = test_results_on_test_split.metrics[Metrics.RECALL]
-        f1_score_change_df.loc[max_depth, "Test"] = test_results_on_test_split.metrics[Metrics.F1_SCORE]
+        accuracy_change_rf.loc[max_depth, "Test"] = test_results_on_test_split.metrics[Metrics.ACCURACY]
+        precision_change_rf.loc[max_depth, "Test"] = test_results_on_test_split.metrics[Metrics.PRECISION]
+        recall_change_rf.loc[max_depth, "Test"] = test_results_on_test_split.metrics[Metrics.RECALL]
+        f1_score_change_rf.loc[max_depth, "Test"] = test_results_on_test_split.metrics[Metrics.F1_SCORE]
 
         test_results_on_oob, test_results_on_in_bag = random_forest_regressor.oob_test(original_y=y)
 
-        accuracy_change_df.loc[max_depth, "In-Bag"] = test_results_on_in_bag.metrics[Metrics.ACCURACY]
-        precision_change_df.loc[max_depth, "In-Bag"] = test_results_on_in_bag.metrics[Metrics.PRECISION]
-        recall_change_df.loc[max_depth, "In-Bag"] = test_results_on_in_bag.metrics[Metrics.RECALL]
-        f1_score_change_df.loc[max_depth, "In-Bag"] = test_results_on_in_bag.metrics[Metrics.F1_SCORE]
+        accuracy_change_rf.loc[max_depth, "In-Bag"] = test_results_on_in_bag.metrics[Metrics.ACCURACY]
+        precision_change_rf.loc[max_depth, "In-Bag"] = test_results_on_in_bag.metrics[Metrics.PRECISION]
+        recall_change_rf.loc[max_depth, "In-Bag"] = test_results_on_in_bag.metrics[Metrics.RECALL]
+        f1_score_change_rf.loc[max_depth, "In-Bag"] = test_results_on_in_bag.metrics[Metrics.F1_SCORE]
 
-        accuracy_change_df.loc[max_depth, "OOB"] = test_results_on_oob.metrics[Metrics.ACCURACY]
-        precision_change_df.loc[max_depth, "OOB"] = test_results_on_oob.metrics[Metrics.PRECISION]
-        recall_change_df.loc[max_depth, "OOB"] = test_results_on_oob.metrics[Metrics.RECALL]
-        f1_score_change_df.loc[max_depth, "OOB"] = test_results_on_oob.metrics[Metrics.F1_SCORE]
+        accuracy_change_rf.loc[max_depth, "OOB"] = test_results_on_oob.metrics[Metrics.ACCURACY]
+        precision_change_rf.loc[max_depth, "OOB"] = test_results_on_oob.metrics[Metrics.PRECISION]
+        recall_change_rf.loc[max_depth, "OOB"] = test_results_on_oob.metrics[Metrics.RECALL]
+        f1_score_change_rf.loc[max_depth, "OOB"] = test_results_on_oob.metrics[Metrics.F1_SCORE]
 
     with Plotter() as plotter:
+        # tree
         plotter.plot_metric(
-            title="RF Regressor Accuracy on Train & Test datasets",
-            x_label="Tree Depth",
-            y_label="Accuracy",
-            metrics=[accuracy_change_df["Train"], accuracy_change_df["Test"]],
+            title="'Точност' на Класификационно дърво върху Обучителна и Тестова извадки",
+            x_label="Дълбочина",
+            y_label="Точност",
+            metrics=[accuracy_change_dt["Train"], accuracy_change_dt["Test"]],
         )
         plotter.plot_metric(
-            title="RF Regressor Accuracy on In-Bag & OOB datasets",
-            x_label="Tree Depth",
-            y_label="Accuracy",
-            metrics=[accuracy_change_df["In-Bag"], accuracy_change_df["OOB"]],
-        )
-
-        plotter.plot_metric(
-            title="RF Regressor Precision on Train & Test datasets",
-            x_label="Tree Depth",
-            y_label="Precision",
-            metrics=[precision_change_df["Train"], precision_change_df["Test"]],
+            title="'Прецизност' на Класификационно дърво върху Обучителна и Тестова извадки",
+            x_label="Дълбочина",
+            y_label="Прецизност",
+            metrics=[precision_change_dt["Train"], precision_change_dt["Test"]],
         )
         plotter.plot_metric(
-            title="RF Regressor Precision on In-Bag & OOB datasets",
-            x_label="Tree Depth",
-            y_label="Precision",
-            metrics=[precision_change_df["In-Bag"], precision_change_df["OOB"]],
-        )
-
-        plotter.plot_metric(
-            title="RF Regressor Recall on Train & Test datasets",
-            x_label="Tree Depth",
-            y_label="Recall",
-            metrics=[recall_change_df["Train"], recall_change_df["Test"]],
+            title="'Пълнота' на Класификационно дърво върху Обучителна и Тестова извадки",
+            x_label="Дълбочина",
+            y_label="Пълнота",
+            metrics=[recall_change_dt["Train"], recall_change_dt["Test"]],
         )
         plotter.plot_metric(
-            title="RF Regressor Recall on In-Bag & OOB datasets",
-            x_label="Tree Depth",
-            y_label="Recall",
-            metrics=[recall_change_df["In-Bag"], recall_change_df["OOB"]],
+            title="'F1-оценка' на Класификационно дърво върху Обучителна и Тестова извадки",
+            x_label="Дълбочина",
+            y_label="F1-оценка",
+            metrics=[f1_score_change_dt["Train"], f1_score_change_dt["Test"]],
         )
 
         plotter.plot_metric(
-            title="RF Regressor F1 Score on Train & Test datasets",
-            x_label="Tree Depth",
-            y_label="F1 Score",
-            metrics=[f1_score_change_df["Train"], f1_score_change_df["Test"]],
+            title="'Точност' на Регресионна Гора върху Обучителна и Тестова извадки",
+            x_label="Дълбочина",
+            y_label="Точност",
+            metrics=[accuracy_change_rf["Train"], accuracy_change_rf["Test"]],
         )
         plotter.plot_metric(
-            title="RF Regressor F1 Score on In-Bag & OOB datasets",
-            x_label="Tree Depth",
-            y_label="F1 Score",
-            metrics=[f1_score_change_df["In-Bag"], f1_score_change_df["OOB"]],
+            title="'Точност' на Регресионна Гора върху Багинг и Извън Багинг извадки",
+            x_label="Дълбочина",
+            y_label="Точност",
+            metrics=[accuracy_change_rf["In-Bag"], accuracy_change_rf["OOB"]],
+        )
+        plotter.plot_metric(
+            title="'Прецизност' на Регресионна Гора върху Обучителна и Тестова извадки",
+            x_label="Дълбочина",
+            y_label="Прецизност",
+            metrics=[precision_change_rf["Train"], precision_change_rf["Test"]],
+        )
+        plotter.plot_metric(
+            title="'Прецизност'на Регресионна Гора върху Багинг и Извън Багинг извадки",
+            x_label="Дълбочина",
+            y_label="Прецизност",
+            metrics=[precision_change_rf["In-Bag"], precision_change_rf["OOB"]],
+        )
+        plotter.plot_metric(
+            title="'Пълнота' на Регресионна Гора върху Обучителна и Тестова извадки",
+            x_label="Дълбочина",
+            y_label="Пълнота",
+            metrics=[recall_change_rf["Train"], recall_change_rf["Test"]],
+        )
+        plotter.plot_metric(
+            title="'Пълнота'на Регресионна Гора върху Багинг и Извън Багинг извадки",
+            x_label="Дълбочина",
+            y_label="Пълнота",
+            metrics=[recall_change_rf["In-Bag"], recall_change_rf["OOB"]],
+        )
+        plotter.plot_metric(
+            title="'F1-оценка' на Регресионна Гора върху Обучителна и Тестова извадки",
+            x_label="Дълбочина",
+            y_label="F1-оценка",
+            metrics=[f1_score_change_rf["Train"], f1_score_change_rf["Test"]],
+        )
+        plotter.plot_metric(
+            title="'F1-оценка' на Регресионна Гора върху Багинг и Извън Багинг извадки",
+            x_label="Дълбочина",
+            y_label="F1-оценка",
+            metrics=[f1_score_change_rf["In-Bag"], f1_score_change_rf["OOB"]],
         )

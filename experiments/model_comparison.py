@@ -94,7 +94,9 @@ if __name__ == "__main__":
         plotter.plot_confusion_matrix(
             actual_column=labeled_data[actual_column],
             predicted_column=labeled_data[predicted_column],
-            title="DT Classifier Confusion Matrix on Train dataset",
+            title="Матрица на неточностите на Класификационно дърво върху Обучителната извадка",
+            ylabel="Действителни",
+            xlabel="Прогнозни",
         )
 
         tree_test_results = classification_tree.test(x_test=x_test, y_test=y_test)
@@ -102,7 +104,9 @@ if __name__ == "__main__":
         plotter.plot_confusion_matrix(
             actual_column=labeled_data[actual_column],
             predicted_column=labeled_data[predicted_column],
-            title="DT Classifier Confusion Matrix in Test dataset",
+            title="Матрица на неточностите на Класификационно дърво върху Тестовата извадка",
+            ylabel="Действителни",
+            xlabel="Прогнозни",
         )
 
         # Random Forest Classifier model
@@ -111,7 +115,9 @@ if __name__ == "__main__":
         plotter.plot_confusion_matrix(
             actual_column=labeled_data[actual_column],
             predicted_column=labeled_data[predicted_column],
-            title="RF Classifier Confusion Matrix on Train dataset",
+            title="Матрица на неточностите на Класификационна гора върху Обучителната извадка",
+            ylabel="Действителни",
+            xlabel="Прогнозни",
         )
 
         test_results_on_test_split = random_forest_classifier.test(x_test=x_test, y_test=y_test)
@@ -119,7 +125,9 @@ if __name__ == "__main__":
         plotter.plot_confusion_matrix(
             actual_column=labeled_data[actual_column],
             predicted_column=labeled_data[predicted_column],
-            title="RF Classifier Confusion Matrix on Test dataset",
+            title="Матрица на неточностите на Класификационна гора върху Тестовата извадка",
+            ylabel="Действителни",
+            xlabel="Прогнозни",
         )
 
         test_results_on_oob, test_results_on_in_bag = random_forest_classifier.oob_test(original_y=y)
@@ -127,14 +135,18 @@ if __name__ == "__main__":
         plotter.plot_confusion_matrix(
             actual_column=labeled_data[actual_column],
             predicted_column=labeled_data[predicted_column],
-            title="RF Classifier Out-of-Bag Confusion Matrix",
+            title="Матрица на неточностите на Класификационна гора върху Багинг извадката",
+            ylabel="Действителни",
+            xlabel="Прогнозни",
         )
 
         labeled_data = test_results_on_in_bag.labeled_data
         plotter.plot_confusion_matrix(
             actual_column=labeled_data[actual_column],
             predicted_column=labeled_data[predicted_column],
-            title="RF Classifier In-Bag Confusion Matrix",
+            title="Матрица на неточностите на Класификационна гора върху Извън Багинг извадката",
+            ylabel="Действителни",
+            xlabel="Прогнозни",
         )
 
         # Random Forest Regressor model with cut off
@@ -143,7 +155,9 @@ if __name__ == "__main__":
         plotter.plot_confusion_matrix(
             actual_column=labeled_data[actual_column],
             predicted_column=labeled_data[predicted_column],
-            title=f"RF Regressor with '{cut_off}' cut off Confusion Matrix on Train dataset",
+            title=f"Матрица на неточностите на Регресионноа гора с cut_off '{cut_off}' върху Обучителната извадка",
+            ylabel="Действителни",
+            xlabel="Прогнозни",
         )
 
         test_results = random_forest_regressor.test(x_test=x_test, y_test=y_test)
@@ -151,7 +165,9 @@ if __name__ == "__main__":
         plotter.plot_confusion_matrix(
             actual_column=labeled_data[actual_column],
             predicted_column=labeled_data[predicted_column],
-            title=f"RF Regressor with '{cut_off}' cut off Confusion Matrix on Test dataset",
+            title=f"Матрица на неточностите на Регресионноа гора с cut_off '{cut_off}' върху Тестовата извадка",
+            ylabel="Действителни",
+            xlabel="Прогнозни",
         )
 
         test_results_on_oob, test_results_on_in_bag = random_forest_regressor.oob_test(original_y=y)
@@ -159,12 +175,16 @@ if __name__ == "__main__":
         plotter.plot_confusion_matrix(
             actual_column=labeled_data[actual_column],
             predicted_column=labeled_data[predicted_column],
-            title=f"RF Regressor with '{cut_off}' cut off Out-of-bag Confusion Matrix",
+            title=f"Матрица на неточностите на Регресионноа гора с cut_off '{cut_off}' върху Багинг извадката",
+            ylabel="Действителни",
+            xlabel="Прогнозни",
         )
 
         labeled_data = test_results_on_in_bag.labeled_data
         plotter.plot_confusion_matrix(
             actual_column=labeled_data[actual_column],
             predicted_column=labeled_data[predicted_column],
-            title=f"RF Regressor with '{cut_off}' cut off In-Bag Confusion Matrix",
+            title=f"Матрица на неточностите на Регресионноа гора с cut_off '{cut_off}' върху Извън Багинг извадката",
+            ylabel="Действителни",
+            xlabel="Прогнозни",
         )
