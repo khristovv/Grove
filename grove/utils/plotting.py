@@ -18,8 +18,8 @@ class Plotter:
         actual_column: pd.Series,
         predicted_column: pd.Series,
         title: str = "Confusion Matrix",
-        xlabel: str = "Actual",
-        ylabel: str = "Predicted",
+        xlabel: str = "Predicted",
+        ylabel: str = "Actual",
     ):
         cm = confusion_matrix(actual=actual_column, predicted=predicted_column)
 
