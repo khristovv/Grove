@@ -90,7 +90,7 @@ if __name__ == "__main__":
 
         # Regression Forest
         random_forest_regressor = RandomForestRegressor(
-            n_trees=20,
+            n_trees=64,
             encoding_config=encoding_config,
             tree_args={
                 "max_children": 4,

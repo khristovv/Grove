@@ -43,7 +43,7 @@ if __name__ == "__main__":
     classification_tree.train(x=x_train, y=y_train)
 
     random_forest_classifier = RandomForestClassifer(
-        n_trees=20,
+        n_trees=64,
         encoding_config=encoding_config,
         # train_in_parallel=False,
         tree_args={
@@ -65,7 +65,7 @@ if __name__ == "__main__":
 
     cut_off = 0.41
     random_forest_regressor = RandomForestRegressor(
-        n_trees=20,
+        n_trees=64,
         encoding_config=encoding_config,
         # train_in_parallel=False,
         tree_args={
