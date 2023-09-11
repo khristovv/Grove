@@ -55,7 +55,7 @@ if __name__ == "__main__":
             "consecutive_splits_on_same_feature_enabled": False,
         },
         m_split=4,
-        n_bag=1500,
+        n_bag=2000,
         seed=seed,
         oob_score_enabled=True,
         test_on_in_bag_samples_enabled=True,
@@ -63,7 +63,7 @@ if __name__ == "__main__":
     )
     random_forest_classifier.train(x=x_train, y=y_train)
 
-    cut_off = 0.25
+    cut_off = 0.41
     random_forest_regressor = RandomForestRegressor(
         n_trees=20,
         encoding_config=encoding_config,
@@ -78,7 +78,7 @@ if __name__ == "__main__":
         },
         cut_off=cut_off,
         m_split=4,
-        n_bag=8000,
+        n_bag=2000,
         seed=seed,
         logging_enabled=True,
         oob_score_enabled=True,
