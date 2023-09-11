@@ -31,7 +31,7 @@ if __name__ == "__main__":
     actual_column = f"ACTUAL_{y.name}"
     predicted_column = f"PREDICTED_{y.name}"
 
-    number_of_trees = [1, 2, 4, 8, 16, 32, 64, 128, 256]
+    number_of_trees = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512]
 
     columns = ["Train", "Test", "In-Bag", "OOB"]
 
@@ -41,7 +41,7 @@ if __name__ == "__main__":
     f1_score_change_df = pd.DataFrame(index=number_of_trees, columns=columns)
 
     for n_trees in number_of_trees:
-        cut_off = 0.25
+        cut_off = 0.41
 
         random_forest_regressor = RandomForestRegressor(
             n_trees=n_trees,
@@ -57,7 +57,7 @@ if __name__ == "__main__":
             },
             cut_off=cut_off,
             m_split=4,
-            n_bag=8000,
+            n_bag=2000,
             seed=seed,
             logging_enabled=True,
             oob_score_enabled=True,
@@ -66,21 +66,43 @@ if __name__ == "__main__":
         )
         random_forest_regressor.train(x=x_train, y=y_train)
 
-        test_results_on_train_split = random_forest_regressor.test(x_test=x_train, y_test=y_train)
+        test_results_on_train_split = random_forest_regressor.test(
+            x_test=x_train,
+            y_test=y_train,
+            save_results=True,
+            output_dir=f"test_results_n_trees_{n_trees}",
+            labeled_data_filename="labeled_data_train_split.csv",
+            score_filename="train_split_score_results.csv",
+        )
 
         accuracy_change_df.loc[n_trees, "Train"] = test_results_on_train_split.metrics[Metrics.ACCURACY]
         precision_change_df.loc[n_trees, "Train"] = test_results_on_train_split.metrics[Metrics.PRECISION]
         recall_change_df.loc[n_trees, "Train"] = test_results_on_train_split.metrics[Metrics.RECALL]
         f1_score_change_df.loc[n_trees, "Train"] = test_results_on_train_split.metrics[Metrics.F1_SCORE]
 
-        test_results_on_test_split = random_forest_regressor.test(x_test=x_test, y_test=y_test)
+        test_results_on_test_split = random_forest_regressor.test(
+            x_test=x_test,
+            y_test=y_test,
+            save_results=True,
+            output_dir=f"test_results_n_trees_{n_trees}",
+            labeled_data_filename="labeled_data_test_split.csv",
+            score_filename="test_split_score_results.csv",
+        )
 
         accuracy_change_df.loc[n_trees, "Test"] = test_results_on_test_split.metrics[Metrics.ACCURACY]
         precision_change_df.loc[n_trees, "Test"] = test_results_on_test_split.metrics[Metrics.PRECISION]
         recall_change_df.loc[n_trees, "Test"] = test_results_on_test_split.metrics[Metrics.RECALL]
         f1_score_change_df.loc[n_trees, "Test"] = test_results_on_test_split.metrics[Metrics.F1_SCORE]
 
-        test_results_on_oob, test_results_on_in_bag = random_forest_regressor.oob_test(original_y=y)
+        test_results_on_oob, test_results_on_in_bag = random_forest_regressor.oob_test(
+            original_y=y,
+            save_results=True,
+            output_dir=f"test_results_n_trees_{n_trees}",
+            oob_labeled_data_filename="oob_labeled_data.csv",
+            oob_score_filename="oob_score_results.csv",
+            in_bag_labeled_data_filename="in_bag_labeled_data.csv",
+            in_bag_score_filename="in_bag_score_results.csv",
+        )
 
         accuracy_change_df.loc[n_trees, "In-Bag"] = test_results_on_in_bag.metrics[Metrics.ACCURACY]
         precision_change_df.loc[n_trees, "In-Bag"] = test_results_on_in_bag.metrics[Metrics.PRECISION]
