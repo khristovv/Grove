@@ -30,17 +30,26 @@ class Plotter:
             ylabel=ylabel,
         )
 
-    def plot_metric(self, title: str, x_label: str, y_label: str, metrics: list[pd.Series]):
-        fig, ax = plt.subplots()
-        fig.suptitle(title)
+    def plot_metric(
+        self,
+        title: str,
+        x_label: str,
+        y_label: str,
+        metrics: list[pd.Series],
+        fontsize: int | float = 25,
+    ):
+        _, ax = plt.subplots()
 
         for metric in metrics:
             x = metric.index
             y = metric
-            ax.plot(x, y, marker=".", label=metric.name)
-            ax.set(xlabel=x_label, ylabel=y_label)
+            ax.plot(x, y, label=metric.name, marker=".", markersize=15, linewidth=3)
+            ax.set_title(title, fontsize=fontsize)
+            ax.tick_params(labelsize=fontsize)
+            ax.set_xlabel(x_label, fontsize=fontsize)
+            ax.set_ylabel(y_label, fontsize=fontsize)
 
-        ax.legend()
+        ax.legend(fontsize=fontsize)
         ax.grid()
 
     def plot_metric_grid(self, metrics_df: pd.DataFrame, title: str, x_label: str, y_label: str):
