@@ -234,8 +234,10 @@ class BaseRandomForest(RandomForestInterface, BaggingMixin):
         original_y: pd.Series,
         save_results: bool = False,
         output_dir: str | None = None,
-        labeled_data_filename: str = None,
-        score_filename: str = None,
+        oob_labeled_data_filename: str = None,
+        oob_score_filename: str = None,
+        in_bag_labeled_data_filename: str = None,
+        in_bag_score_filename: str = None,
     ) -> tuple[TestResults, None]:
         """Test the model on a test dataset."""
         self.logger.log_section("Testing", add_newline=False)
@@ -265,8 +267,8 @@ class BaseRandomForest(RandomForestInterface, BaggingMixin):
             if save_results:
                 in_bag_test_results.save(
                     output_dir=output_dir,
-                    labeled_data_filename=labeled_data_filename,
-                    score_filename=score_filename,
+                    labeled_data_filename=oob_labeled_data_filename,
+                    score_filename=oob_score_filename,
                 )
 
             self.logger.log_section("In Bag Test Results:")
@@ -285,8 +287,8 @@ class BaseRandomForest(RandomForestInterface, BaggingMixin):
         if save_results:
             oob_test_results.save(
                 output_dir=output_dir,
-                labeled_data_filename=labeled_data_filename,
-                score_filename=score_filename,
+                labeled_data_filename=in_bag_labeled_data_filename,
+                score_filename=in_bag_score_filename,
             )
 
         self.logger.log_section("OOB Test Results:")

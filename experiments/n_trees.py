@@ -129,7 +129,7 @@ if __name__ == "__main__":
         )
 
         plotter.plot_metric(
-            title="'Прецизност' на Регресионна Гора върху Обучителна и Тестова извадк",
+            title="'Прецизност' на Регресионна Гора върху Обучителна и Тестова извадки",
             x_label="Брой Дървета",
             y_label="Прецизност",
             metrics=[precision_change_df["Train"], precision_change_df["Test"]],
