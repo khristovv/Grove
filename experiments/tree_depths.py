@@ -161,74 +161,74 @@ if __name__ == "__main__":
     with Plotter() as plotter:
         # tree
         plotter.plot_metric(
-            title="'Точност' на Класификационно дърво върху Обучителна и Тестова извадки",
+            title="'Точност' на Класификационно дърво върху Обучителната и Тестовата извадка",
             x_label="Дълбочина",
             y_label="Точност",
             metrics=[accuracy_change_dt["Train"], accuracy_change_dt["Test"]],
         )
         plotter.plot_metric(
-            title="'Прецизност' на Класификационно дърво върху Обучителна и Тестова извадки",
+            title="'Прецизност' на Класификационно дърво върху Обучителната и Тестовата извадка",
             x_label="Дълбочина",
             y_label="Прецизност",
             metrics=[precision_change_dt["Train"], precision_change_dt["Test"]],
         )
         plotter.plot_metric(
-            title="'Пълнота' на Класификационно дърво върху Обучителна и Тестова извадки",
+            title="'Пълнота' на Класификационно дърво върху Обучителната и Тестовата извадка",
             x_label="Дълбочина",
             y_label="Пълнота",
             metrics=[recall_change_dt["Train"], recall_change_dt["Test"]],
         )
         plotter.plot_metric(
-            title="'F1-оценка' на Класификационно дърво върху Обучителна и Тестова извадки",
+            title="'F1-оценка' на Класификационно дърво върху Обучителната и Тестовата извадка",
             x_label="Дълбочина",
             y_label="F1-оценка",
             metrics=[f1_score_change_dt["Train"], f1_score_change_dt["Test"]],
         )
 
         plotter.plot_metric(
-            title="'Точност' на Регресионна Гора върху Обучителна и Тестова извадки",
+            title="'Точност' на Регресионна Гора върху Обучителната и Тестовата извадка",
             x_label="Дълбочина",
             y_label="Точност",
             metrics=[accuracy_change_rf["Train"], accuracy_change_rf["Test"]],
         )
         plotter.plot_metric(
-            title="'Точност' на Регресионна Гора върху Багинг и Извън Багинг извадки",
+            title="'Точност' на Регресионна Гора върху Багинг и Извън Багинг извадките",
             x_label="Дълбочина",
             y_label="Точност",
             metrics=[accuracy_change_rf["In-Bag"], accuracy_change_rf["OOB"]],
         )
         plotter.plot_metric(
-            title="'Прецизност' на Регресионна Гора върху Обучителна и Тестова извадки",
+            title="'Прецизност' на Регресионна Гора върху Обучителната и Тестовата извадка",
             x_label="Дълбочина",
             y_label="Прецизност",
             metrics=[precision_change_rf["Train"], precision_change_rf["Test"]],
         )
         plotter.plot_metric(
-            title="'Прецизност'на Регресионна Гора върху Багинг и Извън Багинг извадки",
+            title="'Прецизност'на Регресионна Гора върху Багинг и Извън Багинг извадките",
             x_label="Дълбочина",
             y_label="Прецизност",
             metrics=[precision_change_rf["In-Bag"], precision_change_rf["OOB"]],
         )
         plotter.plot_metric(
-            title="'Пълнота' на Регресионна Гора върху Обучителна и Тестова извадки",
+            title="'Пълнота' на Регресионна Гора върху Обучителната и Тестовата извадка",
             x_label="Дълбочина",
             y_label="Пълнота",
             metrics=[recall_change_rf["Train"], recall_change_rf["Test"]],
         )
         plotter.plot_metric(
-            title="'Пълнота'на Регресионна Гора върху Багинг и Извън Багинг извадки",
+            title="'Пълнота'на Регресионна Гора върху Багинг и Извън Багинг извадките",
             x_label="Дълбочина",
             y_label="Пълнота",
             metrics=[recall_change_rf["In-Bag"], recall_change_rf["OOB"]],
         )
         plotter.plot_metric(
-            title="'F1-оценка' на Регресионна Гора върху Обучителна и Тестова извадки",
+            title="'F1-оценка' на Регресионна Гора върху Обучителната и Тестовата извадка",
             x_label="Дълбочина",
             y_label="F1-оценка",
             metrics=[f1_score_change_rf["Train"], f1_score_change_rf["Test"]],
         )
         plotter.plot_metric(
-            title="'F1-оценка' на Регресионна Гора върху Багинг и Извън Багинг извадки",
+            title="'F1-оценка' на Регресионна Гора върху Багинг и Извън Багинг извадките",
             x_label="Дълбочина",
             y_label="F1-оценка",
             metrics=[f1_score_change_rf["In-Bag"], f1_score_change_rf["OOB"]],
