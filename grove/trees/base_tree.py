@@ -376,6 +376,8 @@ class BaseTree(TreeInterface):
         y_test: pd.Series,
         save_results: bool = False,
         output_dir: str = None,
+        labeled_data_filename: str = None,
+        score_filename: str = None,
     ) -> TreeTestResults:
         """Test the model on a test dataset."""
         self.logger.log_section("Testing", add_newline=False)
@@ -394,7 +396,11 @@ class BaseTree(TreeInterface):
         )
 
         if save_results:
-            test_results.save(output_dir=output_dir)
+            test_results.save(
+                output_dir=output_dir,
+                labeled_data_filename=labeled_data_filename,
+                score_filename=score_filename,
+            )
 
         self.logger.log_section("Test Results:")
         self.logger.log(test_results)
