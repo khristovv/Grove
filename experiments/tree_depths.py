@@ -31,7 +31,7 @@ if __name__ == "__main__":
     actual_column = f"ACTUAL_{y.name}"
     predicted_column = f"PREDICTED_{y.name}"
 
-    max_depths = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    max_depths = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
     columns = ["Train", "Test", "In-Bag", "OOB"]
 
     accuracy_change_rf = pd.DataFrame(index=max_depths, columns=columns)
