@@ -82,7 +82,7 @@ def load_intermediate_dataset():
         y_dtype=y_dtype,
         max_children=4,
         min_samples_per_node=10,
-        max_depth=10,
+        max_depth=4,
         # criterion_threshold=10.0,
         logging_enabled=True,
         statistics_enabled=True,

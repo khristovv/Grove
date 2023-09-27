@@ -51,6 +51,8 @@ class ClassificationTree(BaseTree):
         node.children = []
         node.predicted_value = predicted_value
 
+        node.label = f"{node.label} -> {y.name}: {predicted_value}"
+
     def _build_test_results(
         self,
         labeled_data: pd.DataFrame,
